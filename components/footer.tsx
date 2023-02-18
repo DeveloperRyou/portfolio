@@ -1,8 +1,11 @@
 import Link from 'next/link'
 import Container from './container'
 import { GITHUB_PATH, NICKNAME } from '@lib/constants'
+import PortfolioContext from '@components/context';
+import { useContext } from 'react';
 
 const Footer = () => {
+  const {prefix} = useContext(PortfolioContext);
   return (
     <footer className="bg-neutral-50 border-t border-neutral-200">
       <Container>
@@ -12,7 +15,7 @@ const Footer = () => {
           </h3>
           <div className="flex flex-col lg:flex-row justify-center items-center lg:justify-end lg:pl-4 lg:w-1/2">
             <Link
-              href="./assets/resume.pdf"
+              href={`${prefix}/assets/resume.pdf`}
               target='_blank'
               className="mx-3 bg-black hover:bg-white hover:text-black border border-black text-white font-bold py-3 px-12 lg:px-8 duration-200 transition-colors mb-6 lg:mb-0"
             >

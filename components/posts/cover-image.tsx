@@ -1,3 +1,5 @@
+import PortfolioContext from '@components/context';
+import { useContext } from 'react';
 import cn from 'classnames'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -9,9 +11,10 @@ type Props = {
 }
 
 const CoverImage = ({ title, src, slug }: Props) => {
+  const { prefix } = useContext(PortfolioContext);
   const image = (
     <Image
-      src={src}
+      src={prefix + src}
       alt={`Cover Image for ${title}`}
       className={cn('shadow-sm w-full', {
         'hover:shadow-lg transition-shadow duration-200': slug,

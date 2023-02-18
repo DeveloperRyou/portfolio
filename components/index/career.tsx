@@ -1,12 +1,16 @@
+import PortfolioContext from '@components/context';
+import { useContext } from 'react';
 import Image from 'next/image';
+
 const Career = () => {
+  const { prefix } = useContext(PortfolioContext);
   return (
     <div className='inline-block mt-16 mb-16 md:mb-12'>
       <h1 className='text-3xl md:text-4xl lg:text-5xl font-bold mb-8'>Career</h1>
       <section className="flex-col md:flex-row flex items-center md:justify-between">
         <div className="text-center mb-8 md:mb-0 w-1/2 md:w-1/3 mx-auto md:mr-auto md:pr-8">
           <Image 
-            src="/assets/developerryou.jpg"
+            src={`${prefix}/assets/developerryou.jpg`}
             alt="career"
             className='rounded-full'
             width={1000}
