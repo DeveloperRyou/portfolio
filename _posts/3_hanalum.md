@@ -24,7 +24,7 @@ Hanalum Project는 한민고등학교의 교육발전을 위한 프로젝트입�
 
 Hanalum의 대표로서는 400명 규모의 고등학교 멘토링을 기획, 운영했습니다. 프로젝트 기간 내 단기성 멘토링에서 그치지 않고 커뮤니티로의 확장을 하고자 한아름 웹서비스를 기획, 개발했습니다. 이후 개발된 웹 서비스에서는 다양한 분야에서 꿈을 찾아 노력하는 졸업생들의 이야기를 게시하였습니다.
 
-![hanmaum](/assets/blog/hanalum/hanmaum.jpg)
+![hanmaum](https://developerryou.github.io/portfolio/assets/blog/hanalum/hanmaum.jpg)
 
 **[Hanalum 활동 소개 바로가기](http://hanalum.kr/about)**
 

@@ -28,9 +28,9 @@ OASIS Project는 가상화폐 자동매매 프로그램을 기획, 개발하고 
 
 OASIS Project를 통해 기존의 가상화폐 자동매매 프로그램에서 부족했던 부분인 UI / UX 를 발전시켜야겠다고 생각했습니다. 데스크탑 어플리케이션을 개발함에 있어 Dashboard 형태의 어플리케이션이 유저의 경험에 도움이 되리라 판단했습니다. figma를 이용해 본격적인 개발 전 어플리케이션의 레이아웃과 색 등을 미리 정의하였습니다.
 
-![Dashboard](/assets/blog/oasis/dashboard.png)
+![Dashboard](https://developerryou.github.io/portfolio/assets/blog/oasis/dashboard.png)
 
-![Dashboard](/assets/blog/oasis/oasisbot.png)
+![Dashboard](https://developerryou.github.io/portfolio/assets/blog/oasis/oasisbot.png)
 
 **[figma 확인하기](https://www.figma.com/file/XQozaVMLzNJ5LxA8byEkqO/Trade-Bot?node-id=1%3A1096&t=OPtk0MpLLQTDUT7e-1)** 
 
