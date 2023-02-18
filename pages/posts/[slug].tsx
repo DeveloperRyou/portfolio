@@ -1,16 +1,16 @@
 import { useRouter } from 'next/router'
 import ErrorPage from 'next/error'
-import Container from '../../components/container'
-import PostBody from '../../components/post-body'
-import Header from '../../components/header'
-import PostHeader from '../../components/post-header'
-import Layout from '../../components/layout'
-import { getPostBySlug, getAllPosts } from '../../lib/api'
-import PostTitle from '../../components/post-title'
 import Head from 'next/head'
-import { CMS_NAME } from '../../lib/constants'
-import markdownToHtml from '../../lib/markdownToHtml'
-import type PostType from '../../interfaces/post'
+import Header from '@components/header'
+import Container from '@components/container'
+import Layout from '@components/layout'
+import PostBody from '@components/posts/post-body'
+import PostHeader from '@components/posts/post-header'
+import PostTitle from '@components/posts/post-title'
+import { getPostBySlug, getAllPosts } from '@lib/api'
+import { NICKNAME } from '@lib/constants'
+import markdownToHtml from '@lib/markdownToHtml'
+import type PostType from '@interfaces/post'
 
 type Props = {
   post: PostType
@@ -24,7 +24,7 @@ export default function Post({ post, morePosts, preview }: Props) {
     return <ErrorPage statusCode={404} />
   }
   return (
-    <Layout preview={preview}>
+    <Layout>
       <Container>
         <Header />
         {router.isFallback ? (
@@ -34,7 +34,7 @@ export default function Post({ post, morePosts, preview }: Props) {
             <article className="mb-32">
               <Head>
                 <title>
-                  {post.title} | Next.js Blog Example with {CMS_NAME}
+                  {post.title} | {NICKNAME}
                 </title>
                 <meta property="og:image" content={post.ogImage.url} />
               </Head>
@@ -42,7 +42,6 @@ export default function Post({ post, morePosts, preview }: Props) {
                 title={post.title}
                 coverImage={post.coverImage}
                 date={post.date}
-                author={post.author}
               />
               <PostBody content={post.content} />
             </article>

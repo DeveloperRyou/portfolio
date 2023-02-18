@@ -1,12 +1,13 @@
-import Container from '../components/container'
-import MoreStories from '../components/more-stories'
-import HeroPost from '../components/hero-post'
-import Intro from '../components/intro'
-import Layout from '../components/layout'
-import { getAllPosts } from '../lib/api'
 import Head from 'next/head'
-import { CMS_NAME } from '../lib/constants'
-import Post from '../interfaces/post'
+import Container from '@components/container'
+import Layout from '@components/layout'
+import Intro from '@components/index/intro'
+import MoreStories from '@components/index/more-stories'
+import HeroPost from '@components/index/hero-post'
+import { getAllPosts } from '@lib/api'
+import { NICKNAME } from '@lib/constants'
+import Post from '@interfaces/post'
+import Career from '@components/index/career'
 
 type Props = {
   allPosts: Post[]
@@ -19,16 +20,16 @@ export default function Index({ allPosts }: Props) {
     <>
       <Layout>
         <Head>
-          <title>{`Next.js Blog Example with ${CMS_NAME}`}</title>
+          <title>{NICKNAME}</title>
         </Head>
         <Container>
           <Intro />
+          <Career />
           {heroPost && (
             <HeroPost
               title={heroPost.title}
               coverImage={heroPost.coverImage}
               date={heroPost.date}
-              author={heroPost.author}
               slug={heroPost.slug}
               excerpt={heroPost.excerpt}
             />
