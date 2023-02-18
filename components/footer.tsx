@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import Container from './container'
 import { GITHUB_PATH, NICKNAME } from '@lib/constants'
-import PortfolioContext from '@components/context';
-import { useContext } from 'react';
+import PortfolioContext from '@components/context'
+import { useContext } from 'react'
 
 const Footer = () => {
   const {prefix} = useContext(PortfolioContext);

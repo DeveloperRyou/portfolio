@@ -1,6 +1,8 @@
 import DateFormatter from '@components/posts/date-formatter'
 import CoverImage from '@components/posts/cover-image'
 import Link from 'next/link'
+import PortfolioContext from '@components/context'
+import { useContext } from 'react'
 
 type Props = {
   title: string
@@ -17,6 +19,7 @@ const PostPreview = ({
   excerpt,
   slug,
 }: Props) => {
+  const {prefix} = useContext(PortfolioContext);
   return (
     <div>
       <div className="mb-5">
@@ -24,8 +27,8 @@ const PostPreview = ({
       </div>
       <h3 className="text-3xl mb-3 leading-snug">
         <Link
-          as={`./posts/${slug}`}
-          href="./posts/[slug]"
+          as={`${prefix}/posts/${slug}`}
+          href={`${prefix}/posts/${slug}`}
           className="hover:underline"
         >
           {title}

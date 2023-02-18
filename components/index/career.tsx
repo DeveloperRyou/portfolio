@@ -1,6 +1,6 @@
-import PortfolioContext from '@components/context';
-import { useContext } from 'react';
-import Image from 'next/image';
+import PortfolioContext from '@components/context'
+import { useContext } from 'react'
+import Image from 'next/image'
 
 const Career = () => {
   const { prefix } = useContext(PortfolioContext);

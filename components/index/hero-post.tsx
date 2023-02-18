@@ -1,3 +1,5 @@
+import PortfolioContext from '@components/context'
+import { useContext } from 'react'
 import Link from 'next/link'
 import DateFormatter from '@components/posts/date-formatter'
 import CoverImage from '@components/posts/cover-image'
@@ -17,6 +19,7 @@ const HeroPost = ({
   excerpt,
   slug,
 }: Props) => {
+  const {prefix} = useContext(PortfolioContext);
   return (
     <div className='inline-block mt-16 mb-16 md:mb-12'>
       <h1 className='mb-8 text-5xl md:text-7xl font-bold tracking-tighter leading-tight'>Project</h1>
@@ -28,8 +31,8 @@ const HeroPost = ({
           <div>
             <h3 className="mb-4 text-4xl lg:text-5xl leading-tight">
               <Link
-                as={`./posts/${slug}`}
-                href="./posts/[slug]"
+                as={`${prefix}/posts/${slug}`}
+                href={`${prefix}/posts/${slug}`}
                 className="hover:underline"
               >
                 {title}
