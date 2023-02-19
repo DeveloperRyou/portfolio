@@ -26,20 +26,42 @@ const Career = () => {
                 Yonsei University
               </a>
               , Seoul
-              <span className='text-xl'>&nbsp;- Bachelor of Computer Science</span>
+              <span className='text-xl'>&nbsp;- Currently enrolled in Bachelor of Computer Science</span>
             </h2>
-            <p className='text-base text-gray-500'>2018.2. ~</p>
+            <p className='text-base text-gray-500'>2018.2. ~ Present</p>
           </div>
           <div className='mb-2'>
             <h2 className='text-2xl'>
               <a className='hover:text-sky-600'
-              href='http://hanalum.kr/'
+              href='https://oasisbot24.com/'
               target='_blank'>
-                Hanalum
+                OASIS
               </a>
-              <span className='text-xl'>&nbsp;- Project Leader</span>
+              <span className='text-xl'>&nbsp;- Development Team Leader</span>
             </h2>
-            <p className='text-base text-gray-500'>2019.2. ~ 2020.5.</p>
+            <p className='text-base text-gray-500'>2022.9. ~ Present</p>
+          </div>
+          <div className='mb-2'>
+            <h2 className='text-2xl'>
+              <a className='hover:text-sky-600'
+              href='https://github.com/DeveloperRyou/stockPricePredict_AI'
+              target='_blank'>
+                Stock Price Predict Model
+              </a>
+              <span className='text-xl'>&nbsp;- LSTM Project Leader Programmer</span>
+            </h2>
+            <p className='text-base text-gray-500'>2022.4. ~ 2022.6.</p>
+          </div>
+          <div className='mb-2'>
+            <h2 className='text-2xl'>
+              <a className='hover:text-sky-600 underline decoration-sky-400'
+              href='https://42seoul.kr/seoul42/main/view'
+              target='_blank'>
+                42 Seoul
+              </a>
+              <span className='text-xl'>&nbsp;- Learner</span>
+            </h2>
+            <p className='text-base text-gray-500'>2022.2. ~ Present</p>
           </div>
           <div className='mb-2'>
             <h2 className='text-2xl'>
@@ -54,36 +76,14 @@ const Career = () => {
           </div>
           <div className='mb-2'>
             <h2 className='text-2xl'>
-              <a className='hover:text-sky-600 underline decoration-sky-400'
-              href='https://42seoul.kr/seoul42/main/view'
-              target='_blank'>
-                42 Seoul
-              </a>
-              <span className='text-xl'>&nbsp;- Learner</span>
-            </h2>
-            <p className='text-base text-gray-500'>2022.2. ~</p>
-          </div>
-          <div className='mb-2'>
-            <h2 className='text-2xl'>
               <a className='hover:text-sky-600'
-              href='https://github.com/DeveloperRyou/stockPricePredict_AI'
+              href='http://hanalum.kr/'
               target='_blank'>
-                Stock Price Predict Model
+                Hanalum
               </a>
-              <span className='text-xl'>&nbsp;- LSTM Project Leader Programmer</span>
+              <span className='text-xl'>&nbsp;- Project Leader</span>
             </h2>
-            <p className='text-base text-gray-500'>2022.4. ~ 2022.6.</p>
-          </div>
-          <div>
-            <h2 className='text-2xl'>
-              <a className='hover:text-sky-600'
-              href='https://oasisbot24.com/'
-              target='_blank'>
-                OASIS
-              </a>
-              <span className='text-xl'>&nbsp;- Development Team Leader</span>
-            </h2>
-            <p className='text-base text-gray-500'>2022.9. ~</p>
+            <p className='text-base text-gray-500'>2019.2. ~ 2020.5.</p>
           </div>
         </div>
       </section>
