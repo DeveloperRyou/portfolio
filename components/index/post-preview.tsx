@@ -1,25 +1,19 @@
-import DateFormatter from '@components/posts/date-formatter'
-import CoverImage from '@components/posts/cover-image'
-import Link from 'next/link'
-import PortfolioContext from '@components/context'
-import { useContext } from 'react'
+import DateFormatter from "@components/posts/date-formatter";
+import CoverImage from "@components/posts/cover-image";
+import Link from "next/link";
+import PortfolioContext from "@components/context";
+import { useContext } from "react";
 
 type Props = {
-  title: string
-  coverImage: string
-  date: string
-  excerpt: string
-  slug: string
-}
+  title: string;
+  coverImage: string;
+  date: string;
+  excerpt: string;
+  slug: string;
+};
 
-const PostPreview = ({
-  title,
-  coverImage,
-  date,
-  excerpt,
-  slug,
-}: Props) => {
-  const {prefix} = useContext(PortfolioContext);
+const PostPreview = ({ title, coverImage, date, excerpt, slug }: Props) => {
+  const { prefix } = useContext(PortfolioContext);
   return (
     <div>
       <div className="mb-5">
@@ -39,7 +33,7 @@ const PostPreview = ({
       </div>
       <p className="text-lg leading-relaxed mb-4">{excerpt}</p>
     </div>
-  )
-}
+  );
+};
 
-export default PostPreview
+export default PostPreview;
