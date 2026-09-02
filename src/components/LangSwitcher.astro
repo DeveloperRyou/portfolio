@@ -1,0 +1,41 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { stripBase, stripLocale } from "@/utils/withBase";
+
+const locales = [
+  { code: "en", label: "EN" },
+  { code: "ko", label: "KO" },
+  { code: "ja", label: "JA" },
+];
+
+const locale = Astro.currentLocale ?? "en";
+const relativePath = stripBase(Astro.url.pathname);
+const pathWithoutTrailingSlash =
+  relativePath.endsWith("/") && relativePath !== "/"
+    ? relativePath.slice(0, -1)
+    : relativePath;
+const currentPath = stripLocale(pathWithoutTrailingSlash, locale);
+const targetPath = currentPath.replace(/^\//, "");
+---
+
+<ul
+  class="flex items-center gap-1 text-sm font-medium"
+  aria-label="Language switcher"
+>
+  {
+    locales.map(({ code, label }) => (
+      <li>
+        <a
+          href={getRelativeLocaleUrl(code, targetPath)}
+          class:list={[
+            "focus-outline hover:text-accent px-1.5 py-1",
+            { "text-accent underline": code === locale },
+          ]}
+          aria-current={code === locale ? "true" : undefined}
+        >
+          {label}
+        </a>
+      </li>
+    ))
+  }
+</ul>

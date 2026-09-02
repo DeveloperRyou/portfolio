@@ -1,0 +1,59 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getPostUrl } from "@/utils/getPostPaths";
+import { toTransitionName } from "@/utils/toTransitionName";
+import { slugifyStr } from "@/utils/slugify";
+import Datetime from "./Datetime.astro";
+import Tag from "./Tag.astro";
+
+type Props = {
+  variant?: "h2" | "h3";
+} & CollectionEntry<"posts">;
+
+const { variant: Heading = "h2", id, data, filePath } = Astro.props;
+
+const { title, description, coverImage, tags, ...props } = data;
+const postUrl = getPostUrl(id, filePath, Astro.currentLocale);
+---
+
+<li class="my-6 flex gap-4 sm:gap-5">
+  {
+    coverImage && (
+      <a href={postUrl} tabindex="-1" aria-hidden="true" class="shrink-0">
+        <img
+          src={coverImage}
+          alt=""
+          loading="lazy"
+          width={160}
+          height={112}
+          class="border-border h-20 w-28 rounded-md border object-cover sm:h-24 sm:w-40"
+        />
+      </a>
+    )
+  }
+  <div class="min-w-0 flex-1">
+    <a
+      href={postUrl}
+      class:list={[
+        "text-accent inline-block text-lg font-medium",
+        "decoration-dashed underline-offset-4 hover:underline",
+        "focus-visible:no-underline focus-visible:underline-offset-0",
+      ]}
+    >
+      <Heading transition:name={toTransitionName(id)}>
+        {title}
+      </Heading>
+    </a>
+    <Datetime {...props} />
+    <p>{description}</p>
+    {
+      tags.length > 0 && (
+        <ul class="mt-2 flex flex-wrap gap-x-3 gap-y-1">
+          {tags.map(tag => (
+            <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" />
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</li>
