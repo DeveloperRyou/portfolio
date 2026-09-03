@@ -2,7 +2,7 @@ import { defineAstroPaperConfig } from "./src/types/config";
 
 export default defineAstroPaperConfig({
   site: {
-    url: "https://developerryou.pages.dev/",
+    url: "https://portfolio.developerryou.workers.dev/",
     title: "Developer Ryou",
     description:
       "Sungmin Ryou's dev blog — notes on the web services, homelab, and infra projects I build.",
