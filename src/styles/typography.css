@@ -60,6 +60,8 @@
     }
 
     table {
+      @apply block max-w-full overflow-x-auto;
+
       th,
       td {
         @apply border-border border p-2;
@@ -112,7 +114,7 @@
 
   /* ===== Code Blocks & Syntax Highlighting ===== */
   .astro-code {
-    @apply outline-border flex border bg-(--shiki-light-bg) text-(--shiki-light) [&_span]:text-(--shiki-light);
+    @apply outline-border flex border overflow-x-auto bg-(--shiki-light-bg) text-(--shiki-light) [&_span]:text-(--shiki-light);
   }
 
   html[data-theme="dark"] .astro-code {
