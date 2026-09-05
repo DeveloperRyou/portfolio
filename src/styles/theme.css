@@ -7,6 +7,14 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
+}
+
+/* Not declared with `inline` above: `inline` copies the variable's
+   *literal* value into every utility at build time, so the `font-app`
+   utility would permanently reference `--font-google-sans-code` instead
+   of staying a live indirection through `--font-app` -- breaking the
+   per-locale overrides below. */
+@theme {
   --font-app: var(--font-google-sans-code);
 }
 
