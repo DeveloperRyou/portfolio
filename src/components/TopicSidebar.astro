@@ -1,0 +1,34 @@
+---
+import { getCollection } from "astro:content";
+import Tag from "@/components/Tag.astro";
+import { getUniqueTags } from "@/utils/getUniqueTags";
+import { useTranslations } from "@/i18n";
+import config from "@/config";
+
+type Props = {
+  class?: string;
+};
+
+const { class: className } = Astro.props;
+
+const locale = Astro.currentLocale ?? config.site.lang;
+const t = useTranslations(locale);
+
+const posts = await getCollection("posts", ({ data }) => !data.draft);
+const tags = getUniqueTags(posts);
+---
+
+{
+  tags.length > 0 && (
+    <nav aria-label={t.nav.tags} class:list={["shrink-0 lg:w-56", className]}>
+      <h2 class="text-muted-foreground mb-3 text-sm font-semibold tracking-wide uppercase">
+        {t.nav.tags}
+      </h2>
+      <ul class="flex flex-wrap gap-x-4 gap-y-2 lg:flex-col lg:gap-2">
+        {tags.map(({ tag, tagName }) => (
+          <Tag {tag} {tagName} size="sm" />
+        ))}
+      </ul>
+    </nav>
+  )
+}
