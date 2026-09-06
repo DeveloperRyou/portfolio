@@ -3,7 +3,6 @@ import { getCollection } from "astro:content";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
 import Layout from "@/layouts/Layout.astro";
-import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Socials from "@/components/Socials.astro";
 import Card from "@/components/Card.astro";
@@ -25,7 +24,6 @@ const homePath = getRelativeLocaleUrl(locale, "");
 ---
 
 <Layout>
-  <Header />
   <main
     id="main-content"
     data-layout="index"

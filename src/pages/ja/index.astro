@@ -3,7 +3,6 @@ import { getCollection } from "astro:content";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
 import Layout from "@/layouts/Layout.astro";
-import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Socials from "@/components/Socials.astro";
 import Card from "@/components/Card.astro";
@@ -25,7 +24,6 @@ const homePath = getRelativeLocaleUrl(locale, "");
 ---
 
 <Layout>
-  <Header />
   <main
     id="main-content"
     data-layout="index"
@@ -46,8 +44,10 @@ const homePath = getRelativeLocaleUrl(locale, "");
             こんにちは、リュ・ソンミンです
           </h1>
           <p>
-            Web サービスを作るソフトウェアエンジニアです。このブログには、仮想通貨の自動売買ボットから
-            42 Seoul のチームプロジェクトまで、これまで手がけたプロジェクトの記録をまとめています。
+            Web
+            サービスを作るソフトウェアエンジニアです。このブログには、仮想通貨の自動売買ボットから
+            42 Seoul
+            のチームプロジェクトまで、これまで手がけたプロジェクトの記録をまとめています。
           </p>
           <p class="mt-2">
             下の投稿を読むか、{" "}

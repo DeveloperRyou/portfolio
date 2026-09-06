@@ -21,12 +21,12 @@ export default defineAstroPaperConfig({
   features: {
     lightAndDarkMode: true,
     dynamicOgImage: true,
-    showArchives: true,
+    showArchives: false,
     showBackButton: true,
     editPost: {
       enabled: false,
     },
-    search: "pagefind",
+    search: false,
   },
   socials: [
     { name: "github", url: "https://github.com/DeveloperRyou" },

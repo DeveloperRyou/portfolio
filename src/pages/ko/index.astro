@@ -3,7 +3,6 @@ import { getCollection } from "astro:content";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
 import Layout from "@/layouts/Layout.astro";
-import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Socials from "@/components/Socials.astro";
 import Card from "@/components/Card.astro";
@@ -25,7 +24,6 @@ const homePath = getRelativeLocaleUrl(locale, "");
 ---
 
 <Layout>
-  <Header />
   <main
     id="main-content"
     data-layout="index"
@@ -46,9 +44,9 @@ const homePath = getRelativeLocaleUrl(locale, "");
             안녕하세요, 류성민입니다
           </h1>
           <p>
-            웹 서비스를 만드는 소프트웨어 엔지니어입니다. 이 블로그에는
-            가상화폐 자동매매 봇부터 42 Seoul 팀 프로젝트까지, 그동안 만든
-            프로젝트들의 기록을 담았습니다.
+            웹 서비스를 만드는 소프트웨어 엔지니어입니다. 이 블로그에는 가상화폐
+            자동매매 봇부터 42 Seoul 팀 프로젝트까지, 그동안 만든 프로젝트들의
+            기록을 담았습니다.
           </p>
           <p class="mt-2">
             아래 글을 읽거나,{" "}

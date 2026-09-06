@@ -33,6 +33,10 @@ export default {
     recentPosts: "最近の記事",
     allPosts: "すべての記事",
   },
+  sidebar: {
+    bio: "ウェブサービスを作るソフトウェアエンジニアです。",
+    categories: "カテゴリー",
+  },
   footer: {
     copyright: "Copyright",
     allRightsReserved: "All rights reserved.",
@@ -57,6 +61,8 @@ export default {
     skipToContent: "本文へスキップ",
     openMenu: "メニューを開く",
     closeMenu: "メニューを閉じる",
+    openSidebar: "サイドバーを開く",
+    closeSidebar: "サイドバーを閉じる",
     toggleTheme: "テーマを切り替える",
     searchPlaceholder: "記事を検索...",
     noResults: "検索結果がありません",

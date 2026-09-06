@@ -6,6 +6,7 @@ import IconArchive from "@/assets/icons/IconArchive.svg";
 import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import IconSearch from "@/assets/icons/IconSearch.svg";
 import IconMoon from "@/assets/icons/IconMoon.svg";
+import IconHash from "@/assets/icons/IconHash.svg";
 import IconX from "@/assets/icons/IconX.svg";
 import LinkButton from "./LinkButton.astro";
 import LangSwitcher from "./LangSwitcher.astro";
@@ -43,15 +44,24 @@ const isActive = (path: string) => {
   {t.a11y.skipToContent}
 </a>
 
-<header
-  class="app-layout flex flex-col items-center justify-between sm:flex-row"
->
+<header class="flex w-full flex-col items-center justify-between sm:flex-row">
   <div
     class="border-border bg-background relative flex w-full items-baseline justify-between border-b py-4 sm:items-center sm:py-6"
   >
+    <button
+      id="sidebar-toggle"
+      class="focus-outline order-first me-2 self-center p-2 lg:hidden"
+      aria-label={t.a11y.openSidebar}
+      aria-expanded="false"
+      aria-controls="sidebar"
+      data-label-open={t.a11y.openSidebar}
+      data-label-close={t.a11y.closeSidebar}
+    >
+      <IconHash />
+    </button>
     <a
       href={getRelativeLocaleUrl(locale, "")}
-      class="absolute py-1 text-xl leading-8 font-semibold whitespace-nowrap sm:static sm:my-auto sm:text-2xl sm:leading-none"
+      class="absolute start-10 py-1 text-xl leading-8 font-semibold whitespace-nowrap sm:static sm:start-auto sm:my-auto sm:text-2xl sm:leading-none"
     >
       {site.title}
     </a>
