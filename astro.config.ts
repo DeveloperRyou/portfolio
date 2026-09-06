@@ -64,6 +64,14 @@ export default defineConfig({
       cssVariable: "--font-google-sans-code",
       provider: fontProviders.google(),
       fallbacks: ["monospace"],
+      // Astro's default optimized fallback picks a local system font
+      // (e.g. Courier New) size-matched to this face, but that face has
+      // no unicode-range, so on systems where it resolves to a font with
+      // any CJK glyph coverage it can intercept Korean/Japanese text
+      // before it ever reaches the Noto Sans KR/JP fallback below in
+      // theme.css. The plain "monospace" generic keyword falls through
+      // to the next font in the stack per spec, so disable it here.
+      optimizedFallbacks: false,
       weights: [300, 400, 500, 600, 700],
       styles: ["normal", "italic"],
       formats: ["woff", "ttf"],
