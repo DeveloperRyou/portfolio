@@ -5,6 +5,7 @@ import satori from "satori";
 import sharp from "sharp";
 import { getFontPathByWeight } from "@/utils/getFontPathByWeight";
 import { getPostSlug } from "@/utils/getPostPaths";
+import { getPostsByLocale } from "@/utils/postLocale";
 import config from "@/config";
 
 export async function getStaticPaths() {
@@ -13,7 +14,10 @@ export async function getStaticPaths() {
   }
 
   const posts = await getCollection("posts").then(p =>
-    p.filter(({ data }) => !data.draft && !data.ogImage)
+    getPostsByLocale(
+      p.filter(({ data }) => !data.draft && !data.ogImage),
+      "ko"
+    )
   );
 
   return posts.map(post => ({

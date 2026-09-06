@@ -1,37 +1,37 @@
 ---
 title: "OASIS Project"
-description: "가상화폐 자동매매 프로그램을 기획, 개발, 배포하는 프로젝트. Electron으로 데스크탑 앱을, Node.js와 Upbit API로 자동매매를, React로 프론트엔드를 구현했다."
+description: "A project to plan, build, and ship a cryptocurrency auto-trading program. Built a desktop app with Electron, an auto-trading engine with Node.js and the Upbit API, and a frontend in React."
 pubDatetime: 2022-09-01T01:00:00
 tags: ["oasis", "electron", "react", "typescript"]
 coverImage: "/assets/blog/oasis/cover.jpg"
 ---
 
-## OASIS 소개
+## About OASIS
 
-OASIS Project는 가상화폐 자동매매 프로그램을 기획, 개발하고 배포하는 프로젝트입니다.
+The OASIS Project plans, builds, and ships a cryptocurrency auto-trading program.
 
-**[OASIS 랜딩페이지 바로가기](http://oasisbot24.com)**
+**[Visit the OASIS landing page](http://oasisbot24.com)**
 
-2022년 9월 부터 기획을 시작했으며 현재(2023.2.)까지 진행하고 있습니다. 고객들에게 필요한 가상화폐 자동매매 프로그램을 OASIS BOT 명명하고 필요한 기능을 정의 하는것 부터, UI / UX 디자인, OASIS BOT 개발, 랜딩페이지 개발을 담당했습니다. 프로젝트 내의 모든 서비스 개발과 기술 관리를 맡고 있습니다.
+Planning began in September 2022, and as of writing (Feb. 2023) it's still ongoing. I named the customer-facing crypto auto-trading program "OASIS BOT" and owned everything from defining its required features, to UI/UX design, to building OASIS BOT itself and its landing page. I'm responsible for all service development and technical management within the project.
 
-현재(2023.2)는 사업자등록을 마친 상태이며, 1억원 가량의 자금을 모아 beta 서비스를 런칭하였습니다. OASIS BOT을 검증하고 본 서비스까지 수정, 보완을 이어갈 예정입니다.
+As of writing (Feb. 2023), the business has been formally registered, and we've raised roughly 100 million KRW to launch a beta service. We plan to validate OASIS BOT through the beta and keep iterating on it toward a full release.
 
-**[OASIS BOT Beta 서비스 바로가기](https://github.com/DeveloperRyou/oasis/releases/)**
+**[Visit the OASIS BOT beta service](https://github.com/DeveloperRyou/oasis/releases/)**
 
-## UI / UX 디자인
+## UI/UX Design
 
-OASIS Project를 통해 기존의 가상화폐 자동매매 프로그램에서 부족했던 부분인 UI / UX 를 발전시켜야겠다고 생각했습니다. 데스크탑 어플리케이션을 개발함에 있어 Dashboard 형태의 어플리케이션이 유저의 경험에 도움이 되리라 판단했습니다. figma를 이용해 본격적인 개발 전 어플리케이션의 레이아웃과 색 등을 미리 정의하였습니다.
+Working on the OASIS Project, I felt that UI/UX was an area existing crypto auto-trading programs handled poorly, and set out to improve it. For a desktop application, I decided a dashboard-style layout would serve the user experience well. Before diving into development, I used Figma to define the app's layout and color palette.
 
 ![Dashboard](/assets/blog/oasis/dashboard.png)
 
 ![oasisbot](/assets/blog/oasis/oasisbot.png)
 
-**[figma 확인하기](https://www.figma.com/file/XQozaVMLzNJ5LxA8byEkqO/Trade-Bot?node-id=1%3A1096&t=OPtk0MpLLQTDUT7e-1)**
+**[Check out the Figma file](https://www.figma.com/file/XQozaVMLzNJ5LxA8byEkqO/Trade-Bot?node-id=1%3A1096&t=OPtk0MpLLQTDUT7e-1)**
 
 ## OASIS BOT
 
-OASIS BOT은 데스크탑 어플리케이션으로 개발하기로 결정했습니다. 이를 위해서 사용할 기술을 알아보던 중, 저에게 익숙한 웹기술을 이용하여 데스크탑 어플리케이션을 개발해야겠다고 생각하였습니다. Electron은 이를 가능하게 해주는 프레임워크였습니다. Discord, Slack, Skype 등의 소프트웨어가 Electron으로 개발되었습니다. Electron과 함께 typescript를 사용하여 방대한 구현과정 속 예상치 못한 에러가 일어나지 않도록 하였습니다.
+I decided to build OASIS BOT as a desktop application. While researching what to build it with, I realized I could build a desktop app using web technologies I already knew well. Electron made that possible — it's the same framework behind software like Discord, Slack, and Skype. I paired Electron with TypeScript to catch unexpected errors early across such a large implementation.
 
-Electron의 Main 프로세스에서는 Nodejs with typescript를 이용해 자동매매의 핵심 동작을 구현하였습니다. interface와 class를 사용해 객체 지향적 개발을 하여 유지 보수가 원할하게 개발을 진행했습니다.
+In Electron's main process, I used Node.js with TypeScript to implement the core auto-trading logic. Using interfaces and classes for an object-oriented approach kept the codebase maintainable as it grew.
 
-Electron의 Renderer 프로세스에서는 React with typescript를 이용해 figma로 디자인한 화면을 어플리케이션에서 렌더링 할 수 있도록 구현하였습니다. OASIS BOT에서 필요한 정보는 Main 프로세스에서 제공하고, Renderer 프로세스에서는 React의 State를 활용하여 제공된 정보를 화면에 렌더링했습니다.
+In Electron's renderer process, I used React with TypeScript to render the screens designed in Figma inside the app. The main process supplies the data OASIS BOT needs, and the renderer process uses React state to render that data to the screen.
