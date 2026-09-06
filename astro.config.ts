@@ -63,14 +63,20 @@ export default defineConfig({
       name: "Google Sans Code",
       cssVariable: "--font-google-sans-code",
       provider: fontProviders.google(),
-      fallbacks: ["monospace"],
-      // Astro's default optimized fallback picks a local system font
-      // (e.g. Courier New) size-matched to this face, but that face has
-      // no unicode-range, so on systems where it resolves to a font with
-      // any CJK glyph coverage it can intercept Korean/Japanese text
-      // before it ever reaches the Noto Sans KR/JP fallback below in
-      // theme.css. The plain "monospace" generic keyword falls through
-      // to the next font in the stack per spec, so disable it here.
+      // No fallback baked into this variable: theme.css's ko/ja override
+      // appends Noto Sans KR/JP directly after this font for CJK glyphs.
+      // A generic keyword (e.g. "monospace") in between is unsafe -- on
+      // Windows, the OS performs its own font-linking substitution for
+      // unnamed generic fonts, silently swapping in a system CJK font
+      // for Hangul/Kanji *before* the browser ever checks the next font
+      // in the CSS list, so Noto Sans KR/JP never gets requested at all.
+      // Named web fonts don't trigger this, only generic keywords do.
+      // The default locale's own fallback is appended explicitly below
+      // in theme.css instead, where it's safe (nothing CJK follows it).
+      fallbacks: [],
+      // Astro's default optimized fallback also picks a local system
+      // font (e.g. Courier New) size-matched to this face with no
+      // unicode-range, which has the same Windows font-linking risk.
       optimizedFallbacks: false,
       weights: [300, 400, 500, 600, 700],
       styles: ["normal", "italic"],
