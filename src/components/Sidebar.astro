@@ -1,0 +1,142 @@
+---
+import { getCollection } from "astro:content";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import IconX from "@/assets/icons/IconX.svg";
+import Socials from "@/components/Socials.astro";
+import { getUniqueTags } from "@/utils/getUniqueTags";
+import { postFilter } from "@/utils/postFilter";
+import { slugifyStr } from "@/utils/slugify";
+import { useTranslations } from "@/i18n";
+import config from "@/config";
+
+const { site } = config;
+const locale = Astro.currentLocale ?? config.site.lang;
+const t = useTranslations(locale);
+
+const posts = await getCollection("posts", ({ data }) => !data.draft);
+const tags = getUniqueTags(posts);
+
+const countsByTag = new Map<string, number>();
+for (const post of posts.filter(postFilter)) {
+  for (const tag of post.data.tags) {
+    const slug = slugifyStr(tag);
+    countsByTag.set(slug, (countsByTag.get(slug) ?? 0) + 1);
+  }
+}
+const categories = tags.map(({ tag, tagName }) => ({
+  tag,
+  tagName,
+  count: countsByTag.get(tag) ?? 0,
+}));
+---
+
+<div
+  id="sidebar-backdrop"
+  class="fixed inset-0 z-30 hidden bg-black/50 lg:hidden"
+  data-sidebar-backdrop
+>
+</div>
+<aside
+  id="sidebar"
+  aria-label={site.title}
+  class="border-border bg-background fixed inset-y-0 start-0 z-40 w-72 max-w-[80%] -translate-x-full overflow-y-auto border-e p-6 transition-transform duration-200 ease-out lg:sticky lg:top-24 lg:z-0 lg:h-fit lg:w-56 lg:max-w-none lg:translate-x-0 lg:overflow-visible lg:border-e-0 lg:p-0 lg:transition-none"
+>
+  <div class="mb-6 flex items-center justify-end lg:hidden">
+    <button
+      id="sidebar-close"
+      class="focus-outline p-2"
+      aria-label={t.a11y.closeSidebar}
+    >
+      <IconX />
+    </button>
+  </div>
+
+  <div class="flex flex-col items-center gap-3 text-center">
+    <img
+      src="/assets/developerryou.jpg"
+      alt={site.author}
+      width={80}
+      height={80}
+      class="border-border h-20 w-20 rounded-full border object-cover"
+    />
+    <div>
+      <p class="font-semibold">{site.author}</p>
+      <p class="text-muted-foreground mt-1 text-sm">{t.sidebar.bio}</p>
+    </div>
+    <Socials />
+  </div>
+
+  {
+    categories.length > 0 && (
+      <nav
+        aria-label={t.sidebar.categories}
+        class="border-border mt-8 border-t pt-6"
+      >
+        <h2 class="text-muted-foreground mb-3 text-sm font-semibold tracking-wide uppercase">
+          {t.sidebar.categories}
+        </h2>
+        <ul class="flex flex-col">
+          {categories.map(({ tag, tagName, count }) => (
+            <li>
+              <a
+                href={getRelativeLocaleUrl(locale, `tags/${tag}/`)}
+                class="hover:text-accent -ms-2 flex items-center justify-between gap-2 rounded px-2 py-1.5 text-sm"
+              >
+                <span class="truncate">{tagName}</span>
+                <span class="text-muted-foreground shrink-0">{count}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )
+  }
+</aside>
+
+<script>
+  function initSidebar() {
+    const sidebar = document.querySelector<HTMLElement>("#sidebar");
+    const backdrop = document.querySelector<HTMLElement>("#sidebar-backdrop");
+    const openBtn =
+      document.querySelector<HTMLButtonElement>("#sidebar-toggle");
+    const closeBtn =
+      document.querySelector<HTMLButtonElement>("#sidebar-close");
+
+    if (!sidebar || !backdrop || !openBtn) return;
+
+    const openLabel = openBtn.dataset.labelOpen ?? "Open sidebar";
+    const closeLabel = openBtn.dataset.labelClose ?? "Close sidebar";
+
+    // A page navigation while the drawer was open swaps <body> but Astro's
+    // ClientRouter keeps <html> around, so a stale lock could persist.
+    document.documentElement.classList.remove("overflow-hidden");
+
+    const open = () => {
+      sidebar.classList.remove("-translate-x-full");
+      backdrop.classList.remove("hidden");
+      document.documentElement.classList.add("overflow-hidden");
+      openBtn.setAttribute("aria-expanded", "true");
+      openBtn.setAttribute("aria-label", closeLabel);
+      closeBtn?.focus();
+    };
+
+    const close = () => {
+      sidebar.classList.add("-translate-x-full");
+      backdrop.classList.add("hidden");
+      document.documentElement.classList.remove("overflow-hidden");
+      openBtn.setAttribute("aria-expanded", "false");
+      openBtn.setAttribute("aria-label", openLabel);
+      openBtn.focus();
+    };
+
+    openBtn.addEventListener("click", open);
+    closeBtn?.addEventListener("click", close);
+    backdrop.addEventListener("click", close);
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") close();
+    });
+  }
+
+  initSidebar();
+  document.addEventListener("astro:after-swap", initSidebar);
+</script>

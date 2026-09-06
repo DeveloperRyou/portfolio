@@ -33,6 +33,10 @@ export default {
     recentPosts: "Recent Posts",
     allPosts: "All Posts",
   },
+  sidebar: {
+    bio: "Software engineer building web services.",
+    categories: "Categories",
+  },
   footer: {
     copyright: "Copyright",
     allRightsReserved: "All rights reserved.",
@@ -57,6 +61,8 @@ export default {
     skipToContent: "Skip to content",
     openMenu: "Open menu",
     closeMenu: "Close menu",
+    openSidebar: "Open sidebar",
+    closeSidebar: "Close sidebar",
     toggleTheme: "Toggle theme",
     searchPlaceholder: "Search posts...",
     noResults: "No results found",

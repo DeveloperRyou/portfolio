@@ -1,7 +1,6 @@
 ---
 import { getEntry, render } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
-import Header from "@/components/Header.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
 import Main from "@/components/Main.astro";
 import Footer from "@/components/Footer.astro";
@@ -24,11 +23,13 @@ const { Content } = await render(about);
   ogImage={about.data.ogImage}
   canonicalURL={about.data.canonicalURL}
 >
-  <Header />
-
   <Breadcrumb />
 
-  <Main pageTitle={about.data.title} pageDesc={about.data.description} class="app-prose">
+  <Main
+    pageTitle={about.data.title}
+    pageDesc={about.data.description}
+    class="app-prose"
+  >
     <Content />
   </Main>
 

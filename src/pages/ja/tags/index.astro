@@ -1,7 +1,6 @@
 ---
 import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
-import Header from "@/components/Header.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
 import Main from "@/components/Main.astro";
 import Footer from "@/components/Footer.astro";
@@ -18,8 +17,6 @@ const t = useTranslations(locale);
 ---
 
 <Layout title={`${t.pages.tagsTitle} | ${config.site.title}`}>
-  <Header />
-
   <Breadcrumb />
 
   <Main pageTitle={t.pages.tagsTitle} pageDesc={t.pages.tagsDesc}>

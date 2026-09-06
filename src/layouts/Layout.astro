@@ -4,6 +4,8 @@ import { ClientRouter } from "astro:transitions";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import { resolveDefaultOgImagePath } from "@/utils/resolveDefaultOgImagePath";
 import { getAssetPath } from "@/utils/withBase";
+import Header from "@/components/Header.astro";
+import Sidebar from "@/components/Sidebar.astro";
 import config from "@/config";
 import "@/styles/global.css";
 
@@ -146,7 +148,15 @@ const locale = Astro.currentLocale ?? config.site.lang;
   <body
     class="bg-background font-app text-foreground selection:bg-accent/75 selection:text-accent-foreground flex min-h-svh flex-col"
   >
-    <slot />
+    <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4">
+      <Header />
+      <div class="flex flex-1 flex-col gap-x-10 lg:flex-row">
+        <Sidebar />
+        <div class="min-w-0 flex-1">
+          <slot />
+        </div>
+      </div>
+    </div>
     <script>
       import "@/scripts/theme";
     </script>

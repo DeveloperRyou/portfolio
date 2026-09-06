@@ -31,6 +31,10 @@ export interface UIStrings {
     recentPosts: string;
     allPosts: string;
   };
+  sidebar: {
+    bio: string;
+    categories: string;
+  };
   footer: {
     copyright: string;
     allRightsReserved: string;
@@ -55,6 +59,8 @@ export interface UIStrings {
     skipToContent: string;
     openMenu: string;
     closeMenu: string;
+    openSidebar: string;
+    closeSidebar: string;
     toggleTheme: string;
     searchPlaceholder: string;
     noResults: string;

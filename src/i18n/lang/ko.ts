@@ -33,6 +33,10 @@ export default {
     recentPosts: "최근 글",
     allPosts: "전체 글",
   },
+  sidebar: {
+    bio: "웹 서비스를 만드는 소프트웨어 엔지니어입니다.",
+    categories: "카테고리",
+  },
   footer: {
     copyright: "Copyright",
     allRightsReserved: "All rights reserved.",
@@ -57,6 +61,8 @@ export default {
     skipToContent: "본문으로 건너뛰기",
     openMenu: "메뉴 열기",
     closeMenu: "메뉴 닫기",
+    openSidebar: "사이드바 열기",
+    closeSidebar: "사이드바 닫기",
     toggleTheme: "테마 전환",
     searchPlaceholder: "글 검색...",
     noResults: "검색 결과가 없습니다",
