@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import IconX from "@/assets/icons/IconX.svg";
+import Avatar from "@/components/Avatar.astro";
 import Socials from "@/components/Socials.astro";
 import { getUniqueTags } from "@/utils/getUniqueTags";
 import { getPostsByLocale } from "@/utils/postLocale";
@@ -56,13 +57,7 @@ const categories = tags.map(({ tag, tagName }) => ({
   </div>
 
   <div class="flex flex-col items-center gap-3 text-center">
-    <img
-      src="/assets/developerryou.jpg"
-      alt={site.author}
-      width={80}
-      height={80}
-      class="border-border h-20 w-20 rounded-full border object-cover"
-    />
+    <Avatar alt={site.author} />
     <div>
       <p class="font-semibold">{site.author}</p>
       <p class="text-muted-foreground mt-1 text-sm">{t.sidebar.bio}</p>

@@ -1,0 +1,22 @@
+---
+type Props = {
+  alt: string;
+  size?: "md" | "lg";
+  class?: string;
+};
+
+const { alt, size = "md", class: className } = Astro.props;
+const dimension = size === "lg" ? 96 : 80;
+---
+
+<img
+  src="/assets/developerryou.jpg"
+  alt={alt}
+  width={dimension}
+  height={dimension}
+  class:list={[
+    "border-border rounded-full border object-cover",
+    size === "lg" ? "h-20 w-20 shrink-0 sm:h-24 sm:w-24" : "h-20 w-20",
+    className,
+  ]}
+/>
