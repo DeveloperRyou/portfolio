@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
 import Layout from "@/layouts/Layout.astro";
+import Avatar from "@/components/Avatar.astro";
 import Footer from "@/components/Footer.astro";
 import Card from "@/components/Card.astro";
 import LinkButton from "@/components/LinkButton.astro";
@@ -32,13 +33,7 @@ const homePath = getRelativeLocaleUrl(locale, "");
   >
     <section id="hero" class="border-border border-b pt-8 pb-6">
       <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-        <img
-          src="/assets/developerryou.jpg"
-          alt="リュ・ソンミン"
-          width={96}
-          height={96}
-          class="border-border h-20 w-20 shrink-0 rounded-full border object-cover sm:h-24 sm:w-24"
-        />
+        <Avatar alt="リュ・ソンミン" size="lg" />
         <div>
           <h1 class="my-2 inline-block text-4xl font-bold sm:text-5xl">
             こんにちは、リュ・ソンミンです
