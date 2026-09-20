@@ -36,12 +36,12 @@ const postUrl = getPostUrl(id, filePath, Astro.currentLocale);
       <a
         href={postUrl}
         class:list={[
-          "text-accent block min-w-0 text-lg font-medium sm:truncate",
+          "text-accent block min-w-0 text-lg font-medium",
           "decoration-dashed underline-offset-4 hover:underline",
           "focus-visible:no-underline focus-visible:underline-offset-0",
         ]}
       >
-        <Heading transition:name={toTransitionName(id)}>
+        <Heading transition:name={toTransitionName(id)} class="sm:truncate">
           {title}
         </Heading>
       </a>
