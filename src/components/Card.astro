@@ -24,31 +24,33 @@ const postUrl = getPostUrl(id, filePath, Astro.currentLocale);
           src={coverImage}
           alt=""
           loading="lazy"
-          width={160}
+          width={192}
           height={112}
-          class="border-border h-20 w-28 rounded-md border object-cover sm:h-24 sm:w-40"
+          class="border-border h-24 w-32 rounded-md border object-cover sm:h-28 sm:w-48"
         />
       </a>
     )
   }
   <div class="min-w-0 flex-1">
-    <a
-      href={postUrl}
-      class:list={[
-        "text-accent inline-block text-lg font-medium",
-        "decoration-dashed underline-offset-4 hover:underline",
-        "focus-visible:no-underline focus-visible:underline-offset-0",
-      ]}
-    >
-      <Heading transition:name={toTransitionName(id)}>
-        {title}
-      </Heading>
-    </a>
-    <Datetime {...props} />
-    <p>{description}</p>
+    <div class="flex flex-col gap-x-3 sm:flex-row sm:items-baseline sm:justify-between">
+      <a
+        href={postUrl}
+        class:list={[
+          "text-accent block min-w-0 text-lg font-medium",
+          "decoration-dashed underline-offset-4 hover:underline",
+          "focus-visible:no-underline focus-visible:underline-offset-0",
+        ]}
+      >
+        <Heading transition:name={toTransitionName(id)} class="sm:truncate">
+          {title}
+        </Heading>
+      </a>
+      <Datetime {...props} class="shrink-0" />
+    </div>
+    <p class="mt-1 line-clamp-2">{description}</p>
     {
       tags.length > 0 && (
-        <ul class="mt-2 flex flex-wrap gap-x-3 gap-y-1">
+        <ul class="mt-2 hidden flex-wrap gap-x-3 gap-y-1 sm:flex">
           {tags.map(tag => (
             <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" />
           ))}
