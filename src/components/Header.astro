@@ -1,12 +1,12 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
 import IconUnderline from "@/assets/icons/IconUnderline.svg";
+import IconLayoutSidebar from "@/assets/icons/IconLayoutSidebar.svg";
 import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
 import IconArchive from "@/assets/icons/IconArchive.svg";
 import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import IconSearch from "@/assets/icons/IconSearch.svg";
 import IconMoon from "@/assets/icons/IconMoon.svg";
-import IconHash from "@/assets/icons/IconHash.svg";
 import IconX from "@/assets/icons/IconX.svg";
 import LinkButton from "./LinkButton.astro";
 import LangSwitcher from "./LangSwitcher.astro";
@@ -57,7 +57,7 @@ const isActive = (path: string) => {
       data-label-open={t.a11y.openSidebar}
       data-label-close={t.a11y.closeSidebar}
     >
-      <IconHash />
+      <IconLayoutSidebar />
     </button>
     <a
       href={getRelativeLocaleUrl(locale, "")}
