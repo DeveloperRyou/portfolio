@@ -1,0 +1,44 @@
+---
+/**
+ * Static (non-hoverable, non-clickable) card grid for About page sections
+ * that are plain facts, not links to follow -- e.g. activities/cohorts.
+ * For clickable project cards with a thumbnail and link, see
+ * ProjectCards.astro instead: a card only hovers if it actually goes
+ * somewhere on click. Locale-agnostic; only the `heading` prop and the
+ * entry text carry locale-specific content.
+ */
+type CardEntry = {
+  org: string;
+  location?: string;
+  role: string;
+  start: string;
+  end: string;
+};
+
+type Props = {
+  heading: string;
+  items: CardEntry[];
+};
+
+const { heading, items } = Astro.props;
+---
+
+<section class="mt-8">
+  <h2 class="text-foreground mb-3 text-2xl font-semibold">{heading}</h2>
+  <ul class="grid list-none grid-cols-1 gap-3 ps-0 sm:grid-cols-2">
+    {
+      items.map(entry => (
+        <li class="border-border rounded-lg border p-4">
+          <p class="text-foreground font-semibold">
+            {entry.org}
+            {entry.location && `, ${entry.location}`}
+          </p>
+          <p class="text-muted-foreground mt-0.5 text-sm">{entry.role}</p>
+          <p class="text-foreground/70 mt-2 text-sm font-medium">
+            {entry.start} – {entry.end}
+          </p>
+        </li>
+      ))
+    }
+  </ul>
+</section>

@@ -1,0 +1,313 @@
+---
+/**
+ * Internal, Storybook-style reference of the site's design tokens
+ * (colors, fonts) and the components built on them -- for checking that a
+ * token/component change looks right, not reader-facing content. Not part
+ * of the i18n route set on purpose: it's a dev tool, not translated
+ * content, so it isn't triplicated under ko/ja like real pages are.
+ *
+ * Caption-free by rule: no explanatory prose ("Defined in X",
+ * "src/components/Y.astro", usage notes) under a section heading -- just
+ * the live rendered example. Only add a label where it's otherwise
+ * ambiguous which example is which (e.g. the per-font-specimen tags
+ * below), not to explain rationale or point at source files.
+ */
+import { Font } from "astro:assets";
+import Layout from "@/layouts/Layout.astro";
+import LinkButton from "@/components/LinkButton.astro";
+import Chip from "@/components/about/Chip.astro";
+import TechStack from "@/components/about/TechStack.astro";
+import Cards from "@/components/about/Cards.astro";
+import ProjectCards from "@/components/about/ProjectCards.astro";
+import Timeline from "@/components/about/Timeline.astro";
+
+/**
+ * `cssVar` is the source token declared in theme.css (always a real,
+ * readable custom property) -- see Timeline.astro for why this reads
+ * that instead of the `@theme inline`-derived `--color-*` name.
+ */
+const colorTokens = [
+  { cssVar: "--background", token: "background" },
+  { cssVar: "--foreground", token: "foreground" },
+  { cssVar: "--accent", token: "accent" },
+  { cssVar: "--accent-foreground", token: "accent-foreground" },
+  { cssVar: "--muted", token: "muted" },
+  { cssVar: "--muted-foreground", token: "muted-foreground" },
+  { cssVar: "--border", token: "border" },
+  { cssVar: "--chip-blue", token: "chip-blue" },
+  { cssVar: "--chip-brown", token: "chip-brown" },
+];
+
+const navItems = [
+  { href: "#colors", label: "Colors" },
+  { href: "#typography", label: "Typography" },
+  { href: "#buttons", label: "Buttons & Links" },
+  { href: "#chips", label: "Chips" },
+  { href: "#tech-stack", label: "Tech Stack" },
+  { href: "#cards", label: "Cards" },
+  { href: "#timeline", label: "Timeline" },
+];
+
+const sampleTimeline = [
+  {
+    org: "Example Corp",
+    location: "Tokyo",
+    role: "Software Engineer",
+    start: "2025.4",
+    end: "현재",
+    label: "Company",
+  },
+  {
+    org: "Sample Studio",
+    role: "Project Lead",
+    start: "2023.6",
+    end: "2024.12",
+    label: "Project",
+  },
+];
+
+const sampleActivities = [
+  { org: "Example Bootcamp", role: "Trainee", start: "2023.3", end: "2024.2" },
+  { org: "Sample Club", role: "Member", start: "2022.2", end: "2023.2" },
+];
+
+const sampleProjects = [
+  {
+    org: "World Culture Travel",
+    role: "Android App Development",
+    start: "2019.5",
+    end: "2019.7",
+    thumbnail: "/assets/blog/worldculturetravel/cover.jpg",
+    link: "/posts/world-culture-travel",
+  },
+];
+---
+
+<Layout title={`Style Guide | Developer Ryou`}>
+  <Font
+    slot="head"
+    cssVariable="--font-noto-sans-kr"
+    preload={[{ subset: "korean", weight: 400, style: "normal" }]}
+  />
+  <Font
+    slot="head"
+    cssVariable="--font-noto-sans-jp"
+    preload={[{ subset: "japanese", weight: 400, style: "normal" }]}
+  />
+
+  <div class="app-layout mt-8 pb-16">
+    <h1 class="text-2xl font-semibold sm:text-3xl">Style Guide</h1>
+
+    <nav
+      aria-label="Style guide sections"
+      class="border-border mt-6 mb-10 border-b"
+    >
+      <ul class="flex gap-x-6 overflow-x-auto pb-3 whitespace-nowrap">
+        {
+          navItems.map(item => (
+            <li>
+              <a
+                href={item.href}
+                class="styleguide-nav-link hover:text-accent text-sm"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <section id="colors" class="scroll-mt-24">
+      <h2 class="text-foreground mb-4 text-xl font-semibold">Colors</h2>
+      <ul
+        class="grid list-none grid-cols-2 gap-4 p-0 sm:grid-cols-3 lg:grid-cols-4"
+      >
+        {
+          colorTokens.map(c => (
+            <li class="border-border overflow-hidden rounded-lg border">
+              <span
+                class="block h-20 w-full"
+                style={`background-color: var(${c.cssVar})`}
+              />
+              <p class="flex items-center justify-between gap-2 px-2 py-1.5 font-mono text-xs">
+                <span class="text-foreground font-semibold">{c.token}</span>
+                <span class="text-muted-foreground" data-hex={c.cssVar}>
+                  --
+                </span>
+              </p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section id="typography" class="mt-12 scroll-mt-24">
+      <h2 class="text-foreground mb-4 text-xl font-semibold">Typography</h2>
+      <div class="border-border space-y-4 rounded-lg border p-4">
+        <div>
+          <p class="text-3xl font-semibold">Aa Bb 12 -- E2E Testing</p>
+          <p class="text-muted-foreground mt-1 text-xs">
+            Latin -- Google Sans Code
+          </p>
+        </div>
+        <div
+          style="font-family: var(--font-google-sans-code), var(--font-noto-sans-kr);"
+        >
+          <p class="text-3xl font-semibold">안녕하세요, 류성민입니다</p>
+          <p class="text-muted-foreground mt-1 text-xs">Noto Sans KR</p>
+        </div>
+        <div
+          style="font-family: var(--font-google-sans-code), var(--font-noto-sans-jp);"
+        >
+          <p class="text-3xl font-semibold">
+            こんにちは、ソフトウェアエンジニアです
+          </p>
+          <p class="text-muted-foreground mt-1 text-xs">Noto Sans JP</p>
+        </div>
+        <div
+          class="border-border flex flex-wrap items-baseline gap-x-4 gap-y-2 border-t pt-4"
+        >
+          <span class="text-3xl">text-3xl</span>
+          <span class="text-2xl">text-2xl</span>
+          <span class="text-xl">text-xl</span>
+          <span class="text-base">text-base</span>
+          <span class="text-muted-foreground text-sm">text-sm</span>
+          <span class="text-muted-foreground text-xs">text-xs</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="buttons" class="mt-12 scroll-mt-24">
+      <h2 class="text-foreground mb-4 text-xl font-semibold">
+        Buttons & Links
+      </h2>
+      <div
+        class="border-border flex flex-wrap items-center gap-4 rounded-lg border p-4"
+      >
+        <LinkButton
+          href="#"
+          class="border-border rounded-md border px-3 py-1.5"
+        >
+          LinkButton
+        </LinkButton>
+        <LinkButton
+          href="#"
+          class="text-accent underline decoration-dashed underline-offset-4"
+        >
+          Inline link style
+        </LinkButton>
+        <LinkButton
+          href="#"
+          disabled
+          class="border-border rounded-md border px-3 py-1.5 opacity-50"
+        >
+          Disabled
+        </LinkButton>
+      </div>
+    </section>
+
+    <section id="chips" class="mt-12 scroll-mt-24">
+      <h2 class="text-foreground mb-4 text-xl font-semibold">Chips</h2>
+      <div
+        class="border-border flex flex-wrap items-center gap-3 rounded-lg border p-4"
+      >
+        <Chip label="Company" tone="blue" />
+        <Chip label="Project" tone="brown" />
+      </div>
+    </section>
+
+    <section id="tech-stack" class="mt-12 scroll-mt-24">
+      <h2 class="text-foreground mb-4 text-xl font-semibold">
+        Tech Stack Badges
+      </h2>
+      <div class="border-border rounded-lg border p-4">
+        <TechStack
+          groups={[
+            { label: "Focus", items: ["AI", "DevOps"] },
+            { label: "Frameworks", items: ["React", "Next.js"] },
+            { label: "Languages", items: ["TypeScript", "Python"] },
+          ]}
+        />
+      </div>
+    </section>
+
+    <section id="cards" class="mt-12 scroll-mt-24">
+      <h2 class="text-foreground mb-4 text-xl font-semibold">Cards</h2>
+      <div class="space-y-8">
+        <Cards heading="Cards (static)" items={sampleActivities} />
+        <ProjectCards
+          heading="ProjectCards (clickable)"
+          items={sampleProjects}
+        />
+      </div>
+    </section>
+
+    <section id="timeline" class="mt-12 scroll-mt-24">
+      <h2 class="text-foreground mb-4 text-xl font-semibold">Timeline</h2>
+      <Timeline heading="Timeline" items={sampleTimeline} />
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .styleguide-nav-link.is-active {
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+</style>
+
+<script is:inline data-astro-rerun>
+  function initStyleguideHexReadout() {
+    const swatches = Array.from(document.querySelectorAll("[data-hex]"));
+    if (!swatches.length) return;
+
+    function update() {
+      const styles = getComputedStyle(document.documentElement);
+      swatches.forEach(el => {
+        const varName = el.dataset.hex;
+        const value = styles.getPropertyValue(varName).trim();
+        el.textContent = value || "--";
+      });
+    }
+
+    update();
+
+    const observer = new MutationObserver(update);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+  }
+
+  function initStyleguideNavHighlight() {
+    const links = Array.from(document.querySelectorAll(".styleguide-nav-link"));
+    if (!links.length) return;
+
+    const sections = links
+      .map(link => document.querySelector(link.getAttribute("href")))
+      .filter(Boolean);
+
+    if (!("IntersectionObserver" in window) || !sections.length) return;
+
+    const observer = new IntersectionObserver(
+      entries => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          links.forEach(link => {
+            link.classList.toggle(
+              "is-active",
+              link.getAttribute("href") === `#${entry.target.id}`
+            );
+          });
+        }
+      },
+      { rootMargin: "-20% 0px -70% 0px" }
+    );
+
+    sections.forEach(section => observer.observe(section));
+  }
+
+  initStyleguideHexReadout();
+  initStyleguideNavHighlight();
+</script>

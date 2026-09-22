@@ -37,6 +37,12 @@ export default {
     bio: "웹 서비스를 만드는 소프트웨어 엔지니어입니다.",
     categories: "카테고리",
   },
+  about: {
+    career: "경력",
+    education: "학력",
+    activities: "활동",
+    outsourcing: "외주",
+  },
   footer: {
     copyright: "Copyright",
     allRightsReserved: "All rights reserved.",

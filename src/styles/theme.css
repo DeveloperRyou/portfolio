@@ -7,6 +7,27 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
+  --color-chip-blue: var(--chip-blue);
+  --color-chip-blue-foreground: var(--chip-blue-foreground);
+  --color-chip-brown: var(--chip-brown);
+  --color-chip-brown-foreground: var(--chip-brown-foreground);
+}
+
+/* Category-chip palette (e.g. the About page's "Company"/"Project" tags).
+   Sourced from Radix Colors' `blue`/`brown` scales, step 9 ("solid") --
+   see https://www.radix-ui.com/colors, package @radix-ui/colors. Radix
+   tunes step 9 to be the same hex in both its light and dark scales and
+   pairs it with white text in its own Badge/Button "solid" recipe, so
+   unlike our other tokens these don't need a `[data-theme="dark"]`
+   override: the one value already has enough contrast against both this
+   site's light (#fdfdfd) and dark (#212737) backgrounds, and against
+   white foreground text. Pick more from the same two scales (steps 1-12)
+   if another category color is needed later -- don't invent one by eye. */
+:root {
+  --chip-blue: #0090ff;
+  --chip-blue-foreground: #ffffff;
+  --chip-brown: #ad7f58;
+  --chip-brown-foreground: #ffffff;
 }
 
 /* Not declared with `inline` above: `inline` copies the variable's

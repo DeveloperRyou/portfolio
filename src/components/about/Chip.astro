@@ -1,0 +1,30 @@
+---
+/**
+ * Small inline label badge (e.g. "Company" / "Project") shown next to a
+ * Timeline entry's org name. `tone` picks a fixed color per category (see
+ * the `--chip-*` tokens in `src/styles/theme.css`, sourced from Radix
+ * Colors) so the two are easy to tell apart and stay legible against both
+ * this site's light and dark backgrounds. Independent of the `label` text
+ * itself, which is locale-specific content from the caller.
+ */
+type Props = {
+  label: string;
+  tone?: "blue" | "brown";
+};
+
+const { label, tone = "blue" } = Astro.props;
+
+const toneClasses = {
+  blue: "bg-chip-blue text-chip-blue-foreground",
+  brown: "bg-chip-brown text-chip-brown-foreground",
+};
+---
+
+<span
+  class:list={[
+    "rounded-sm px-1.5 py-0.5 align-middle text-[0.6875rem] leading-none font-medium tracking-wide uppercase",
+    toneClasses[tone],
+  ]}
+>
+  {label}
+</span>

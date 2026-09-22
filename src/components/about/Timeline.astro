@@ -1,0 +1,56 @@
+---
+/**
+ * Data-driven career/education timeline for the About page -- renders
+ * semantic markup from structured frontmatter instead of styling
+ * free-form markdown prose. Locale-agnostic; only the `heading` prop and
+ * the entry text carry locale-specific content.
+ */
+import Chip from "./Chip.astro";
+
+type TimelineEntry = {
+  org: string;
+  location?: string;
+  role: string;
+  start: string;
+  end: string;
+  label?: string;
+};
+
+type Props = {
+  heading: string;
+  items: TimelineEntry[];
+};
+
+const { heading, items } = Astro.props;
+---
+
+<section class="about-timeline-section mt-8">
+  <h2 class="text-foreground mb-3 text-2xl font-semibold">{heading}</h2>
+  <ol class="about-timeline">
+    {
+      items.map(entry => (
+        <li class="about-timeline-item border-border grid grid-cols-[5rem_1fr] gap-x-4 gap-y-1 border-t py-4 first:border-t-0 first:pt-0 sm:grid-cols-[7.5rem_1fr]">
+          <p class="text-foreground/70 pt-0.5 text-xs leading-snug font-medium sm:text-sm">
+            {entry.start}
+            <br />– {entry.end}
+          </p>
+          <div>
+            <p class="text-foreground font-semibold">
+              {entry.label && (
+                <>
+                  <Chip
+                    label={entry.label}
+                    tone={entry.label === "Company" ? "blue" : "brown"}
+                  />{" "}
+                </>
+              )}
+              {entry.org}
+              {entry.location && `, ${entry.location}`}
+            </p>
+            <p class="text-muted-foreground mt-0.5 text-sm">{entry.role}</p>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</section>

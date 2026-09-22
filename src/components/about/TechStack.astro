@@ -1,0 +1,52 @@
+---
+/**
+ * Tech-stack badge rows for the About page, each with a category label
+ * (e.g. { label: "Languages", items: ["TypeScript", "Python", "Go"] }) so
+ * related technologies are grouped instead of dumped into one flat list.
+ * Locale-agnostic: the group labels and badge text are proper nouns /
+ * short category names, not translated copy, so this stays shared across
+ * every locale's about.astro.
+ */
+type Props = {
+  groups: { label: string; items: string[] }[];
+};
+
+const { groups } = Astro.props;
+---
+
+<div
+  class="mt-8 grid grid-cols-[max-content_1fr] items-baseline gap-x-4 gap-y-1.5"
+>
+  {
+    groups.map(group => (
+      <>
+        <span class="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+          {group.label}
+        </span>
+        <ul class="m-0 flex list-none flex-wrap gap-1.5 p-0">
+          {group.items.map(item => (
+            <li class="about-tech-badge border-accent/25 bg-accent/10 text-accent rounded-full border px-2 py-0.5 text-xs font-medium marker:content-none">
+              {item}
+            </li>
+          ))}
+        </ul>
+      </>
+    ))
+  }
+</div>
+
+<style>
+  .about-tech-badge {
+    transition:
+      transform 0.2s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .about-tech-badge:hover {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-accent-foreground);
+    transform: translateY(-2px);
+  }
+</style>

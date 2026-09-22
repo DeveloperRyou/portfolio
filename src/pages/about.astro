@@ -4,6 +4,12 @@ import Layout from "@/layouts/Layout.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
 import Main from "@/components/Main.astro";
 import Footer from "@/components/Footer.astro";
+import AboutHero from "@/components/about/AboutHero.astro";
+import Timeline from "@/components/about/Timeline.astro";
+import Cards from "@/components/about/Cards.astro";
+import ProjectCards from "@/components/about/ProjectCards.astro";
+import TechStack from "@/components/about/TechStack.astro";
+import { useTranslations } from "@/i18n";
 import config from "@/config";
 
 const about = await getEntry("pages", "about");
@@ -15,6 +21,8 @@ if (!about) {
 }
 
 const { Content } = await render(about);
+const locale = Astro.currentLocale ?? config.site.lang;
+const t = useTranslations(locale);
 ---
 
 <Layout
@@ -25,13 +33,51 @@ const { Content } = await render(about);
 >
   <Breadcrumb />
 
+  <AboutHero />
+
   <Main
     pageTitle={about.data.title}
     pageDesc={about.data.description}
+    descClass="font-bold"
     class="app-prose"
   >
     <Content />
+    {about.data.techStack && <TechStack groups={about.data.techStack} />}
   </Main>
+
+  <div class="mb-8">
+    {
+      about.data.career?.length && (
+        <div class="app-layout">
+          <Timeline heading={t.about.career} items={about.data.career} />
+        </div>
+      )
+    }
+    {
+      about.data.education?.length && (
+        <div class="app-layout">
+          <Timeline heading={t.about.education} items={about.data.education} />
+        </div>
+      )
+    }
+    {
+      about.data.activities?.length && (
+        <div class="app-layout">
+          <Cards heading={t.about.activities} items={about.data.activities} />
+        </div>
+      )
+    }
+    {
+      about.data.outsourcing?.length && (
+        <div class="app-layout">
+          <ProjectCards
+            heading={t.about.outsourcing}
+            items={about.data.outsourcing}
+          />
+        </div>
+      )
+    }
+  </div>
 
   <Footer />
 </Layout>
