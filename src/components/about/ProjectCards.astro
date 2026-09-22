@@ -1,0 +1,77 @@
+---
+/**
+ * Clickable card grid for About page sections that link somewhere --
+ * currently freelance/outsourcing projects. Each card is a thumbnail +
+ * details wrapped in an <a>, so the hover affordance (border/lift) is
+ * honest: it hovers because clicking it goes somewhere. For plain
+ * non-clickable facts (activities/cohorts), use Cards.astro instead.
+ * Locale-agnostic; only the `heading` prop and the entry text carry
+ * locale-specific content.
+ */
+type ProjectEntry = {
+  org: string;
+  location?: string;
+  role: string;
+  start: string;
+  end: string;
+  thumbnail: string;
+  link: string;
+};
+
+type Props = {
+  heading: string;
+  items: ProjectEntry[];
+};
+
+const { heading, items } = Astro.props;
+---
+
+<section class="mt-8">
+  <h2 class="text-foreground mb-3 text-2xl font-semibold">{heading}</h2>
+  <ul class="grid list-none grid-cols-1 gap-3 ps-0 sm:grid-cols-2">
+    {
+      items.map(entry => (
+        <li>
+          <a
+            href={entry.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="about-project-card border-border block overflow-hidden rounded-lg border"
+          >
+            <img
+              src={entry.thumbnail}
+              alt=""
+              class="h-48 w-full object-cover"
+              loading="lazy"
+            />
+            <div class="p-4">
+              <p class="text-foreground font-semibold">
+                {entry.org}
+                {entry.location && `, ${entry.location}`}
+              </p>
+              <p class="text-muted-foreground mt-0.5 text-sm">{entry.role}</p>
+              <p class="text-foreground/70 mt-2 text-sm font-medium">
+                {entry.start} – {entry.end}
+              </p>
+            </div>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .about-project-card {
+    transition:
+      border-color 0.2s ease,
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .about-project-card:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px -12px var(--color-foreground);
+  }
+</style>

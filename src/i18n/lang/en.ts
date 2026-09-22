@@ -37,6 +37,12 @@ export default {
     bio: "Software engineer building web services.",
     categories: "Categories",
   },
+  about: {
+    career: "Career",
+    education: "Education",
+    activities: "Activities",
+    outsourcing: "Freelance & Outsourcing",
+  },
   footer: {
     copyright: "Copyright",
     allRightsReserved: "All rights reserved.",

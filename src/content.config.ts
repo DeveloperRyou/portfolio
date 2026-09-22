@@ -26,6 +26,22 @@ const posts = defineCollection({
     }),
 });
 
+const timelineEntry = z.object({
+  org: z.string(),
+  location: z.string().optional(),
+  role: z.string(),
+  start: z.string(),
+  end: z.string(),
+  /** Small badge shown next to the org name, e.g. "Company" vs "Project". */
+  label: z.string().optional(),
+});
+
+/** A timeline entry rendered as a clickable card with a thumbnail (see `outsourcing`). */
+const projectCardEntry = timelineEntry.extend({
+  thumbnail: z.string(),
+  link: z.string(),
+});
+
 const pages = defineCollection({
   loader: glob({ pattern: "**/[^_]*.{md,mdx}", base: "./src/content/pages" }),
   schema: z.object({
@@ -33,6 +49,17 @@ const pages = defineCollection({
     description: z.string().optional(),
     ogImage: z.string().optional(),
     canonicalURL: z.string().optional(),
+    /** Structured career/education timeline, rendered by the About page's Timeline component instead of markdown prose. */
+    career: z.array(timelineEntry).optional(),
+    education: z.array(timelineEntry).optional(),
+    /** Community/cohort activities (bootcamps etc.), kept separate from paid work in `career`. */
+    activities: z.array(timelineEntry).optional(),
+    /** Freelance/contract-for-hire projects, kept separate from `career`. Rendered as clickable thumbnail cards. */
+    outsourcing: z.array(projectCardEntry).optional(),
+    /** Tech-stack badges shown on the About page, grouped into labeled rows. */
+    techStack: z
+      .array(z.object({ label: z.string(), items: z.array(z.string()) }))
+      .optional(),
   }),
 });
 

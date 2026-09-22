@@ -37,6 +37,12 @@ export default {
     bio: "ウェブサービスを作るソフトウェアエンジニアです。",
     categories: "カテゴリー",
   },
+  about: {
+    career: "経歴",
+    education: "学歴",
+    activities: "活動",
+    outsourcing: "外注",
+  },
   footer: {
     copyright: "Copyright",
     allRightsReserved: "All rights reserved.",

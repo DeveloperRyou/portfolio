@@ -35,6 +35,12 @@ export interface UIStrings {
     bio: string;
     categories: string;
   };
+  about: {
+    career: string;
+    education: string;
+    activities: string;
+    outsourcing: string;
+  };
   footer: {
     copyright: string;
     allRightsReserved: string;
