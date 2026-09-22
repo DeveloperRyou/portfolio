@@ -16,7 +16,7 @@ const { title, description, coverImage, tags, ...props } = data;
 const postUrl = getPostUrl(id, filePath, Astro.currentLocale);
 ---
 
-<li class="my-6 flex gap-4 sm:gap-5">
+<li class="my-6 flex gap-4 lg:gap-5">
   {
     coverImage && (
       <a href={postUrl} tabindex="-1" aria-hidden="true" class="shrink-0">
@@ -26,13 +26,13 @@ const postUrl = getPostUrl(id, filePath, Astro.currentLocale);
           loading="lazy"
           width={192}
           height={112}
-          class="border-border h-24 w-32 rounded-md border object-cover sm:h-28 sm:w-48"
+          class="border-border h-24 w-32 rounded-md border object-cover lg:h-28 lg:w-48"
         />
       </a>
     )
   }
   <div class="min-w-0 flex-1">
-    <div class="flex flex-col gap-x-3 sm:flex-row sm:items-baseline sm:justify-between">
+    <div class="flex flex-col gap-x-3 lg:flex-row lg:items-baseline lg:justify-between">
       <a
         href={postUrl}
         class:list={[
@@ -41,7 +41,7 @@ const postUrl = getPostUrl(id, filePath, Astro.currentLocale);
           "focus-visible:no-underline focus-visible:underline-offset-0",
         ]}
       >
-        <Heading transition:name={toTransitionName(id)} class="sm:truncate">
+        <Heading transition:name={toTransitionName(id)} class="lg:truncate">
           {title}
         </Heading>
       </a>
@@ -50,7 +50,7 @@ const postUrl = getPostUrl(id, filePath, Astro.currentLocale);
     <p class="mt-1 line-clamp-2">{description}</p>
     {
       tags.length > 0 && (
-        <ul class="mt-2 hidden flex-wrap gap-x-3 gap-y-1 sm:flex">
+        <ul class="mt-2 hidden flex-wrap gap-x-3 gap-y-1 lg:flex">
           {tags.map(tag => (
             <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" />
           ))}
