@@ -35,6 +35,7 @@ export default {
   },
   sidebar: {
     bio: "Software engineer building web services.",
+    navigation: "Navigation",
     categories: "Categories",
   },
   about: {
@@ -65,8 +66,6 @@ export default {
   },
   a11y: {
     skipToContent: "Skip to content",
-    openMenu: "Open menu",
-    closeMenu: "Close menu",
     openSidebar: "Open sidebar",
     closeSidebar: "Close sidebar",
     toggleTheme: "Toggle theme",

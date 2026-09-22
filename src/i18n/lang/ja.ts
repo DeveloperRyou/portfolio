@@ -35,6 +35,7 @@ export default {
   },
   sidebar: {
     bio: "ウェブサービスを作るソフトウェアエンジニアです。",
+    navigation: "メニュー",
     categories: "カテゴリー",
   },
   about: {
@@ -65,8 +66,6 @@ export default {
   },
   a11y: {
     skipToContent: "本文へスキップ",
-    openMenu: "メニューを開く",
-    closeMenu: "メニューを閉じる",
     openSidebar: "サイドバーを開く",
     closeSidebar: "サイドバーを閉じる",
     toggleTheme: "テーマを切り替える",

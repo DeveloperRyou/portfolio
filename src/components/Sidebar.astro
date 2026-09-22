@@ -2,18 +2,25 @@
 import { getCollection } from "astro:content";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import IconX from "@/assets/icons/IconX.svg";
+import IconArchive from "@/assets/icons/IconArchive.svg";
+import IconSearch from "@/assets/icons/IconSearch.svg";
+import IconMoon from "@/assets/icons/IconMoon.svg";
+import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import Avatar from "@/components/Avatar.astro";
 import Socials from "@/components/Socials.astro";
+import LangSwitcher from "@/components/LangSwitcher.astro";
 import { getUniqueTags } from "@/utils/getUniqueTags";
 import { getPostsByLocale } from "@/utils/postLocale";
 import { postFilter } from "@/utils/postFilter";
 import { slugifyStr } from "@/utils/slugify";
+import { getIsActivePath } from "@/utils/isActivePath";
 import { useTranslations } from "@/i18n";
 import config from "@/config";
 
-const { site } = config;
+const { site, features } = config;
 const locale = Astro.currentLocale ?? config.site.lang;
 const t = useTranslations(locale);
+const isActive = getIsActivePath(Astro.url.pathname, locale);
 
 const posts = getPostsByLocale(
   await getCollection("posts", ({ data }) => !data.draft),
@@ -65,6 +72,76 @@ const categories = tags.map(({ tag, tagName }) => ({
     <Socials />
   </div>
 
+  <nav aria-label={t.sidebar.navigation} class="border-border mt-8 border-t pt-6 lg:hidden">
+    <ul class="flex flex-col text-sm font-medium">
+      <li>
+        <a
+          href={getRelativeLocaleUrl(locale, "posts")}
+          class:list={[
+            "hover:text-accent -ms-2 block rounded px-2 py-1.5",
+            { "active-nav": isActive("/posts") },
+          ]}
+        >
+          {t.nav.posts}
+        </a>
+      </li>
+      <li>
+        <a
+          href={getRelativeLocaleUrl(locale, "tags")}
+          class:list={[
+            "hover:text-accent -ms-2 block rounded px-2 py-1.5",
+            { "active-nav": isActive("/tags") },
+          ]}
+        >
+          {t.nav.tags}
+        </a>
+      </li>
+      <li>
+        <a
+          href={getRelativeLocaleUrl(locale, "about")}
+          class:list={[
+            "hover:text-accent -ms-2 block rounded px-2 py-1.5",
+            { "active-nav": isActive("/about") },
+          ]}
+        >
+          {t.nav.about}
+        </a>
+      </li>
+      {
+        features.showArchives && (
+          <li>
+            <a
+              href={getRelativeLocaleUrl(locale, "archives")}
+              class:list={[
+                "hover:text-accent -ms-2 flex items-center gap-2 rounded px-2 py-1.5",
+                { "active-nav": isActive("/archives") },
+              ]}
+            >
+              <IconArchive class="size-4" />
+              {t.nav.archives}
+            </a>
+          </li>
+        )
+      }
+      {
+        features.search !== false && (
+          <li>
+            <a
+              href={getRelativeLocaleUrl(locale, "search")}
+              class:list={[
+                "hover:text-accent -ms-2 flex items-center gap-2 rounded px-2 py-1.5",
+                { "active-nav": isActive("/search") },
+              ]}
+            >
+              <IconSearch class="size-4" />
+              {t.nav.search}
+            </a>
+          </li>
+        )
+      }
+    </ul>
+  </nav>
+
   {
     categories.length > 0 && (
       <nav
@@ -90,6 +167,24 @@ const categories = tags.map(({ tag, tagName }) => ({
       </nav>
     )
   }
+
+  <div class="border-border mt-8 flex items-center justify-between border-t pt-6 lg:hidden">
+    <LangSwitcher />
+    {
+      features.lightAndDarkMode && (
+        <button
+          id="theme-btn-mobile"
+          class="theme-toggle focus-outline hover:[&>svg]:stroke-accent relative size-8"
+          title={t.a11y.toggleTheme}
+          aria-label="auto"
+          aria-live="polite"
+        >
+          <IconMoon class="absolute top-[50%] left-[50%] translate-[-50%] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+          <IconSunHigh class="absolute top-[50%] left-[50%] translate-[-50%] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+        </button>
+      )
+    }
+  </div>
 
   <div class="border-border mt-8 border-t pt-6">
     <a
