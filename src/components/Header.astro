@@ -1,7 +1,7 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
 import IconUnderline from "@/assets/icons/IconUnderline.svg";
-import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
+import IconLayoutSidebar from "@/assets/icons/IconLayoutSidebar.svg";
 import IconArchive from "@/assets/icons/IconArchive.svg";
 import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import IconSearch from "@/assets/icons/IconSearch.svg";
@@ -29,11 +29,22 @@ const isActive = getIsActivePath(Astro.url.pathname, locale);
 
 <header class="flex w-full flex-col items-center justify-between lg:flex-row">
   <div
-    class="border-border bg-background flex w-full items-center justify-between border-b py-4 lg:py-6"
+    class="border-border bg-background relative flex w-full items-center justify-between border-b py-4 lg:py-6"
   >
+    <button
+      id="sidebar-toggle"
+      class="focus-outline order-first me-2 p-2 lg:hidden"
+      aria-label={t.a11y.openSidebar}
+      aria-expanded="false"
+      aria-controls="sidebar"
+      data-label-open={t.a11y.openSidebar}
+      data-label-close={t.a11y.closeSidebar}
+    >
+      <IconLayoutSidebar />
+    </button>
     <a
       href={getRelativeLocaleUrl(locale, "")}
-      class="py-1 text-xl leading-8 font-semibold whitespace-nowrap lg:text-2xl lg:leading-none"
+      class="absolute start-10 py-1 text-xl leading-8 font-semibold whitespace-nowrap lg:static lg:start-auto lg:text-2xl lg:leading-none"
     >
       {site.title}
     </a>
@@ -131,17 +142,6 @@ const isActive = getIsActivePath(Astro.url.pathname, locale);
           )
         }
       </ul>
-      <button
-        id="sidebar-toggle"
-        class="focus-outline p-2 lg:hidden"
-        aria-label={t.a11y.openSidebar}
-        aria-expanded="false"
-        aria-controls="sidebar"
-        data-label-open={t.a11y.openSidebar}
-        data-label-close={t.a11y.closeSidebar}
-      >
-        <IconMenuDeep />
-      </button>
     </nav>
   </div>
 </header>
