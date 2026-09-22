@@ -33,6 +33,7 @@ export interface UIStrings {
   };
   sidebar: {
     bio: string;
+    navigation: string;
     categories: string;
   };
   about: {
@@ -63,8 +64,6 @@ export interface UIStrings {
   };
   a11y: {
     skipToContent: string;
-    openMenu: string;
-    closeMenu: string;
     openSidebar: string;
     closeSidebar: string;
     toggleTheme: string;

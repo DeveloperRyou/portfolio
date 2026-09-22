@@ -35,6 +35,7 @@ export default {
   },
   sidebar: {
     bio: "웹 서비스를 만드는 소프트웨어 엔지니어입니다.",
+    navigation: "메뉴",
     categories: "카테고리",
   },
   about: {
@@ -65,8 +66,6 @@ export default {
   },
   a11y: {
     skipToContent: "본문으로 건너뛰기",
-    openMenu: "메뉴 열기",
-    closeMenu: "메뉴 닫기",
     openSidebar: "사이드바 열기",
     closeSidebar: "사이드바 닫기",
     toggleTheme: "테마 전환",
