@@ -20,6 +20,8 @@ export default {
     editPage: "페이지 수정",
     previousPost: "이전 글",
     nextPost: "다음 글",
+    readingTime: "{{minutes}}분 분량",
+    tableOfContents: "목차",
   },
   pagination: {
     prev: "이전",

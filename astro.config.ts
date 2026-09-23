@@ -17,6 +17,10 @@ import {
   transformerNotationWordHighlight,
 } from "@shikijs/transformers";
 import { transformerFileName } from "./src/utils/transformers/fileName";
+import {
+  codeThemes,
+  transformerCommentContrast,
+} from "./src/utils/transformers/codeTheme";
 import config from "./astro-paper.config";
 
 export default defineConfig({
@@ -44,7 +48,7 @@ export default defineConfig({
       rehypePlugins: [rehypeCallouts],
     }),
     shikiConfig: {
-      themes: { light: "min-light", dark: "night-owl" },
+      themes: codeThemes,
       defaultColor: false,
       wrap: false,
       transformers: [
@@ -52,6 +56,7 @@ export default defineConfig({
         transformerNotationHighlight(),
         transformerNotationWordHighlight(),
         transformerNotationDiff({ matchAlgorithm: "v3" }),
+        transformerCommentContrast(),
       ],
     },
   },

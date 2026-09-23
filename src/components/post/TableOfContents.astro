@@ -1,0 +1,91 @@
+---
+import type { MarkdownHeading } from "astro";
+import { useTranslations } from "@/i18n";
+
+type Props = {
+  headings: MarkdownHeading[];
+  class?: string;
+};
+
+const { headings, class: className = "" } = Astro.props;
+const t = useTranslations(Astro.currentLocale);
+
+const items = headings.filter(h => h.depth === 2 || h.depth === 3);
+---
+
+{
+  items.length > 1 && (
+    <nav
+      aria-label={t.post.tableOfContents}
+      class:list={["sticky top-24 self-start", className]}
+      data-toc
+    >
+      <p class="text-foreground mb-3 text-sm font-semibold">
+        {t.post.tableOfContents}
+      </p>
+      <ul class="border-border space-y-2 border-s text-sm">
+        {items.map(h => (
+          <li>
+            <a
+              href={`#${h.slug}`}
+              data-toc-link={h.slug}
+              class:list={[
+                "text-muted-foreground hover:text-foreground -ms-px block border-s border-transparent leading-snug transition-colors",
+                h.depth === 3 ? "ps-6" : "ps-3",
+              ]}
+            >
+              {h.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<script>
+  // Scroll-spy: mark the link of the last heading scrolled past as current.
+  let onScroll: (() => void) | undefined;
+
+  function setupToc() {
+    if (onScroll) window.removeEventListener("scroll", onScroll);
+    onScroll = undefined;
+
+    const links = document.querySelectorAll<HTMLAnchorElement>(
+      "[data-toc] [data-toc-link]"
+    );
+    if (links.length === 0) return;
+
+    const headings = [...links]
+      .map(link => document.getElementById(link.dataset.tocLink ?? ""))
+      .filter((el): el is HTMLElement => el !== null);
+
+    const setActive = () => {
+      const passed = headings.filter(h => h.getBoundingClientRect().top <= 120);
+      const current = (passed.at(-1) ?? headings[0])?.id;
+      links.forEach(link => {
+        const isActive = link.dataset.tocLink === current;
+        link.classList.toggle("text-foreground", isActive);
+        link.classList.toggle("border-foreground", isActive);
+        link.classList.toggle("text-muted-foreground", !isActive);
+        link.classList.toggle("border-transparent", !isActive);
+        if (isActive) link.setAttribute("aria-current", "location");
+        else link.removeAttribute("aria-current");
+      });
+    };
+
+    let ticking = false;
+    onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        setActive();
+        ticking = false;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    setActive();
+  }
+
+  document.addEventListener("astro:page-load", setupToc);
+</script>
