@@ -10,9 +10,10 @@
 type Props = {
   label: string;
   tone?: "blue" | "brown";
+  class?: string;
 };
 
-const { label, tone = "blue" } = Astro.props;
+const { label, tone = "blue", class: className } = Astro.props;
 
 const toneClasses = {
   blue: "bg-chip-blue text-chip-blue-foreground",
@@ -30,6 +31,7 @@ const toneClasses = {
   class:list={[
     "inline-block min-w-[6.5em] rounded-sm px-1.5 py-0.5 text-center align-middle text-[0.6875rem] leading-[1.25] font-medium tracking-wide uppercase",
     toneClasses[tone],
+    className,
   ]}
 >
   {label}
