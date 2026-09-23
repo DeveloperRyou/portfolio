@@ -1,6 +1,6 @@
-# developerryou.pages.dev
+# portfolio.developerryou.workers.dev
 
-Source for [Sungmin Ryou's](https://github.com/DeveloperRyou) blog — project write-ups and notes, built with [Astro](https://astro.build/) and the [AstroPaper](https://github.com/satnaing/astro-paper) theme, deployed on Cloudflare Pages.
+Source for [Sungmin Ryou's](https://github.com/DeveloperRyou) blog — project write-ups and notes, built with [Astro](https://astro.build/) and the [AstroPaper](https://github.com/satnaing/astro-paper) theme, deployed on Cloudflare Workers: <https://portfolio.developerryou.workers.dev/>.
 
 ## Development
 
