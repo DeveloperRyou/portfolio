@@ -20,9 +20,15 @@ const toneClasses = {
 };
 ---
 
+<!--
+  min-w (in em, so it scales with the chip's font size) fits the longest
+  current label, "Company": Inter is proportional, so same-length labels
+  otherwise render at different widths and the Timeline's chips stop
+  lining up.
+-->
 <span
   class:list={[
-    "rounded-sm px-1.5 py-0.5 align-middle text-[0.6875rem] leading-none font-medium tracking-wide uppercase",
+    "inline-block min-w-[6.5em] rounded-sm px-1.5 py-0.5 text-center align-middle text-[0.6875rem] leading-[1.25] font-medium tracking-wide uppercase",
     toneClasses[tone],
   ]}
 >
