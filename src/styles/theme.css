@@ -7,6 +7,7 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-chip-blue: var(--chip-blue);
   --color-chip-blue-foreground: var(--chip-blue-foreground);
   --color-chip-brown: var(--chip-brown);
@@ -14,19 +15,20 @@
 }
 
 /* Category-chip palette (e.g. the About page's "Company"/"Project" tags).
-   Sourced from Radix Colors' `blue`/`brown` scales, step 9 ("solid") --
-   see https://www.radix-ui.com/colors, package @radix-ui/colors. Radix
-   tunes step 9 to be the same hex in both its light and dark scales and
-   pairs it with white text in its own Badge/Button "solid" recipe, so
-   unlike our other tokens these don't need a `[data-theme="dark"]`
-   override: the one value already has enough contrast against both this
-   site's light (#fdfdfd) and dark (#212737) backgrounds, and against
-   white foreground text. Pick more from the same two scales (steps 1-12)
-   if another category color is needed later -- don't invent one by eye. */
+   Sourced from Radix Colors' `blue`/`brown` scales (light scale), step 11
+   -- see https://www.radix-ui.com/colors, package @radix-ui/colors.
+   Step 9 ("solid") was used first, but white text on it is only
+   3.3-3.5:1, below WCAG AA's 4.5:1 for small chip text; step 11 gives
+   4.8:1 (blue) / 5.8:1 (brown) with white. One value serves both themes
+   (no `[data-theme="dark"]` override): white-on-chip contrast doesn't
+   depend on the page, and the chip still stands out against the dark
+   background (3.3-4.0:1, above the 3:1 non-text minimum). Pick more from
+   the same scales if another category color is needed -- don't invent
+   one by eye, and check white-text contrast before using a lighter step. */
 :root {
-  --chip-blue: #0090ff;
+  --chip-blue: #0d74ce; /* blue11 */
   --chip-blue-foreground: #ffffff;
-  --chip-brown: #ad7f58;
+  --chip-brown: #815e46; /* brown11 */
   --chip-brown-foreground: #ffffff;
 }
 
@@ -40,27 +42,37 @@
   --font-mono: var(--font-google-sans-code), monospace;
 }
 
+/* Base tokens, both themes sourced from Radix Colors
+   (https://www.radix-ui.com/colors, package @radix-ui/colors) -- neutrals
+   from `slate`, accent from `blue` -- same source as the chip palette
+   above. Step roles follow Radix's own guidance: 1 app background, 3
+   subtle component background, 6 subtle border, 8 hovered border, 11 low-contrast text
+   (and the text-safe accent), 12 high-contrast text. Pick replacements
+   from the same scales, not by eye. */
+
 /* Light theme values */
 :root,
 [data-theme="light"] {
-  --background: #fdfdfd;
-  --foreground: #282728;
-  --accent: #006cac;
+  --background: #fcfcfd; /* slate1 */
+  --foreground: #1c2024; /* slate12 */
+  --accent: #0d74ce; /* blue11 */
   --accent-foreground: #ffffff;
-  --muted: #e6e6e6;
-  --muted-foreground: #6b7280;
-  --border: #ece9e9;
+  --muted: #f0f0f3; /* slate3 */
+  --muted-foreground: #60646c; /* slate11 */
+  --border: #d9d9e0; /* slate6 */
+  --border-strong: #b9bbc6; /* slate8 */
 }
 
 /* Dark theme values */
 [data-theme="dark"] {
-  --background: #212737;
-  --foreground: #eaedf3;
-  --accent: #ff6b01;
-  --accent-foreground: #ffffff;
-  --muted: #343f60;
-  --muted-foreground: #afb9ca;
-  --border: #ab4b08;
+  --background: #111113; /* slateDark1 */
+  --foreground: #edeef0; /* slateDark12 */
+  --accent: #70b8ff; /* blueDark11 */
+  --accent-foreground: #0d1520; /* blueDark1 */
+  --muted: #212225; /* slateDark3 */
+  --muted-foreground: #b0b4ba; /* slateDark11 */
+  --border: #363a3f; /* slateDark6 */
+  --border-strong: #5a6169; /* slateDark8 */
 }
 
 /* CJK-aware body font: Inter has no Korean/Japanese glyphs, so

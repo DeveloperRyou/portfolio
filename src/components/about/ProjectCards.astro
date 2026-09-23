@@ -2,7 +2,7 @@
 /**
  * Clickable card grid for About page sections that link somewhere --
  * currently freelance/outsourcing projects. Each card is a thumbnail +
- * details wrapped in an <a>, so the hover affordance (border/lift) is
+ * details wrapped in an <a>, so the hover affordance (border) is
  * honest: it hovers because clicking it goes somewhere. For plain
  * non-clickable facts (activities/cohorts), use Cards.astro instead.
  * Locale-agnostic; only the `heading` prop and the entry text carry
@@ -62,16 +62,13 @@ const { heading, items } = Astro.props;
 </section>
 
 <style>
+  /* Neutral border step-up on hover (Radix Themes' Card "surface"
+     recipe: gray step 5 -> 7), no accent color, shadow or lift. */
   .about-project-card {
-    transition:
-      border-color 0.2s ease,
-      transform 0.2s ease,
-      box-shadow 0.2s ease;
+    transition: border-color 0.2s ease;
   }
 
   .about-project-card:hover {
-    border-color: var(--color-accent);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px -12px var(--color-foreground);
+    border-color: var(--color-border-strong);
   }
 </style>
