@@ -41,7 +41,8 @@ const { heading, items } = Astro.props;
                   <Chip
                     label={entry.label}
                     tone={entry.label === "Company" ? "blue" : "brown"}
-                  />{" "}
+                    class="me-2"
+                  />
                 </>
               )}
               {entry.org}

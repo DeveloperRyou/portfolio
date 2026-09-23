@@ -10,9 +10,10 @@
 type Props = {
   label: string;
   tone?: "blue" | "brown";
+  class?: string;
 };
 
-const { label, tone = "blue" } = Astro.props;
+const { label, tone = "blue", class: className } = Astro.props;
 
 const toneClasses = {
   blue: "bg-chip-blue text-chip-blue-foreground",
@@ -20,10 +21,21 @@ const toneClasses = {
 };
 ---
 
+<!--
+  min-w (in em, so it scales with the chip's font size) fits the longest
+  current label, "Company": Inter is proportional, so same-length labels
+  otherwise render at different widths and the Timeline's chips stop
+  lining up.
+-->
 <span
   class:list={[
-    "rounded-sm px-1.5 py-0.5 align-middle text-[0.6875rem] leading-none font-medium tracking-wide uppercase",
+    "inline-block min-w-[6.5em] rounded-sm px-1.5 py-0.5 text-center align-middle text-[0.6875rem] leading-[1.25] font-medium tracking-wide uppercase",
+    // Trim the font's built-in ascent/descent space down to the caps, so
+    // symmetric padding centers the label exactly (without it the caps sit
+    // ~1px high). Older browsers keep the untrimmed box above.
+    "supports-[text-box:trim-both_cap_alphabetic]:py-[5px] supports-[text-box:trim-both_cap_alphabetic]:[text-box:trim-both_cap_alphabetic]",
     toneClasses[tone],
+    className,
   ]}
 >
   {label}
