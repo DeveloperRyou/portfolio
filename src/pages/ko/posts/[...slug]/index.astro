@@ -6,6 +6,7 @@ import Datetime from "@/components/Datetime.astro";
 import Tag from "@/components/Tag.astro";
 import { getPostSlug, getPostUrl } from "@/utils/getPostPaths";
 import { getSortedPosts } from "@/utils/getSortedPosts";
+import { type AdjacentPost, getAdjacentPosts } from "@/utils/seriesOrder";
 import { getPostsByLocale } from "@/utils/postLocale";
 import { toTransitionName } from "@/utils/toTransitionName";
 import EditPost from "@/components/post/EditPost.astro";
@@ -20,37 +21,11 @@ export async function getStaticPaths() {
   const posts = await getCollection("posts");
   const sortedPosts = getSortedPosts(getPostsByLocale(posts, "ko"));
 
-  return sortedPosts.map((post, index) => ({
+  return sortedPosts.map(post => ({
     params: { slug: getPostSlug(post.id, post.filePath) },
-    props: {
-      post,
-      // sortedPosts is newest-first, so "older" (prev) is a higher index
-      // and "newer" (next) is a lower index.
-      prevPost:
-        index < sortedPosts.length - 1
-          ? {
-              id: sortedPosts[index + 1].id,
-              title: sortedPosts[index + 1].data.title,
-              filePath: sortedPosts[index + 1].filePath,
-            }
-          : null,
-      nextPost:
-        index > 0
-          ? {
-              id: sortedPosts[index - 1].id,
-              title: sortedPosts[index - 1].data.title,
-              filePath: sortedPosts[index - 1].filePath,
-            }
-          : null,
-    },
+    props: { post, ...getAdjacentPosts(post, sortedPosts) },
   }));
 }
-
-type AdjacentPost = {
-  id: string;
-  title: string;
-  filePath: string | undefined;
-} | null;
 
 type Props = {
   post: CollectionEntry<"posts">;

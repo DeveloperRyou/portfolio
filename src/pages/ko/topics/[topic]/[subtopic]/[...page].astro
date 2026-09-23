@@ -9,6 +9,7 @@ import Footer from "@/components/Footer.astro";
 import Pagination from "@/components/Pagination.astro";
 import { getPostsByLocale } from "@/utils/postLocale";
 import { getTopicTree } from "@/utils/getTopicTree";
+import { compareSeriesOrder } from "@/utils/seriesOrder";
 import { tplStr, useTranslations } from "@/i18n";
 import config from "@/config";
 
@@ -21,17 +22,12 @@ export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
 
   return getTopicTree(posts).flatMap(topic =>
     topic.subtopics.flatMap(subtopic =>
-      // Oldest first: a subtopic reads as a series, in publishing order.
-      paginate(
-        [...subtopic.posts].sort(
-          (a, b) => a.data.pubDatetime.getTime() - b.data.pubDatetime.getTime()
-        ),
-        {
-          params: { topic: topic.slug, subtopic: subtopic.slug },
-          props: { topicLabel: topic.label, label: subtopic.label },
-          pageSize: config.posts.perPage,
-        }
-      )
+      // A subtopic reads as a series: by `order`, then oldest first.
+      paginate([...subtopic.posts].sort(compareSeriesOrder), {
+        params: { topic: topic.slug, subtopic: subtopic.slug },
+        props: { topicLabel: topic.label, label: subtopic.label },
+        pageSize: config.posts.perPage,
+      })
     )
   );
 }
