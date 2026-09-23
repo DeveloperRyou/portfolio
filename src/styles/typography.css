@@ -5,16 +5,17 @@
   .app-prose {
     @apply prose;
 
+    /* Hangul/Kana are denser than Latin; give them a little more air. */
+    &:where(:lang(ko), :lang(ja)) {
+      line-height: 1.85;
+    }
+
     h1,
     h2,
     h3,
     h4,
     th {
       @apply text-foreground mb-3;
-    }
-
-    h3 {
-      @apply italic;
     }
 
     p,
