@@ -31,7 +31,6 @@ export const taxonomy: Topic[] = [
         label: "AI Documents",
       },
       { slug: "models", label: "Models" },
-      { slug: "retrospective", label: "Retrospective" },
     ],
   },
   {
