@@ -20,7 +20,7 @@
    pairs it with white text in its own Badge/Button "solid" recipe, so
    unlike our other tokens these don't need a `[data-theme="dark"]`
    override: the one value already has enough contrast against both this
-   site's light (#fdfdfd) and dark (#212737) backgrounds, and against
+   site's light (slate1) and dark (slateDark1) backgrounds, and against
    white foreground text. Pick more from the same two scales (steps 1-12)
    if another category color is needed later -- don't invent one by eye. */
 :root {
@@ -40,27 +40,35 @@
   --font-mono: var(--font-google-sans-code), monospace;
 }
 
+/* Base tokens, both themes sourced from Radix Colors
+   (https://www.radix-ui.com/colors, package @radix-ui/colors) -- neutrals
+   from `slate`, accent from `blue` -- same source as the chip palette
+   above. Step roles follow Radix's own guidance: 1 app background, 3
+   subtle component background, 6 subtle border, 11 low-contrast text
+   (and the text-safe accent), 12 high-contrast text. Pick replacements
+   from the same scales, not by eye. */
+
 /* Light theme values */
 :root,
 [data-theme="light"] {
-  --background: #fdfdfd;
-  --foreground: #282728;
-  --accent: #006cac;
+  --background: #fcfcfd; /* slate1 */
+  --foreground: #1c2024; /* slate12 */
+  --accent: #0d74ce; /* blue11 */
   --accent-foreground: #ffffff;
-  --muted: #e6e6e6;
-  --muted-foreground: #6b7280;
-  --border: #ece9e9;
+  --muted: #f0f0f3; /* slate3 */
+  --muted-foreground: #60646c; /* slate11 */
+  --border: #d9d9e0; /* slate6 */
 }
 
 /* Dark theme values */
 [data-theme="dark"] {
-  --background: #212737;
-  --foreground: #eaedf3;
-  --accent: #ff6b01;
-  --accent-foreground: #ffffff;
-  --muted: #343f60;
-  --muted-foreground: #afb9ca;
-  --border: #ab4b08;
+  --background: #111113; /* slateDark1 */
+  --foreground: #edeef0; /* slateDark12 */
+  --accent: #70b8ff; /* blueDark11 */
+  --accent-foreground: #0d1520; /* blueDark1 */
+  --muted: #212225; /* slateDark3 */
+  --muted-foreground: #b0b4ba; /* slateDark11 */
+  --border: #363a3f; /* slateDark6 */
 }
 
 /* CJK-aware body font: Inter has no Korean/Japanese glyphs, so
