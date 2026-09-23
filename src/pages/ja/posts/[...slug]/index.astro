@@ -2,18 +2,17 @@
 import { type CollectionEntry, getCollection, render } from "astro:content";
 import PostLayout from "@/layouts/PostLayout.astro";
 import Footer from "@/components/Footer.astro";
-import Datetime from "@/components/Datetime.astro";
-import Tag from "@/components/Tag.astro";
 import { getPostSlug, getPostUrl } from "@/utils/getPostPaths";
 import { getSortedPosts } from "@/utils/getSortedPosts";
 import { type AdjacentPost, getAdjacentPosts } from "@/utils/seriesOrder";
 import { getPostsByLocale } from "@/utils/postLocale";
-import { toTransitionName } from "@/utils/toTransitionName";
 import EditPost from "@/components/post/EditPost.astro";
 import ShareLinks from "@/components/post/ShareLinks.astro";
 import BackButton from "@/components/post/BackButton.astro";
 import BackToTopButton from "@/components/post/BackToTopButton.astro";
 import AdjacentPostNav from "@/components/post/AdjacentPostNav.astro";
+import PostHeader from "@/components/post/PostHeader.astro";
+import TableOfContents from "@/components/post/TableOfContents.astro";
 import ArticleEnhancements from "@/components/post/ArticleEnhancements.astro";
 import config from "@/config";
 
@@ -43,12 +42,10 @@ const {
   canonicalURL,
   pubDatetime,
   modDatetime,
-  timezone,
-  tags,
   hideEditPost,
 } = post.data;
 
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 
 let ogImageUrl: string | undefined;
 
@@ -86,47 +83,26 @@ const ogImage = ogImageUrl
     class:list={["app-layout", { "mt-8": !config.features.showBackButton }]}
     data-pagefind-body
   >
-    <h1
-      style={{ viewTransitionName: toTransitionName(post.id) }}
-      class="text-accent inline-block text-2xl font-bold sm:text-3xl"
-    >
-      {title}
-    </h1>
+    <PostHeader {post} />
 
-    <div class="my-2 flex items-center gap-2">
-      <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
-      <span
-        aria-hidden="true"
-        class:list={[
-          "text-muted-foreground max-sm:hidden",
-          { hidden: !config.features.editPost?.enabled || hideEditPost },
-        ]}
+    <div
+      class="mt-8 xl:grid xl:grid-cols-[minmax(0,1fr)_11rem] xl:items-start xl:gap-8"
+    >
+      <article
+        id="article"
+        class="app-prose prose-pre:bg-(--code-bg) w-full max-w-[70ch]"
       >
-        |
-      </span>
-      <EditPost {hideEditPost} {post} class="max-sm:hidden" />
-    </div>
+        <Content />
+      </article>
 
-    <article
-      id="article"
-      class:list={[
-        "mt-8 w-full",
-        "app-prose max-w-[70ch]",
-        "prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)",
-      ]}
-    >
-      <Content />
-    </article>
+      <TableOfContents {headings} class="hidden xl:block" />
+    </div>
 
     <hr class="my-8 border-dashed" />
 
     <EditPost class="sm:hidden" {hideEditPost} {post} />
 
     <BackToTopButton />
-
-    <ul class="mt-4 mb-8 flex flex-wrap gap-4 sm:my-8">
-      {tags.map(tag => <Tag tagName={tag} size="sm" />)}
-    </ul>
 
     <ShareLinks />
 

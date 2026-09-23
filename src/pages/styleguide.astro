@@ -13,6 +13,7 @@
  * below), not to explain rationale or point at source files.
  */
 import { Font } from "astro:assets";
+import { Code } from "astro:components";
 import Layout from "@/layouts/Layout.astro";
 import LinkButton from "@/components/LinkButton.astro";
 import Chip from "@/components/about/Chip.astro";
@@ -20,6 +21,10 @@ import TechStack from "@/components/about/TechStack.astro";
 import Cards from "@/components/about/Cards.astro";
 import ProjectCards from "@/components/about/ProjectCards.astro";
 import Timeline from "@/components/about/Timeline.astro";
+import {
+  codeThemes,
+  transformerCommentContrast,
+} from "@/utils/transformers/codeTheme";
 
 /**
  * `cssVar` is the source token declared in theme.css (always a real,
@@ -35,6 +40,7 @@ const colorTokens = [
   { cssVar: "--muted-foreground", token: "muted-foreground" },
   { cssVar: "--border", token: "border" },
   { cssVar: "--border-strong", token: "border-strong" },
+  { cssVar: "--code-bg", token: "code-bg" },
   { cssVar: "--chip-blue", token: "chip-blue" },
   { cssVar: "--chip-brown", token: "chip-brown" },
 ];
@@ -42,12 +48,19 @@ const colorTokens = [
 const navItems = [
   { href: "#colors", label: "Colors" },
   { href: "#typography", label: "Typography" },
+  { href: "#prose", label: "Prose" },
   { href: "#buttons", label: "Buttons & Links" },
   { href: "#chips", label: "Chips" },
   { href: "#tech-stack", label: "Tech Stack" },
   { href: "#cards", label: "Cards" },
   { href: "#timeline", label: "Timeline" },
 ];
+
+const sampleCode = `// highlight the active heading
+function setActive(id: string) {
+  const link = document.querySelector(\`[data-toc-link="\${id}"]\`);
+  link?.setAttribute("aria-current", "location");
+}`;
 
 const sampleTimeline = [
   {
@@ -176,6 +189,26 @@ const sampleProjects = [
           <span class="text-muted-foreground text-sm">text-sm</span>
           <span class="text-muted-foreground text-xs">text-xs</span>
         </div>
+      </div>
+    </section>
+
+    <section id="prose" class="mt-12 scroll-mt-24">
+      <h2 class="text-foreground mb-4 text-xl font-semibold">Prose</h2>
+      <div class="app-prose max-w-[70ch]">
+        <p>
+          Inline <code>code</code> sits in running text, and a
+          <a href="#prose">link</a> stays underlined.
+        </p>
+        <blockquote>
+          <p>A blockquote reads as a quieter aside, not a second headline.</p>
+        </blockquote>
+        <Code
+          code={sampleCode}
+          lang="ts"
+          themes={codeThemes}
+          defaultColor={false}
+          transformers={[transformerCommentContrast()]}
+        />
       </div>
     </section>
 

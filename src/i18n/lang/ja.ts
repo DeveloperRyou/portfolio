@@ -20,6 +20,8 @@ export default {
     editPage: "ページを編集",
     previousPost: "前の記事",
     nextPost: "次の記事",
+    readingTime: "{{minutes}}分で読めます",
+    tableOfContents: "目次",
   },
   pagination: {
     prev: "前へ",

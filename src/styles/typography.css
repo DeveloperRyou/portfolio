@@ -97,7 +97,11 @@
     }
 
     blockquote {
-      @apply border-s-accent/80 wrap-break-word opacity-80;
+      @apply border-s-border-strong text-muted-foreground font-normal wrap-break-word not-italic;
+
+      p {
+        @apply text-muted-foreground before:content-none after:content-none;
+      }
     }
 
     details:not(.callout) {
@@ -115,11 +119,11 @@
 
   /* ===== Code Blocks & Syntax Highlighting ===== */
   .astro-code {
-    @apply outline-border flex overflow-x-auto border bg-(--shiki-light-bg) text-(--shiki-light) [&_span]:text-(--shiki-light);
+    @apply border-border flex overflow-x-auto rounded-md border bg-(--code-bg) text-(--shiki-light) [&_span]:text-(--shiki-light);
   }
 
   html[data-theme="dark"] .astro-code {
-    @apply bg-(--shiki-dark-bg) text-(--shiki-dark) [&_span]:text-(--shiki-dark);
+    @apply text-(--shiki-dark) [&_span]:text-(--shiki-dark);
   }
 
   /* Styles for Shiki transformers */

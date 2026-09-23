@@ -61,6 +61,7 @@
   --muted-foreground: #60646c; /* slate11 */
   --border: #d9d9e0; /* slate6 */
   --border-strong: #b9bbc6; /* slate8 */
+  --code-bg: #f9f9fb; /* slate2 */
 }
 
 /* Dark theme values */
@@ -73,6 +74,7 @@
   --muted-foreground: #b0b4ba; /* slateDark11 */
   --border: #363a3f; /* slateDark6 */
   --border-strong: #5a6169; /* slateDark8 */
+  --code-bg: #18191b; /* slateDark2 */
 }
 
 /* CJK-aware body font: Inter has no Korean/Japanese glyphs, so
