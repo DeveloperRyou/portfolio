@@ -121,7 +121,7 @@ draft: true                        # 작성 중에는 true
 
 ## 7. 정해야 할 것
 
-- [x] 시리즈 순서: subtopic으로 묶고, 범용 `order` 필드로 순서 지정. `order`가 있는 subtopic은 목록·이전/다음 글이 `order` 기준으로 동작 (구현 필요)
+- [x] 시리즈 순서: subtopic으로 묶고, 범용 `order` 필드로 순서 지정. `order`가 있는 subtopic은 목록·이전/다음 글이 `order` 기준으로 동작
 - [x] 분량: 한국어 3,000~8,000자
 - [x] 문체: About 말투 기준, 사람이 쓴 느낌
 - [ ] 기존 `career` 글 보강 범위

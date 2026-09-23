@@ -16,6 +16,8 @@ const posts = defineCollection({
         modDatetime: z.date().optional().nullable(),
         title: z.string(),
         featured: z.boolean().optional(),
+        /** Position within its subtopic; ordered posts list and prev/next in this order. */
+        order: z.number().optional(),
         draft: z.boolean().optional(),
         /** Sidebar navigation: slugs from `src/taxonomy.ts`, checked below. */
         topic: z.string(),
