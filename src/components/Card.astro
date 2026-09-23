@@ -15,7 +15,7 @@ const { title, description, coverImage, tags, ...props } = data;
 const postUrl = getPostUrl(id, filePath, Astro.currentLocale);
 ---
 
-<li class="my-6 flex gap-4 lg:gap-5">
+<li class="border-border flex gap-4 border-b py-6 last:border-b-0 lg:gap-5">
   {
     coverImage && (
       <a href={postUrl} tabindex="-1" aria-hidden="true" class="shrink-0">
@@ -24,8 +24,8 @@ const postUrl = getPostUrl(id, filePath, Astro.currentLocale);
           alt=""
           loading="lazy"
           width={192}
-          height={112}
-          class="border-border h-24 w-32 rounded-md border object-cover lg:h-28 lg:w-48"
+          height={120}
+          class="border-border aspect-[8/5] w-32 rounded-md border object-cover lg:w-48"
         />
       </a>
     )
@@ -37,9 +37,8 @@ const postUrl = getPostUrl(id, filePath, Astro.currentLocale);
       <a
         href={postUrl}
         class:list={[
-          "text-accent block min-w-0 text-lg font-medium",
-          "decoration-dashed underline-offset-4 hover:underline",
-          "focus-visible:no-underline focus-visible:underline-offset-0",
+          "text-foreground block min-w-0 text-lg font-semibold",
+          "hover:text-accent focus-visible:text-accent transition-colors",
         ]}
       >
         <Heading transition:name={toTransitionName(id)} class="lg:truncate">
@@ -48,7 +47,7 @@ const postUrl = getPostUrl(id, filePath, Astro.currentLocale);
       </a>
       <Datetime {...props} class="shrink-0" />
     </div>
-    <p class="mt-1 line-clamp-2">{description}</p>
+    <p class="text-muted-foreground mt-1 line-clamp-2">{description}</p>
     {
       tags.length > 0 && (
         <ul class="mt-2 hidden flex-wrap gap-x-3 gap-y-1 lg:flex">
