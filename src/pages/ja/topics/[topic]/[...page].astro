@@ -20,7 +20,7 @@ export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
     locale
   );
 
-  return getTopicTree(posts, locale).flatMap(topic =>
+  return getTopicTree(posts).flatMap(topic =>
     paginate(getSortedPosts(topic.posts), {
       params: { topic: topic.slug },
       props: { label: topic.label },

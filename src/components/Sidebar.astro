@@ -21,13 +21,15 @@ import config from "@/config";
 const { site, features } = config;
 const locale = Astro.currentLocale ?? config.site.lang;
 const t = useTranslations(locale);
+// Sidebar chrome stays English on every locale; only the bio is translated.
+const tEn = useTranslations("en");
 const isActive = getIsActivePath(Astro.url.pathname, locale);
 
 const posts = getPostsByLocale(
   await getCollection("posts", ({ data }) => !data.draft),
   locale
 );
-const topics = getTopicTree(posts, locale);
+const topics = getTopicTree(posts);
 
 // Which topic/subtopic the reader is in: from a /topics/... URL directly,
 // or, on a post page, from that post's own frontmatter.
@@ -63,7 +65,7 @@ const currentSubtopic =
     <button
       id="sidebar-close"
       class="focus-outline p-2"
-      aria-label={t.a11y.closeSidebar}
+      aria-label={tEn.a11y.closeSidebar}
     >
       <IconX />
     </button>
@@ -79,7 +81,7 @@ const currentSubtopic =
   </div>
 
   <nav
-    aria-label={t.sidebar.navigation}
+    aria-label={tEn.sidebar.navigation}
     class="border-border mt-8 border-t pt-6 lg:hidden"
   >
     <ul class="flex flex-col text-sm font-medium">
@@ -91,7 +93,7 @@ const currentSubtopic =
             { "active-nav": isActive("/posts") },
           ]}
         >
-          {t.nav.posts}
+          {tEn.nav.posts}
         </a>
       </li>
       <li>
@@ -102,7 +104,7 @@ const currentSubtopic =
             { "active-nav": isActive("/about") },
           ]}
         >
-          {t.nav.about}
+          {tEn.nav.about}
         </a>
       </li>
       {
@@ -116,7 +118,7 @@ const currentSubtopic =
               ]}
             >
               <IconArchive class="size-4" />
-              {t.nav.archives}
+              {tEn.nav.archives}
             </a>
           </li>
         )
@@ -132,7 +134,7 @@ const currentSubtopic =
               ]}
             >
               <IconSearch class="size-4" />
-              {t.nav.search}
+              {tEn.nav.search}
             </a>
           </li>
         )
@@ -143,11 +145,11 @@ const currentSubtopic =
   {
     topics.length > 0 && (
       <nav
-        aria-label={t.sidebar.categories}
+        aria-label={tEn.sidebar.categories}
         class="border-border mt-8 border-t pt-6"
       >
         <h2 class="text-muted-foreground mb-3 text-sm font-semibold tracking-wide uppercase">
-          {t.sidebar.categories}
+          {tEn.sidebar.categories}
         </h2>
         <ul class="flex flex-col">
           {topics.map(topic => {
@@ -177,7 +179,7 @@ const currentSubtopic =
                       class="group focus-outline hover:text-accent shrink-0 rounded p-1"
                       aria-expanded={isCurrent ? "true" : "false"}
                       aria-controls={listId}
-                      aria-label={tplStr(t.sidebar.toggleSubtopics, {
+                      aria-label={tplStr(tEn.sidebar.toggleSubtopics, {
                         topic: topic.label,
                       })}
                       data-topic-toggle
@@ -234,7 +236,7 @@ const currentSubtopic =
         <button
           id="theme-btn-mobile"
           class="theme-toggle focus-outline hover:[&>svg]:stroke-accent relative size-8"
-          title={t.a11y.toggleTheme}
+          title={tEn.a11y.toggleTheme}
           aria-label="auto"
           aria-live="polite"
         >

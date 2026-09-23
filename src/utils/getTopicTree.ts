@@ -1,5 +1,5 @@
 import type { CollectionEntry } from "astro:content";
-import { taxonomy, localizeLabel } from "@/taxonomy";
+import { taxonomy } from "@/taxonomy";
 import { postFilter } from "./postFilter";
 
 export type SubtopicNode = {
@@ -24,10 +24,7 @@ export type TopicNode = {
  * no published posts are dropped, so they get neither a route nor a sidebar
  * entry. Pass posts already narrowed to a single locale.
  */
-export function getTopicTree(
-  posts: CollectionEntry<"posts">[],
-  locale: string
-): TopicNode[] {
+export function getTopicTree(posts: CollectionEntry<"posts">[]): TopicNode[] {
   const published = posts.filter(postFilter);
 
   return taxonomy
@@ -38,7 +35,7 @@ export function getTopicTree(
       const subtopics = (topic.subtopics ?? [])
         .map(sub => ({
           slug: sub.slug,
-          label: localizeLabel(sub.label, locale),
+          label: sub.label,
           path: `topics/${topic.slug}/${sub.slug}/`,
           posts: topicPosts.filter(({ data }) => data.subtopic === sub.slug),
         }))
@@ -46,7 +43,7 @@ export function getTopicTree(
 
       return {
         slug: topic.slug,
-        label: localizeLabel(topic.label, locale),
+        label: topic.label,
         path: `topics/${topic.slug}/`,
         posts: topicPosts,
         subtopics,
