@@ -14,7 +14,7 @@
 | topic | 성격 | subtopic (안) |
 | --- | --- | --- |
 | `project-cloud` | 자체 클라우드 구축 학습 프로젝트 (VM 생성부터 순차 진행하는 시리즈) | 시리즈 1개 = subtopic 1개 (예: `build-your-own-cloud`), 편 순서는 `order`. VM → 네트워크 → 스토리지 → 컨트롤 플레인 → DBaaS 같은 단계는 편 제목으로 구분 |
-| `ai` | AI 도구 사용기·분석·회고 | `skills`, `models`, `ai-documents`, `retrospective` |
+| `ai` | AI 도구 사용기·분석 | `skills`, `models`, `ai-documents` |
 | `career`, `outsourcing` | 기존 프로젝트 기록 (유지, 필요 시 보강) | 기존 그대로 |
 
 새 topic/subtopic은 `src/taxonomy.ts`에 먼저 등록해야 빌드가 통과한다.
@@ -43,13 +43,12 @@
 ## 결론               -- 언제 쓰고 언제 안 쓰는가
 ```
 
-### C. 회고
+### 회고 섹션 (선택)
+
+회고는 별도 subtopic이 아니라, 어느 유형의 글이든 끝에 필요할 때만 붙이는 섹션이다. 쓸 만한 게 없으면 생략한다.
 
 ```
-## 요약
-## 무엇을 했나
-## 잘된 것 / 아쉬운 것
-## 다음에 바꿀 것
+## 회고               -- 잘된 것 / 아쉬운 것 / 다음에 바꿀 것
 ```
 
 ## 4. 작성 규칙
