@@ -59,9 +59,10 @@ const locale = Astro.currentLocale ?? config.site.lang;
 
     <!-- Font -->
     <Font
-      cssVariable="--font-google-sans-code"
+      cssVariable="--font-inter"
       preload={[{ subset: "latin", weight: 400, style: "normal" }]}
     />
+    <Font cssVariable="--font-google-sans-code" />
     {
       locale === "ko" && (
         <Font

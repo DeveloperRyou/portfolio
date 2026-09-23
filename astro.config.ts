@@ -60,6 +60,20 @@ export default defineConfig({
   },
   fonts: [
     {
+      // Body text. Same no-generic-fallback setup as Google Sans Code
+      // below, for the same reason: theme.css's ko/ja override appends
+      // Noto Sans KR/JP directly after this font for CJK glyphs.
+      name: "Inter",
+      cssVariable: "--font-inter",
+      provider: fontProviders.google(),
+      fallbacks: [],
+      optimizedFallbacks: false,
+      weights: [400, 500, 600, 700],
+      styles: ["normal", "italic"],
+      formats: ["woff", "ttf"],
+    },
+    {
+      // Code blocks, inline code and small metadata (dates) only.
       name: "Google Sans Code",
       cssVariable: "--font-google-sans-code",
       provider: fontProviders.google(),

@@ -36,7 +36,8 @@
    of staying a live indirection through `--font-app` -- breaking the
    per-locale overrides below. */
 @theme {
-  --font-app: var(--font-google-sans-code), monospace;
+  --font-app: var(--font-inter), sans-serif;
+  --font-mono: var(--font-google-sans-code), monospace;
 }
 
 /* Light theme values */
@@ -62,25 +63,25 @@
   --border: #ab4b08;
 }
 
-/* CJK-aware body font: Google Sans Code has no Korean/Japanese glyphs,
-   so non-Latin text falls back to whatever the browser/OS ships. Layer
-   a proper CJK font in *behind* it for those locales instead -- Google
-   Sans Code stays first so Latin/code text renders identically across
-   every locale, and only glyphs it lacks (Hangul/Kanji) fall through
-   to the CJK font. Noto Sans KR/JP also cover Latin, so listing them
-   first would make English text look different on ko/ja pages.
+/* CJK-aware body font: Inter has no Korean/Japanese glyphs, so
+   non-Latin text would fall back to whatever the browser/OS ships. Layer
+   a proper CJK font in *behind* it for those locales instead -- Inter
+   stays first so Latin text renders identically across every locale,
+   and only glyphs it lacks (Hangul/Kanji) fall through to the CJK font.
+   Noto Sans KR/JP also cover Latin, so listing them first would make
+   English text look different on ko/ja pages.
 
-   Deliberately no generic keyword (e.g. "monospace") between the two
-   fonts here -- astro.config.ts's Google Sans Code family has its own
-   fallback disabled specifically so this chain goes straight from one
-   named web font to the other. A generic keyword in between is unsafe
-   on Windows: the OS does its own font-linking for unnamed generic
-   fonts, silently substituting a system CJK font for Hangul/Kanji
-   before the browser ever checks the next font in this list, so
-   Noto Sans KR/JP would never even get requested. */
+   Deliberately no generic keyword (e.g. "sans-serif") between the two
+   fonts here -- astro.config.ts's Inter family has its own fallback
+   disabled specifically so this chain goes straight from one named web
+   font to the other. A generic keyword in between is unsafe on Windows:
+   the OS does its own font-linking for unnamed generic fonts, silently
+   substituting a system CJK font for Hangul/Kanji before the browser
+   ever checks the next font in this list, so Noto Sans KR/JP would
+   never even get requested. */
 html[lang="ko"] {
-  --font-app: var(--font-google-sans-code), var(--font-noto-sans-kr);
+  --font-app: var(--font-inter), var(--font-noto-sans-kr);
 }
 html[lang="ja"] {
-  --font-app: var(--font-google-sans-code), var(--font-noto-sans-jp);
+  --font-app: var(--font-inter), var(--font-noto-sans-jp);
 }
