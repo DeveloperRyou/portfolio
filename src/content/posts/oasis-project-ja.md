@@ -2,6 +2,8 @@
 title: "OASIS Project"
 description: "仮想通貨自動売買プログラムを企画・開発・リリースするプロジェクト。Electronでデスクトップアプリを、Node.jsとUpbit APIで自動売買を、Reactでフロントエンドを実装した。"
 pubDatetime: 2022-09-01T01:00:00
+topic: "career"
+subtopic: "oasis"
 tags: ["oasis", "electron", "react", "typescript"]
 coverImage: "/assets/blog/oasis/cover.jpg"
 ---

@@ -2,6 +2,8 @@
 title: "Hanalum Project"
 description: "ハンミン高校総同窓生コミュニティ拡張のためのプロジェクト。10人規模の開発チームとともにDjangoでWebサービスを企画・開発した。"
 pubDatetime: 2019-02-15T18:32:07
+topic: "career"
+subtopic: "hanalum"
 tags: ["hanalum", "django", "leadership"]
 coverImage: "/assets/blog/hanalum/cover.png"
 ---

@@ -2,28 +2,50 @@ import { defineCollection } from "astro:content";
 import { z } from "astro/zod";
 import { glob } from "astro/loaders";
 import config from "@/config";
+import { getSubtopic, getTopic } from "@/taxonomy";
 
 export const BLOG_PATH = "src/content/posts";
 
 const posts = defineCollection({
   loader: glob({ pattern: "**/[^_]*.{md,mdx}", base: `./${BLOG_PATH}` }),
   schema: ({ image }) =>
-    z.object({
-      author: z.string().default(config.site.author),
-      pubDatetime: z.date(),
-      modDatetime: z.date().optional().nullable(),
-      title: z.string(),
-      featured: z.boolean().optional(),
-      draft: z.boolean().optional(),
-      tags: z.array(z.string()).default(["others"]),
-      ogImage: image().or(z.string()).optional(),
-      /** Thumbnail shown on post list cards. Plain /public path, not processed by Astro's image pipeline. */
-      coverImage: z.string().optional(),
-      description: z.string(),
-      canonicalURL: z.string().optional(),
-      hideEditPost: z.boolean().optional(),
-      timezone: z.string().optional(),
-    }),
+    z
+      .object({
+        author: z.string().default(config.site.author),
+        pubDatetime: z.date(),
+        modDatetime: z.date().optional().nullable(),
+        title: z.string(),
+        featured: z.boolean().optional(),
+        draft: z.boolean().optional(),
+        /** Sidebar navigation: slugs from `src/taxonomy.ts`, checked below. */
+        topic: z.string(),
+        subtopic: z.string().optional(),
+        /** Free keyword chips only; not used for navigation. */
+        tags: z.array(z.string()).default(["others"]),
+        ogImage: image().or(z.string()).optional(),
+        /** Thumbnail shown on post list cards. Plain /public path, not processed by Astro's image pipeline. */
+        coverImage: z.string().optional(),
+        description: z.string(),
+        canonicalURL: z.string().optional(),
+        hideEditPost: z.boolean().optional(),
+        timezone: z.string().optional(),
+      })
+      .superRefine(({ topic, subtopic }, ctx) => {
+        // No test suite here, so a typo'd slug has to fail the build instead.
+        if (!getTopic(topic)) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["topic"],
+            message: `Unknown topic "${topic}" -- register it in src/taxonomy.ts`,
+          });
+        } else if (subtopic && !getSubtopic(topic, subtopic)) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["subtopic"],
+            message: `Unknown subtopic "${subtopic}" under topic "${topic}" -- register it in src/taxonomy.ts`,
+          });
+        }
+      }),
 });
 
 const timelineEntry = z.object({

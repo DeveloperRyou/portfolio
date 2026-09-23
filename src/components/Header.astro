@@ -51,7 +51,7 @@ const isActive = getIsActivePath(Astro.url.pathname, locale);
     <nav id="nav-menu" class="flex items-center lg:ms-2">
       <ul
         id="nav-links"
-        class="[&>li>a]:hover:text-accent [&>li]:flex [&>li]:h-8 [&>li]:items-center hidden items-center gap-x-5 lg:flex [&>li>a]:block [&>li>a]:px-2 [&>li>a]:py-1 [&>li>a]:font-medium"
+        class="[&>li>a]:hover:text-accent hidden items-center gap-x-5 lg:flex [&>li]:flex [&>li]:h-8 [&>li]:items-center [&>li>a]:block [&>li>a]:px-2 [&>li>a]:py-1 [&>li>a]:font-medium"
       >
         <li>
           <a
@@ -59,14 +59,6 @@ const isActive = getIsActivePath(Astro.url.pathname, locale);
             class:list={{ "active-nav": isActive("/posts") }}
           >
             {t.nav.posts}
-          </a>
-        </li>
-        <li>
-          <a
-            href={getRelativeLocaleUrl(locale, "tags")}
-            class:list={{ "active-nav": isActive("/tags") }}
-          >
-            {t.nav.tags}
           </a>
         </li>
         <li>

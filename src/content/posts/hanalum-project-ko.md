@@ -2,6 +2,8 @@
 title: "Hanalum Project"
 description: "한민고등학교 총동문 커뮤니티 확장을 위한 프로젝트. 10명 규모 개발팀과 함께 Django로 웹서비스를 기획·개발했다."
 pubDatetime: 2019-02-15T18:32:07
+topic: "career"
+subtopic: "hanalum"
 tags: ["hanalum", "django", "leadership"]
 coverImage: "/assets/blog/hanalum/cover.png"
 ---

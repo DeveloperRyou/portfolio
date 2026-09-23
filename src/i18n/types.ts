@@ -2,7 +2,6 @@ export interface UIStrings {
   nav: {
     home: string;
     posts: string;
-    tags: string;
     about: string;
     archives: string;
     search: string;
@@ -35,6 +34,8 @@ export interface UIStrings {
     bio: string;
     navigation: string;
     categories: string;
+    /** aria-label for a topic's expand/collapse button; `{{topic}}` is its label. */
+    toggleSubtopics: string;
   };
   about: {
     career: string;
@@ -47,11 +48,8 @@ export interface UIStrings {
     allRightsReserved: string;
   };
   pages: {
-    tagTitle: string;
-    tagDesc: string;
-
-    tagsTitle: string;
-    tagsDesc: string;
+    /** `{{topic}}` is the localized topic/subtopic label. */
+    topicDesc: string;
 
     postsTitle: string;
     postsDesc: string;

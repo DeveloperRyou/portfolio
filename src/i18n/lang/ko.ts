@@ -4,7 +4,6 @@ export default {
   nav: {
     home: "홈",
     posts: "포스트",
-    tags: "태그",
     about: "소개",
     archives: "아카이브",
     search: "검색",
@@ -37,6 +36,7 @@ export default {
     bio: "웹 서비스를 만드는 소프트웨어 엔지니어입니다.",
     navigation: "메뉴",
     categories: "카테고리",
+    toggleSubtopics: "{{topic}} 하위 주제 펼치기",
   },
   about: {
     career: "경력",
@@ -49,11 +49,7 @@ export default {
     allRightsReserved: "All rights reserved.",
   },
   pages: {
-    tagTitle: "태그",
-    tagDesc: "해당 태그가 달린 모든 글",
-
-    tagsTitle: "태그",
-    tagsDesc: "글에서 사용된 모든 태그.",
+    topicDesc: '"{{topic}}"의 모든 글.',
 
     postsTitle: "포스트",
     postsDesc: "작성한 모든 글.",

@@ -7,45 +7,47 @@ import Breadcrumb from "@/components/Breadcrumb.astro";
 import Card from "@/components/Card.astro";
 import Footer from "@/components/Footer.astro";
 import Pagination from "@/components/Pagination.astro";
-import { getUniqueTags } from "@/utils/getUniqueTags";
-import { getSortedPosts } from "@/utils/getSortedPosts";
 import { getPostsByLocale } from "@/utils/postLocale";
-import { slugifyAll } from "@/utils/slugify";
-import { useTranslations } from "@/i18n";
+import { getTopicTree } from "@/utils/getTopicTree";
+import { tplStr, useTranslations } from "@/i18n";
 import config from "@/config";
 
 export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+  const locale = "ko";
   const posts = getPostsByLocale(
     await getCollection("posts", ({ data }) => !data.draft),
-    "ja"
+    locale
   );
-  const tags = getUniqueTags(posts);
 
-  return tags.flatMap(({ tag, tagName }) => {
-    const tagPosts = getSortedPosts(
-      posts.filter(({ data }) => slugifyAll(data.tags).includes(tag))
-    );
-
-    return paginate(tagPosts, {
-      params: { tag },
-      props: { tagName },
-      pageSize: config.posts.perPage,
-    });
-  });
+  return getTopicTree(posts, locale).flatMap(topic =>
+    topic.subtopics.flatMap(subtopic =>
+      // Oldest first: a subtopic reads as a series, in publishing order.
+      paginate(
+        [...subtopic.posts].sort(
+          (a, b) => a.data.pubDatetime.getTime() - b.data.pubDatetime.getTime()
+        ),
+        {
+          params: { topic: topic.slug, subtopic: subtopic.slug },
+          props: { topicLabel: topic.label, label: subtopic.label },
+          pageSize: config.posts.perPage,
+        }
+      )
+    )
+  );
 }
 
-const { page, tagName } = Astro.props;
+const { page, topicLabel, label } = Astro.props;
 
 const locale = Astro.currentLocale ?? config.site.lang;
 const t = useTranslations(locale);
 ---
 
-<Layout title={`${t.pages.tagTitle}: ${tagName} | ${config.site.title}`}>
+<Layout title={`${label} - ${topicLabel} | ${config.site.title}`}>
   <Breadcrumb />
 
   <Main
-    pageTitle={`${t.pages.tagTitle}: ${tagName}`}
-    pageDesc={`${t.pages.tagDesc} "${tagName}".`}
+    pageTitle={label}
+    pageDesc={tplStr(t.pages.topicDesc, { topic: label })}
   >
     <ul>
       {page.data.map(data => <Card {...data} />)}

@@ -2,6 +2,8 @@
 title: "Pong Game"
 description: "A web game project built for 42 Seoul's Transcendence assignment. Implemented 42 OAuth login and real-time chat/gameplay over WebSockets."
 pubDatetime: 2023-12-01T12:00:00
+topic: "career"
+subtopic: "42seoul"
 tags: ["42seoul", "nestjs", "nextjs", "websocket"]
 coverImage: "/assets/blog/ponggame/cover.png"
 ---

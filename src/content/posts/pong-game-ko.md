@@ -2,6 +2,8 @@
 title: "Pong Game"
 description: "42Seoul Transcendence 과제로 진행한 웹 게임 프로젝트. 42 OAuth 로그인과 웹소켓 기반 실시간 채팅·게임을 구현했다."
 pubDatetime: 2023-12-01T12:00:00
+topic: "career"
+subtopic: "42seoul"
 tags: ["42seoul", "nestjs", "nextjs", "websocket"]
 coverImage: "/assets/blog/ponggame/cover.png"
 ---

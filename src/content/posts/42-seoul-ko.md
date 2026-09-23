@@ -2,6 +2,8 @@
 title: "42 Seoul"
 description: "C/C++ 프로젝트 기반 교육과정인 42 Seoul 본과정 경험. 가상 리눅스 환경 구축, 멀티프로세스/멀티스레드 프로그래밍 등을 통해 CS 기본기를 다졌다."
 pubDatetime: 2022-02-02T15:15:12
+topic: "career"
+subtopic: "42seoul"
 tags: ["42seoul", "c", "cs"]
 coverImage: "/assets/blog/42seoul/cover.jpg"
 ---

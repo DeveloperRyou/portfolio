@@ -2,6 +2,8 @@
 title: "42 Seoul"
 description: "My experience in the main track of 42 Seoul, a project-based C/C++ curriculum. Built a strong CS foundation through a virtual Linux environment, multiprocess/multithreaded programming, and more."
 pubDatetime: 2022-02-02T15:15:12
+topic: "career"
+subtopic: "42seoul"
 tags: ["42seoul", "c", "cs"]
 coverImage: "/assets/blog/42seoul/cover.jpg"
 ---
