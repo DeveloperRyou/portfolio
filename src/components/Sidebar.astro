@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import IconX from "@/assets/icons/IconX.svg";
+import IconChevronLeft from "@/assets/icons/IconChevronLeft.svg";
 import IconArchive from "@/assets/icons/IconArchive.svg";
 import IconSearch from "@/assets/icons/IconSearch.svg";
 import IconMoon from "@/assets/icons/IconMoon.svg";
@@ -9,37 +10,44 @@ import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import Avatar from "@/components/Avatar.astro";
 import Socials from "@/components/Socials.astro";
 import LangSwitcher from "@/components/LangSwitcher.astro";
-import { getUniqueTags } from "@/utils/getUniqueTags";
 import { getPostsByLocale } from "@/utils/postLocale";
-import { postFilter } from "@/utils/postFilter";
-import { slugifyStr } from "@/utils/slugify";
+import { getTopicTree } from "@/utils/getTopicTree";
+import { getPostUrl } from "@/utils/getPostPaths";
+import { stripBase, stripLocale } from "@/utils/withBase";
 import { getIsActivePath } from "@/utils/isActivePath";
-import { useTranslations } from "@/i18n";
+import { tplStr, useTranslations } from "@/i18n";
 import config from "@/config";
 
 const { site, features } = config;
 const locale = Astro.currentLocale ?? config.site.lang;
 const t = useTranslations(locale);
+// Sidebar chrome stays English on every locale; only the bio is translated.
+const tEn = useTranslations("en");
 const isActive = getIsActivePath(Astro.url.pathname, locale);
 
 const posts = getPostsByLocale(
   await getCollection("posts", ({ data }) => !data.draft),
   locale
 );
-const tags = getUniqueTags(posts);
+const topics = getTopicTree(posts);
 
-const countsByTag = new Map<string, number>();
-for (const post of posts.filter(postFilter)) {
-  for (const tag of post.data.tags) {
-    const slug = slugifyStr(tag);
-    countsByTag.set(slug, (countsByTag.get(slug) ?? 0) + 1);
-  }
-}
-const categories = tags.map(({ tag, tagName }) => ({
-  tag,
-  tagName,
-  count: countsByTag.get(tag) ?? 0,
-}));
+// Which topic/subtopic the reader is in: from a /topics/... URL directly,
+// or, on a post page, from that post's own frontmatter.
+const trimSlash = (path: string) => path.replace(/\/+$/, "");
+const [section, topicSeg, subtopicSeg] = stripLocale(
+  trimSlash(stripBase(Astro.url.pathname)),
+  locale
+)
+  .split("/")
+  .filter(Boolean);
+const currentPost = posts.find(
+  post =>
+    trimSlash(getPostUrl(post.id, post.filePath, locale)) ===
+    trimSlash(Astro.url.pathname)
+);
+const currentTopic = section === "topics" ? topicSeg : currentPost?.data.topic;
+const currentSubtopic =
+  section === "topics" ? subtopicSeg : currentPost?.data.subtopic;
 ---
 
 <div
@@ -57,7 +65,7 @@ const categories = tags.map(({ tag, tagName }) => ({
     <button
       id="sidebar-close"
       class="focus-outline p-2"
-      aria-label={t.a11y.closeSidebar}
+      aria-label={tEn.a11y.closeSidebar}
     >
       <IconX />
     </button>
@@ -72,7 +80,10 @@ const categories = tags.map(({ tag, tagName }) => ({
     <Socials />
   </div>
 
-  <nav aria-label={t.sidebar.navigation} class="border-border mt-8 border-t pt-6 lg:hidden">
+  <nav
+    aria-label={tEn.sidebar.navigation}
+    class="border-border mt-8 border-t pt-6 lg:hidden"
+  >
     <ul class="flex flex-col text-sm font-medium">
       <li>
         <a
@@ -82,18 +93,7 @@ const categories = tags.map(({ tag, tagName }) => ({
             { "active-nav": isActive("/posts") },
           ]}
         >
-          {t.nav.posts}
-        </a>
-      </li>
-      <li>
-        <a
-          href={getRelativeLocaleUrl(locale, "tags")}
-          class:list={[
-            "hover:text-accent -ms-2 block rounded px-2 py-1.5",
-            { "active-nav": isActive("/tags") },
-          ]}
-        >
-          {t.nav.tags}
+          {tEn.nav.posts}
         </a>
       </li>
       <li>
@@ -104,7 +104,7 @@ const categories = tags.map(({ tag, tagName }) => ({
             { "active-nav": isActive("/about") },
           ]}
         >
-          {t.nav.about}
+          {tEn.nav.about}
         </a>
       </li>
       {
@@ -118,7 +118,7 @@ const categories = tags.map(({ tag, tagName }) => ({
               ]}
             >
               <IconArchive class="size-4" />
-              {t.nav.archives}
+              {tEn.nav.archives}
             </a>
           </li>
         )
@@ -134,7 +134,7 @@ const categories = tags.map(({ tag, tagName }) => ({
               ]}
             >
               <IconSearch class="size-4" />
-              {t.nav.search}
+              {tEn.nav.search}
             </a>
           </li>
         )
@@ -143,39 +143,100 @@ const categories = tags.map(({ tag, tagName }) => ({
   </nav>
 
   {
-    categories.length > 0 && (
+    topics.length > 0 && (
       <nav
-        aria-label={t.sidebar.categories}
+        aria-label={tEn.sidebar.categories}
         class="border-border mt-8 border-t pt-6"
       >
         <h2 class="text-muted-foreground mb-3 text-sm font-semibold tracking-wide uppercase">
-          {t.sidebar.categories}
+          {tEn.sidebar.categories}
         </h2>
         <ul class="flex flex-col">
-          {categories.map(({ tag, tagName, count }) => (
-            <li>
-              <a
-                href={getRelativeLocaleUrl(locale, `tags/${tag}/`)}
-                class="hover:text-accent -ms-2 flex items-center justify-between gap-2 rounded px-2 py-1.5 text-sm"
-              >
-                <span class="truncate">{tagName}</span>
-                <span class="text-muted-foreground shrink-0">{count}</span>
-              </a>
-            </li>
-          ))}
+          {topics.map(topic => {
+            const isCurrent = topic.slug === currentTopic;
+            const listId = `subtopics-${topic.slug}`;
+            return (
+              <li>
+                <div class="-ms-2 flex items-center gap-1">
+                  <a
+                    href={getRelativeLocaleUrl(locale, topic.path)}
+                    aria-current={
+                      isCurrent && !currentSubtopic ? "page" : undefined
+                    }
+                    class:list={[
+                      "hover:text-accent flex min-w-0 flex-1 items-center justify-between gap-2 rounded px-2 py-1.5 text-sm",
+                      { "text-accent font-medium": isCurrent },
+                    ]}
+                  >
+                    <span class="truncate">{topic.label}</span>
+                    <span class="text-muted-foreground shrink-0">
+                      {topic.posts.length}
+                    </span>
+                  </a>
+                  {topic.subtopics.length > 0 && (
+                    <button
+                      type="button"
+                      class="group focus-outline hover:text-accent shrink-0 rounded p-1"
+                      aria-expanded={isCurrent ? "true" : "false"}
+                      aria-controls={listId}
+                      aria-label={tplStr(tEn.sidebar.toggleSubtopics, {
+                        topic: topic.label,
+                      })}
+                      data-topic-toggle
+                    >
+                      <IconChevronLeft class="size-4 rotate-180 transition-transform group-aria-expanded:-rotate-90" />
+                    </button>
+                  )}
+                </div>
+                {topic.subtopics.length > 0 && (
+                  <ul
+                    id={listId}
+                    class:list={[
+                      "border-border ms-1 flex flex-col border-s ps-2",
+                      { hidden: !isCurrent },
+                    ]}
+                  >
+                    {topic.subtopics.map(subtopic => {
+                      const isCurrentSub =
+                        isCurrent && subtopic.slug === currentSubtopic;
+                      return (
+                        <li>
+                          <a
+                            href={getRelativeLocaleUrl(locale, subtopic.path)}
+                            aria-current={isCurrentSub ? "page" : undefined}
+                            class:list={[
+                              "hover:text-accent flex items-center justify-between gap-2 rounded px-2 py-1 text-sm",
+                              { "text-accent font-medium": isCurrentSub },
+                            ]}
+                          >
+                            <span class="truncate">{subtopic.label}</span>
+                            <span class="text-muted-foreground shrink-0">
+                              {subtopic.posts.length}
+                            </span>
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </nav>
     )
   }
 
-  <div class="border-border mt-8 flex items-center justify-between border-t pt-6 lg:hidden">
+  <div
+    class="border-border mt-8 flex items-center justify-between border-t pt-6 lg:hidden"
+  >
     <LangSwitcher />
     {
       features.lightAndDarkMode && (
         <button
           id="theme-btn-mobile"
           class="theme-toggle focus-outline hover:[&>svg]:stroke-accent relative size-8"
-          title={t.a11y.toggleTheme}
+          title={tEn.a11y.toggleTheme}
           aria-label="auto"
           aria-live="polite"
         >
@@ -240,6 +301,26 @@ const categories = tags.map(({ tag, tagName }) => ({
     });
   }
 
+  function initTopicToggles() {
+    document
+      .querySelectorAll<HTMLButtonElement>("[data-topic-toggle]")
+      .forEach(btn => {
+        const list = document.getElementById(
+          btn.getAttribute("aria-controls") ?? ""
+        );
+        if (!list) return;
+        btn.addEventListener("click", () => {
+          const expanded = btn.getAttribute("aria-expanded") === "true";
+          btn.setAttribute("aria-expanded", String(!expanded));
+          list.classList.toggle("hidden", expanded);
+        });
+      });
+  }
+
   initSidebar();
-  document.addEventListener("astro:after-swap", initSidebar);
+  initTopicToggles();
+  document.addEventListener("astro:after-swap", () => {
+    initSidebar();
+    initTopicToggles();
+  });
 </script>

@@ -2,6 +2,8 @@
 title: "Hanalum Project"
 description: "A project to grow the Hanmin High School alumni community. Planned and built a web service in Django with a 10-person development team."
 pubDatetime: 2019-02-15T18:32:07
+topic: "career"
+subtopic: "hanalum"
 tags: ["hanalum", "django", "leadership"]
 coverImage: "/assets/blog/hanalum/cover.png"
 ---

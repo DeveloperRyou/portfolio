@@ -4,7 +4,6 @@ export default {
   nav: {
     home: "Home",
     posts: "Posts",
-    tags: "Tags",
     about: "About",
     archives: "Archives",
     search: "Search",
@@ -37,6 +36,7 @@ export default {
     bio: "Software engineer building web services.",
     navigation: "Navigation",
     categories: "Categories",
+    toggleSubtopics: "Show subtopics of {{topic}}",
   },
   about: {
     career: "Career",
@@ -49,11 +49,7 @@ export default {
     allRightsReserved: "All rights reserved.",
   },
   pages: {
-    tagTitle: "Tag",
-    tagDesc: "All the articles with the tag",
-
-    tagsTitle: "Tags",
-    tagsDesc: "All the tags used in posts.",
+    topicDesc: 'All the articles in "{{topic}}".',
 
     postsTitle: "Posts",
     postsDesc: "All the articles I've posted.",

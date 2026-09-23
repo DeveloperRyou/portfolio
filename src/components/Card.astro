@@ -2,7 +2,6 @@
 import type { CollectionEntry } from "astro:content";
 import { getPostUrl } from "@/utils/getPostPaths";
 import { toTransitionName } from "@/utils/toTransitionName";
-import { slugifyStr } from "@/utils/slugify";
 import Datetime from "./Datetime.astro";
 import Tag from "./Tag.astro";
 
@@ -32,7 +31,9 @@ const postUrl = getPostUrl(id, filePath, Astro.currentLocale);
     )
   }
   <div class="min-w-0 flex-1">
-    <div class="flex flex-col gap-x-3 lg:flex-row lg:items-baseline lg:justify-between">
+    <div
+      class="flex flex-col gap-x-3 lg:flex-row lg:items-baseline lg:justify-between"
+    >
       <a
         href={postUrl}
         class:list={[
@@ -52,7 +53,7 @@ const postUrl = getPostUrl(id, filePath, Astro.currentLocale);
       tags.length > 0 && (
         <ul class="mt-2 hidden flex-wrap gap-x-3 gap-y-1 lg:flex">
           {tags.map(tag => (
-            <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" />
+            <Tag tagName={tag} size="sm" />
           ))}
         </ul>
       )

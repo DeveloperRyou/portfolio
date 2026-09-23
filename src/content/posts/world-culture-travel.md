@@ -2,6 +2,7 @@
 title: "World Culture Travel"
 description: "An outsourced Android app project. Built an app in Java/XML that lets elementary-school audiovisual materials be viewed offline."
 pubDatetime: 2019-05-01T13:00:00
+topic: "outsourcing"
 tags: ["android", "outsourcing"]
 coverImage: "/assets/blog/worldculturetravel/cover.jpg"
 ---

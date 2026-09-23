@@ -2,6 +2,8 @@
 title: "Hire Diversity"
 description: "Spent 3 months at Hire Diversity as a frontend developer, working on a cloud SaaS platform for automating business operations."
 pubDatetime: 2022-09-01T00:00:00
+topic: "career"
+subtopic: "hire-diversity"
 tags: ["hire-diversity", "frontend", "serverless", "aws"]
 coverImage: "/assets/blog/hirediversity/cover.png"
 ---

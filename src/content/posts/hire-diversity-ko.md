@@ -2,6 +2,8 @@
 title: "Hire Diversity"
 description: "Hire Diversity에서 3개월간 프론트엔드 개발자로 참여해, 클라우드 SaaS 형태의 경영 자동화 플랫폼 개발에 참여했다."
 pubDatetime: 2022-09-01T00:00:00
+topic: "career"
+subtopic: "hire-diversity"
 tags: ["hire-diversity", "frontend", "serverless", "aws"]
 coverImage: "/assets/blog/hirediversity/cover.png"
 ---

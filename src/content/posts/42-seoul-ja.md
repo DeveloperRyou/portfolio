@@ -2,6 +2,8 @@
 title: "42 Seoul"
 description: "C/C++プロジェクトベースの教育課程、42 Seoul本課程での経験。仮想Linux環境の構築、マルチプロセス/マルチスレッドプログラミングなどを通じてCSの基礎を固めた。"
 pubDatetime: 2022-02-02T15:15:12
+topic: "career"
+subtopic: "42seoul"
 tags: ["42seoul", "c", "cs"]
 coverImage: "/assets/blog/42seoul/cover.jpg"
 ---

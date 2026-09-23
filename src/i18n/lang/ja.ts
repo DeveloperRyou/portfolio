@@ -4,7 +4,6 @@ export default {
   nav: {
     home: "ホーム",
     posts: "投稿",
-    tags: "タグ",
     about: "紹介",
     archives: "アーカイブ",
     search: "検索",
@@ -37,6 +36,7 @@ export default {
     bio: "ウェブサービスを作るソフトウェアエンジニアです。",
     navigation: "メニュー",
     categories: "カテゴリー",
+    toggleSubtopics: "{{topic}}のサブトピックを表示",
   },
   about: {
     career: "経歴",
@@ -49,11 +49,7 @@ export default {
     allRightsReserved: "All rights reserved.",
   },
   pages: {
-    tagTitle: "タグ",
-    tagDesc: "このタグが付いたすべての記事",
-
-    tagsTitle: "タグ",
-    tagsDesc: "投稿で使われているすべてのタグ。",
+    topicDesc: "「{{topic}}」のすべての記事。",
 
     postsTitle: "投稿",
     postsDesc: "投稿したすべての記事。",

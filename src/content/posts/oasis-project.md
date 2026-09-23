@@ -2,6 +2,8 @@
 title: "OASIS Project"
 description: "A project to plan, build, and ship a cryptocurrency auto-trading program. Built a desktop app with Electron, an auto-trading engine with Node.js and the Upbit API, and a frontend in React."
 pubDatetime: 2022-09-01T01:00:00
+topic: "career"
+subtopic: "oasis"
 tags: ["oasis", "electron", "react", "typescript"]
 coverImage: "/assets/blog/oasis/cover.jpg"
 ---

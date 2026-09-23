@@ -2,6 +2,7 @@
 title: "World Culture Travel"
 description: "外注で進めたAndroidアプリケーション制作プロジェクト。小学校の視聴覚資料をオフラインでも見られるアプリをJava/XMLで開発した。"
 pubDatetime: 2019-05-01T13:00:00
+topic: "outsourcing"
 tags: ["android", "outsourcing"]
 coverImage: "/assets/blog/worldculturetravel/cover.jpg"
 ---
