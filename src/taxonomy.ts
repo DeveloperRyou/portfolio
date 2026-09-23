@@ -30,6 +30,15 @@ export const taxonomy: Topic[] = [
         slug: "ai-documents",
         label: "AI Documents",
       },
+      { slug: "models", label: "Models" },
+      { slug: "retrospective", label: "Retrospective" },
+    ],
+  },
+  {
+    slug: "project-cloud",
+    label: "Project Cloud",
+    subtopics: [
+      { slug: "build-your-own-cloud", label: "Build Your Own Cloud" },
     ],
   },
   {
