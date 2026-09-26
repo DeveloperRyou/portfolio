@@ -391,30 +391,19 @@ kubectl describe networkpolicy -n default
 - `kubectl create service nodeport <name> --tcp=<port>:<targetPort> --node-port=<np>`
 - `kubectl create ingress <name> --class=<c> --rule="host/path*=svc:port"`
 - NetworkPolicy는 imperative 명령이 없음 → 공식 문서 YAML 복사
-- 필드 확인: `kubectl explain ingress.spec.rules.http.paths`, `kubectl explain networkpolicy.spec.ingress.from`
 - 테스트용 임시 Pod: `kubectl run tmp --rm -it --image=busybox:1.36 --restart=Never -- <cmd>`
 
-### 열어 볼 문서
+### kubectl explain
 
-| 필요한 것                          | 문서 위치                                                               |
-| ---------------------------------- | ----------------------------------------------------------------------- |
-| Service YAML, named port, headless | Service 페이지                                                          |
-| DNS 이름 형식                      | DNS for Services and Pods                                               |
-| Ingress YAML, pathType 표          | Ingress 페이지 "The Ingress resource", "Path types", "Types of Ingress" |
-| default deny 5종                   | Network Policies 페이지 "Default policies"                              |
-| 트러블슈팅 순서                    | Tasks > Debug Services                                                  |
-
-### 자주 하는 실수
-
-- Service selector와 Pod label 불일치 → EndpointSlice가 비어 있음
-- `targetPort`를 Service `port`로 착각하거나, container가 실제로 듣지 않는 포트 지정
-- 다른 namespace의 Service를 `<svc>`만으로 호출
-- Ingress의 `pathType` 누락 (validation 실패), `ingressClassName` 누락으로 controller가 무시
-- Ingress backend가 Service 포트가 아니라 container 포트를 가리킴
-- NetworkPolicy에서 AND를 의도했는데 `-`를 하나 더 붙여 OR로 만듦
-- `from.podSelector`는 NetworkPolicy와 같은 namespace만 본다는 점을 놓침 → 다른 namespace는 `namespaceSelector` 필요
-- egress default deny 후 DNS를 안 열어서 이름 해석 실패
-- NetworkPolicy는 허용 목록뿐이라 "특정 Pod만 차단"은 다른 Pod를 허용하는 방식으로 표현해야 함
+```bash
+kubectl explain service.spec.ports               # port, targetPort, nodePort, name
+kubectl explain service.spec.type
+kubectl explain ingress.spec.rules.http.paths    # path, pathType, backend
+kubectl explain ingress.spec.ingressClassName
+kubectl explain networkpolicy.spec.ingress.from  # podSelector, namespaceSelector, ipBlock
+kubectl explain networkpolicy.spec.egress
+kubectl explain networkpolicy.spec.policyTypes
+```
 
 ## 참고 문서
 

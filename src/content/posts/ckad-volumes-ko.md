@@ -373,26 +373,18 @@ kubectl patch pv pv-data -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}
 
 - PV·PVC·StorageClass는 `kubectl create` 하위 명령이 없음 → 공식 문서 YAML을 복사해 수정
 - Pod는 `kubectl run <name> --image=<img> --dry-run=client -o yaml > pod.yaml`로 뼈대를 만든 뒤 `volumes`/`volumeMounts` 추가
-- 필드 이름이 기억 안 날 때: `kubectl explain pod.spec.volumes.persistentVolumeClaim`, `kubectl explain pv.spec --recursive`
 
-### 열어 볼 문서
+### kubectl explain
 
-| 필요한 것                          | 문서 위치                                                                                                       |
-| ---------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| PV/PVC/Pod YAML 세트               | Persistent Volumes 페이지의 예시 섹션, 또는 Tutorials > "Configure a Pod to Use a PersistentVolume for Storage" |
-| emptyDir, hostPath, configMap YAML | Volumes 페이지의 각 volume type 섹션                                                                            |
-| generic ephemeral YAML             | Ephemeral Volumes 페이지                                                                                        |
-| StorageClass 필드                  | Storage Classes 페이지                                                                                          |
-
-### 자주 하는 실수
-
-- `volumeMounts[].name`과 `volumes[].name` 불일치
-- PVC가 Pod와 다른 namespace에 있음
-- PVC가 `Pending`: access mode·크기·`storageClassName`이 PV와 안 맞음, 또는 `WaitForFirstConsumer`라 Pod를 기다리는 중 → `kubectl describe pvc`의 Events 확인
-- static PV에 묶으려는데 `storageClassName`을 생략해서 default StorageClass가 채워지고 dynamic provisioning으로 빠짐
-- `accessModes`를 문자열로 씀 (리스트여야 함)
-- `resources.requests.storage` 대신 `capacity`를 PVC에 씀 (`capacity`는 PV 필드)
-- `emptyDir: {}`에서 `{}` 누락
+```bash
+kubectl explain pod.spec.volumes                                # volume type 목록
+kubectl explain pod.spec.volumes.persistentVolumeClaim          # claimName, readOnly
+kubectl explain pod.spec.volumes.emptyDir                       # medium, sizeLimit
+kubectl explain pod.spec.volumes.ephemeral.volumeClaimTemplate  # generic ephemeral volume
+kubectl explain pv.spec --recursive | less                      # PV 필드 트리
+kubectl explain pvc.spec                                        # accessModes, resources, storageClassName
+kubectl explain storageclass                                    # provisioner, volumeBindingMode
+```
 
 ## 참고 문서
 

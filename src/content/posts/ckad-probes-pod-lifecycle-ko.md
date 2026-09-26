@@ -208,13 +208,23 @@ kubectl explain pod.spec.containers.livenessProbe
 ## 시험 포인트
 
 - probe에는 imperative 플래그가 없다. `kubectl run app --image=nginx --dry-run=client -o yaml > pod.yaml`로 뼈대를 만들고 probe를 YAML로 붙인다
-- 문서에서 찾을 곳: Tasks > Configure Pods and Containers > Configure Liveness, Readiness and Startup Probes. exec, HTTP, TCP, gRPC, named port, startup probe 예시가 한 페이지에 있다
 - 필드 위치는 `spec.containers[].livenessProbe`. `spec` 바로 아래가 아니다
 - 필드 이름이 `livenessProbe`, `readinessProbe`, `startupProbe`로 camelCase. 핸들러는 `httpGet`, `tcpSocket`, `exec`, `grpc`
 - liveness·startup의 `successThreshold`는 1 외의 값을 넣으면 안 된다
 - readiness 실패로는 재시작이 일어나지 않는다. `RESTARTS`가 오르면 liveness나 startup 쪽을 본다
 - `restartPolicy: Never`인 Pod에서 liveness가 실패하면 컨테이너는 kill되고 다시 뜨지 않는다
 - `STATUS` 열의 `CrashLoopBackOff`는 phase가 아니다. phase를 물으면 `-o jsonpath='{.status.phase}'`로 확인
+
+### kubectl explain
+
+```bash
+kubectl explain pod.spec.containers.livenessProbe          # 공통 필드: periodSeconds, failureThreshold 등
+kubectl explain pod.spec.containers.livenessProbe.httpGet  # path, port, httpHeaders
+kubectl explain pod.spec.containers.startupProbe
+kubectl explain pod.spec.containers.lifecycle              # postStart, preStop
+kubectl explain pod.spec.terminationGracePeriodSeconds
+kubectl explain pod.spec.restartPolicy                     # Always / OnFailure / Never
+```
 
 ## 참고 문서
 

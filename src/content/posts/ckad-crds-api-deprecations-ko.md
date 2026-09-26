@@ -223,28 +223,20 @@ spec:
 kubectl get crd
 kubectl describe crd <plural>.<group>
 kubectl api-resources | grep -i <keyword>
-kubectl explain <kind>.spec --recursive
-kubectl explain <resource> --api-version=<group>/<version>
 ```
 
 - 모르는 custom resource가 나오면: `api-resources`로 이름·group·namespaced 여부 확인 → `explain`으로 필드 확인 → YAML 작성
 - 제거된 `apiVersion`을 고쳐야 하면: `kubectl api-resources`의 APIVERSION 열로 현재 서빙 버전 확인. 바뀐 필드는 Deprecated API Migration Guide
 
-### 문서에서 찾는 위치
+### kubectl explain
 
-- CRD YAML 전체 예시(`crontabs.stable.example.com`): "Extend the Kubernetes API with CustomResourceDefinitions"
-- 제거된 API별 이전 버전·필드 변경: "Deprecated API Migration Guide"
-- alpha/beta/GA 수명 규칙: "Kubernetes Deprecation Policy"의 Rule #4a
-- `api-resources` 옵션: kubectl Quick Reference
-
-### 자주 하는 실수
-
-- CRD의 `metadata.name`을 `<plural>.<group>` 형식으로 안 맞춤
-- `versions` 중 `storage: true`를 두 개 이상 두거나 하나도 안 둠
-- custom object의 `apiVersion`에 CRD의 `apiextensions.k8s.io/v1`을 씀. custom object는 `<group>/<version>`
-- CRD를 지우면 그 종류의 객체도 전부 지워진다는 걸 잊음
-- Ingress를 `v1`으로 올리면서 `pathType` 누락, `serviceName`/`servicePort`를 그대로 둠
-- Deployment를 `apps/v1`으로 올리면서 `spec.selector` 누락
+```bash
+kubectl explain crd.spec.names                              # plural, singular, kind, shortNames
+kubectl explain crd.spec.versions                           # served, storage, schema
+kubectl explain crd.spec.scope                              # Namespaced / Cluster
+kubectl explain <kind>.spec --recursive                     # custom resource 필드 (CRD schema 기준)
+kubectl explain ingress --api-version=networking.k8s.io/v1  # 특정 group/version 기준으로 필드 확인
+```
 
 ## 참고 문서
 

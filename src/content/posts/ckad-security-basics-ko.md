@@ -293,25 +293,17 @@ kubectl label namespace secure-ns pod-security.kubernetes.io/enforce=restricted
 ```
 
 - SecurityContext는 imperative 플래그가 없음. `kubectl run ... --dry-run=client -o yaml`로 뼈대를 만든 뒤 YAML에 추가
-- 필드 위치 확인: `kubectl explain pod.spec.securityContext`, `kubectl explain pod.spec.containers.securityContext`
 
-### 문서에서 찾는 위치
+### kubectl explain
 
-- RBAC YAML, `kubectl create role/rolebinding` 예시: "Using RBAC Authorization"
-- `kubectl auth can-i`, `--as`: "Authorization" 페이지의 Checking API access
-- SecurityContext 필드, capabilities 예시: "Configure a Security Context for a Pod or Container"
-- `automountServiceAccountToken`, `kubectl create token`: "Configure Service Accounts for Pods"
-- namespace label 형식: "Pod Security Admission"
-
-### 자주 하는 실수
-
-- `--serviceaccount=<namespace>:<name>` 형식에서 namespace 누락
-- Role에서 core group을 `apiGroups: [""]`로 쓰지 않음. Deployment는 `apps`
-- 이미 떠 있는 Pod의 `serviceAccountName`을 `kubectl edit`으로 바꾸려 함. Pod 재생성 필요
-- `capabilities`, `readOnlyRootFilesystem`을 Pod 레벨 `securityContext`에 넣음
-- capability를 `CAP_NET_ADMIN`처럼 접두사 포함해서 씀
-- `readOnlyRootFilesystem: true`만 켜고 쓰기 필요한 경로에 `emptyDir`를 안 붙임
-- `kubectl auth can-i`에서 ServiceAccount를 `--as=my-sa`로 적음. `system:serviceaccount:<ns>:<name>` 전체가 필요
+```bash
+kubectl explain pod.spec.securityContext                          # Pod 레벨: runAsUser, fsGroup 등
+kubectl explain pod.spec.containers.securityContext               # container 레벨: capabilities, readOnlyRootFilesystem 등
+kubectl explain pod.spec.containers.securityContext.capabilities  # add, drop
+kubectl explain pod.spec.automountServiceAccountToken
+kubectl explain role.rules                                        # apiGroups, resources, verbs
+kubectl explain rolebinding.subjects                              # kind, name, namespace
+```
 
 ## 참고 문서
 

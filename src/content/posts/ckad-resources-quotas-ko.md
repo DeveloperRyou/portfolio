@@ -239,20 +239,14 @@ kubectl describe quota -n dev        # Used / Hard 확인
 - 확인: `kubectl describe quota`, `kubectl describe limitrange`, `kubectl describe node`, `kubectl describe pod`(OOMKilled, FailedScheduling)
 - QoS 확인: `-o jsonpath='{.status.qosClass}'`
 
-### 열어 둘 문서
+### kubectl explain
 
-- `resources` YAML·단위: Concepts > Configuration > Resource Management for Pods and Containers
-- QoS 조건: Concepts > Workloads > Pods > Pod Quality of Service Classes
-- LimitRange YAML: Concepts > Policies > Limit Ranges
-- ResourceQuota 리소스 이름 표: Concepts > Policies > Resource Quotas
-
-### 자주 하는 실수
-
-- memory에 `m`(milli)을 씀. `128Mi`
-- CPU를 `"0.5"`와 `500m` 중 섞어 써서 헷갈림. 둘은 같은 값
-- quota가 걸린 namespace에서 `resources` 없이 Pod를 만들어 403. 에러 메시지에 빠진 항목이 나옴
-- LimitRange `default`에 request 기본값을 넣음. request는 `defaultRequest`
-- LimitRange·ResourceQuota를 만든 뒤 기존 Pod가 바뀌기를 기다림. 새로 만드는 Pod부터 적용
+```bash
+kubectl explain pod.spec.containers.resources  # requests, limits
+kubectl explain resourcequota.spec             # hard, scopes
+kubectl explain limitrange.spec.limits         # default, defaultRequest, max, min
+kubectl explain pod.status.qosClass
+```
 
 ## 참고 문서
 

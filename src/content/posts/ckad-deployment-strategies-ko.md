@@ -306,21 +306,15 @@ kubectl scale deployment/web --replicas=5
 - `kubectl create deployment`는 `strategy`를 따로 받지 않으므로 `--dry-run=client -o yaml`로 뽑고 `strategy` 블록을 손으로 추가
 - `kubectl set image`의 왼쪽은 container 이름. Deployment 이름이 아님 (`kubectl get deploy web -o jsonpath='{.spec.template.spec.containers[*].name}'`)
 
-**문서에서 찾을 위치**
+**kubectl explain**
 
-- strategy·`maxSurge`·`maxUnavailable` 예시 YAML: Deployments 페이지의 "Strategy" 섹션 (`/docs/concepts/workloads/controllers/deployment/#strategy`)
-- rollout history·undo: 같은 페이지 "Rolling Back a Deployment"
-- canary label 구조: Managing Workloads 페이지 "Canary deployments"
-- Service selector 기본형: Service 페이지 첫 예시
-
-**자주 하는 실수**
-
-- `RollingUpdate`에서 `Recreate`로 바꾸면서 `rollingUpdate` 블록을 그대로 둠 → `type: Recreate`만 남김
-- `maxSurge: 0`, `maxUnavailable: 0` 동시 지정
-- blue/green에서 Service selector에 `app`만 둠 → 두 버전 모두 선택되어 canary처럼 동작
-- canary에서 두 Deployment의 selector가 겹침 → 문서 표현대로 controller끼리 "fight". Kubernetes가 막아 주지 않음
-- pause 상태에서 undo 시도 → resume 먼저
-- scale을 되돌리려고 `rollout undo` 사용 → replicas는 revision에 없음
+```bash
+kubectl explain deployment.spec.strategy                # type: RollingUpdate / Recreate
+kubectl explain deployment.spec.strategy.rollingUpdate  # maxSurge, maxUnavailable 기본값
+kubectl explain deployment.spec.revisionHistoryLimit    # rollout history에 남는 revision 수
+kubectl explain deployment.spec.minReadySeconds
+kubectl explain service.spec.selector                   # blue/green 전환 대상
+```
 
 ## 참고 문서
 

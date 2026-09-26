@@ -272,25 +272,15 @@ kubectl get events -n <ns> --sort-by='.lastTimestamp'
 - 이벤트는 namespace 단위. `-n`을 빼면 default namespace만 봄
 - `kubectl top`이 에러를 내면 명령보다 Metrics API(metrics-server) 배포 여부부터 의심
 
-### 문서에서 찾는 위치
+### kubectl explain
 
-| 찾는 것                               | 페이지                                                                                         |
-| ------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `kubectl debug` 예제 전체, profile 표 | Tasks > Monitoring, Logging, and Debugging > Troubleshooting Applications > Debug Running Pods |
-| Pending/Waiting 원인                  | 같은 섹션 > Debug Pods                                                                         |
-| logs 옵션 한 줄 요약                  | Reference > kubectl > Quick Reference, "Interacting with running Pods"                         |
-| sidecar 로그 패턴 YAML                | Concepts > Cluster Administration > Logging Architecture                                       |
-| CrashLoopBackOff, back-off 시간       | Concepts > Workloads > Pods > Pod Lifecycle                                                    |
-| termination message                   | Debug > Determine the Reason for Pod Failure                                                   |
-
-### 자주 하는 실수
-
-- `kubectl exec <pod> ls` → `--` 빠뜨림. `kubectl exec <pod> -- ls`
-- multi-container Pod에서 `-c`를 빠뜨림 → 원하는 컨테이너인지 확인 안 됨
-- ephemeral container로 `ps`를 쳤는데 앱 프로세스가 안 보임 → `--target` 누락
-- `--copy-to`로 command를 바꾸려는데 `--container`를 안 줌 → command 교체 대신 새 컨테이너가 추가됨
-- 디버깅 후 `myapp-debug`, `node-debugger-*` Pod를 안 지움
-- phase와 STATUS를 혼동해 `status.phase`에서 `CrashLoopBackOff`를 찾음 → 컨테이너 상태는 `status.containerStatuses[].state` / `lastState`
+```bash
+kubectl explain pod.status.containerStatuses.state            # waiting / running / terminated
+kubectl explain pod.status.containerStatuses.lastState        # 재시작 전 종료 reason, exitCode
+kubectl explain pod.spec.containers.terminationMessagePolicy  # File / FallbackToLogsOnError
+kubectl explain pod.spec.ephemeralContainers                  # kubectl debug가 추가하는 container
+kubectl explain event                                         # reason, involvedObject, type
+```
 
 ## 참고 문서
 

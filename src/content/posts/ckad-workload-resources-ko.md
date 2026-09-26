@@ -333,7 +333,7 @@ spec:
 ## 시험 포인트
 
 - 먼저 imperative로 되는 것(Deployment, Job, CronJob)은 `kubectl create ... --dry-run=client -o yaml`로 뼈대를 만들고 필요한 필드만 추가
-- StatefulSet, DaemonSet은 문서 예시를 복사하는 게 빠르다. Concepts > Workloads > Workload Management 아래 각 페이지 첫 예시
+- StatefulSet, DaemonSet은 imperative 명령이 없음 → 문서 예시를 복사하고, 필드는 아래 explain으로 확인
 - CronJob에서 `jobTemplate.spec.template.spec`까지 들여쓰기가 세 단계라 `restartPolicy` 위치를 자주 틀린다
 - Job template에 `restartPolicy`를 빠뜨리거나 `Always`를 넣으면 거부된다
 - `completions`와 `parallelism`을 뒤바꾸지 않는다. 총 성공 횟수가 `completions`, 동시 실행 수가 `parallelism`
@@ -341,6 +341,16 @@ spec:
 - `kubectl rollout undo`는 이전 revision으로. 특정 revision은 `--to-revision`
 - CronJob 수동 실행 확인은 `kubectl create job <name> --from=cronjob/<cronjob>`
 - selector는 Deployment·DaemonSet 모두 만든 뒤 못 바꾼다. 틀렸으면 지우고 다시 만든다
+
+### kubectl explain
+
+```bash
+kubectl explain job.spec                                                   # completions, parallelism, backoffLimit, activeDeadlineSeconds
+kubectl explain cronjob.spec                                               # schedule, concurrencyPolicy, history limit
+kubectl explain cronjob.spec.jobTemplate.spec.template.spec.restartPolicy  # 깊은 위치 한 번에 확인
+kubectl explain statefulset.spec                                           # serviceName, volumeClaimTemplates
+kubectl explain daemonset.spec.updateStrategy
+```
 
 ## 참고 문서
 

@@ -8,7 +8,7 @@ tags: ["kubernetes", "ckad", "container-image", "pod"]
 order: 2
 ---
 
-> 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
+> 기준: Kubernetes v1.35
 
 ## 목차
 
@@ -155,9 +155,9 @@ spec:
 - `spec.containers[*].image`
 - `spec.initContainers[*].image`
 - `spec.activeDeadlineSeconds` (미설정 → 양수, 또는 더 작은 값으로만)
-- `spec.terminationGracePeriodSeconds`
+- `spec.terminationGracePeriodSeconds` (이전 값이 음수일 때 1로만)
 - `spec.tolerations` (항목 추가만)
-- `spec.schedulingGates`
+- `spec.schedulingGates` (항목 삭제만)
 
 `namespace`, `name`, `uid` 같은 metadata도 바꿀 수 없음. env, ports, command 등을 바꾸려면 Pod를 지우고 다시 생성. workload resource의 pod template을 바꾸면 controller가 기존 Pod를 수정하지 않고 새 Pod로 교체합니다.
 
@@ -218,20 +218,15 @@ kubectl set image deployment/web web=nginx:1.28
 kubectl get pod web -o jsonpath='{.spec.containers[0].imagePullPolicy}'
 ```
 
-### 문서에서 찾을 위치
+### kubectl explain
 
-- `imagePullPolicy` 기본값 표: Concepts > Containers > Images, "Default image pull policy"
-- Secret 생성 명령어와 Pod YAML: 같은 페이지 "Creating a Secret with a Docker config"
-- 변경 가능한 Pod 필드 목록: Concepts > Workloads > Pods, "Pod update and replacement"
-
-### 자주 하는 실수
-
-- `kubectl set image`에서 container 이름 대신 Pod 이름을 씀. `=` 왼쪽은 container 이름
-- Secret을 다른 namespace에 만듦. Pod와 같은 namespace여야 함
-- image tag만 `latest`로 바꾸고 `Always`로 바뀌었을 거라 생각함. 생성 시점 값이 유지됨
-- `imagePullPolicy: Never`인데 노드에 이미지가 없음. 로컬에서 build한 이미지는 노드의 runtime에 있어야 함
-- podman으로 build한 이미지를 tag 그대로 쓰는데, 실제 이름은 `localhost/web:v2`
-- 실행 중인 Pod의 env나 command를 `kubectl edit`로 바꾸려다 거부됨. `kubectl replace --force -f pod.yaml`로 지우고 다시 만듦
+```bash
+kubectl explain pod.spec.containers.image
+kubectl explain pod.spec.containers.imagePullPolicy  # 값 목록과 기본값 규칙
+kubectl explain pod.spec.imagePullSecrets
+kubectl explain serviceaccount.imagePullSecrets      # ServiceAccount에 붙이는 경우
+kubectl explain pod.spec --recursive | less          # Pod spec 필드 트리 전체
+```
 
 ## 참고 문서
 

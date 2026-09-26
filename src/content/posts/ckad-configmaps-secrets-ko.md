@@ -314,20 +314,17 @@ spec:
 - Secret 값 확인: `kubectl get secret <name> -o jsonpath='{.data.<key>}' | base64 -d`
 - 환경 변수 확인: `kubectl exec <pod> -- env`
 
-### 열어 둘 문서
+### kubectl explain
 
-- YAML 조각(env, envFrom, volume): Tasks > Configure Pods and Containers > Configure a Pod to Use a ConfigMap, Distribute Credentials Securely Using Secrets
-- Downward API 필드 목록: Concepts > Workloads > Pods > Downward API
-- projected volume 예시: Concepts > Storage > Projected Volumes
-
-### 자주 하는 실수
-
-- `data`에 평문을 넣음. 평문이면 `stringData`
-- `echo "pass" | base64`로 인코딩해서 끝에 줄바꿈이 섞임. `echo -n` 사용
-- projected 안의 `secret`에 `secretName`을 씀
-- ConfigMap을 바꾸고 env가 바뀌기를 기다림. env는 Pod를 다시 만들어야 반영(Deployment면 `kubectl rollout restart`)
-- 다른 namespace의 ConfigMap·Secret을 참조함
-- `envFrom`에 `configMapRef`/`secretRef`를 쓸 자리에 `configMapKeyRef`/`secretKeyRef`를 씀
+```bash
+kubectl explain pod.spec.containers.env.valueFrom   # configMapKeyRef, secretKeyRef, fieldRef
+kubectl explain pod.spec.containers.envFrom         # configMapRef, secretRef, prefix
+kubectl explain pod.spec.volumes.configMap          # name, items, defaultMode
+kubectl explain pod.spec.volumes.secret             # secretName (configMap과 필드명이 다름)
+kubectl explain pod.spec.volumes.projected.sources  # projected volume에 넣을 수 있는 source
+kubectl explain pod.spec.volumes.downwardAPI.items  # Downward API volume
+kubectl explain secret.stringData                   # 평문으로 넣는 필드
+```
 
 ## 참고 문서
 

@@ -289,21 +289,17 @@ kubectl kustomize <dir>
 kubectl apply -k <dir>
 ```
 
-**문서에서 찾을 위치**
+**kubectl explain**
 
-- Helm 전반: helm.sh "Using Helm" 페이지 (`--set` 문법, upgrade/rollback, uninstall 예시가 한 페이지에 있음)
-- 플래그: helm.sh "Helm Commands" 아래 `helm install`, `helm upgrade`, `helm rollback`
-- Kustomize: kubernetes.io "Declarative Management of Kubernetes Objects Using Kustomize". base/overlay 예시, patch 두 종류, 마지막의 "Kustomize Feature List" 표
-
-**자주 하는 실수**
-
-- namespace를 빼먹음 → `helm list`, `helm history`, `helm rollback`, `helm uninstall` 모두 `-n` 기준. release가 안 보이면 `helm list -A`
-- upgrade에서 `--set` 하나만 주고 기존 값이 날아감 → 기존 값을 유지하려면 `--reuse-values`
-- `helm rollback` revision 번호를 틀림 → 먼저 `helm history`로 확인
-- uninstall 후 rollback 시도 → 기록이 지워져서 불가
-- `kubectl apply -k`에 `kustomization.yaml` 파일 경로를 줌 → 디렉터리를 줘야 함
-- JSON 6902 patch에 `target`을 안 줌
-- overlay에서 base를 참조할 때 경로 오류 (`../base`)
+```bash
+# Helm·Kustomize 설정은 API 리소스가 아니라 explain 대상이 아님. 결과물 리소스 필드만 explain
+kubectl explain deployment.spec.replicas                                      # Kustomize patch·Helm values가 바꾸는 필드 확인
+kubectl explain deployment.spec.template.spec.containers.image
+# 옵션은 CLI help로
+helm install --help | grep -E -- '--(set|values|namespace|create-namespace)'
+helm upgrade --help | grep -E -- '--(install|reuse-values|reset-values)'
+kubectl kustomize --help
+```
 
 ## 참고 문서
 

@@ -216,20 +216,15 @@ kubectl exec -it <pod> -c <container> -- sh
 kubectl debug -it <pod> --image=busybox:1.28 --target=<container>
 ```
 
-### 문서에서 찾을 위치
+### kubectl explain
 
-- init container 예시 YAML: Concepts > Workloads > Pods > Init Containers, "Init containers in use"
-- native sidecar Deployment/Job 예시: Concepts > Workloads > Pods > Sidecar Containers
-- `kubectl debug` 예시: Tasks > Monitoring, Logging, and Debugging > Debug Running Pods, "Debugging with an ephemeral debug container"
-
-### 자주 하는 실수
-
-- `restartPolicy: Always`를 `containers` 항목에 넣음. native sidecar는 `initContainers` 안에서만 의미가 있음 (일반 container의 container 단위 `restartPolicy`는 `ContainerRestartRules` feature gate가 켜진 클러스터에서만 허용)
-- 일반 init container에 `readinessProbe`를 넣어 validation 에러
-- `volumes`만 정의하고 한쪽 container의 `volumeMounts`를 빠뜨림
-- 두 container가 같은 포트를 listen. network namespace를 공유하므로 충돌
-- `kubectl logs`에 `-c`를 빼먹음. container가 여럿이면 어떤 container인지 지정해야 함
-- init container가 끝나지 않는 명령(`sleep 3600` 등)을 실행해 Pod가 `Init:0/1`에서 멈춤
+```bash
+kubectl explain pod.spec.initContainers
+kubectl explain pod.spec.initContainers.restartPolicy  # Always = native sidecar
+kubectl explain pod.spec.shareProcessNamespace         # container 간 프로세스 공유
+kubectl explain pod.spec.volumes.emptyDir              # container 간 파일 공유
+kubectl explain pod.spec.containers.volumeMounts
+```
 
 ## 참고 문서
 
