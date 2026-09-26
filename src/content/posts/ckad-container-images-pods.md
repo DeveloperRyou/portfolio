@@ -8,7 +8,7 @@ tags: ["kubernetes", "ckad", "container-image", "pod"]
 order: 2
 ---
 
-> Based on: Kubernetes v1.35
+> Based on: Kubernetes v1.35 (commands and YAML checked on kind `kindest/node:v1.35.8`)
 
 ## Contents
 
