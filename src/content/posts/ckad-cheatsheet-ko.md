@@ -162,7 +162,12 @@ spec:
   initContainers:
     - name: wait-db
       image: busybox
-      command: ["sh", "-c", "until nslookup db; do sleep 2; done"]
+      command:
+        [
+          "sh",
+          "-c",
+          "until nslookup db.default.svc.cluster.local; do sleep 2; done",
+        ]
     - name: logshipper
       image: alpine
       restartPolicy: Always # sidecar
@@ -306,8 +311,8 @@ helm repo update                                                          # repo
 helm show values bitnami/nginx > values.yaml                              # chart 기본 values 확인·저장
 
 helm install web bitnami/nginx -n web --create-namespace --set replicaCount=2  # namespace 생성하며 설치, 값 override
-helm install web bitnami/nginx -f values.yaml                             # values 파일로 설치
-helm upgrade web bitnami/nginx --set replicaCount=3                       # 값 변경해 업그레이드
+helm install web bitnami/nginx -n web -f values.yaml                       # values 파일로 설치
+helm upgrade web bitnami/nginx -n web --set replicaCount=3                 # 값 변경해 업그레이드
 helm list -A                                                              # 전체 namespace release 목록
 helm history web -n web                                                   # release revision 목록
 helm rollback web 1 -n web                                                # revision 1로 롤백
@@ -407,7 +412,7 @@ spec:
         periodSeconds: 10
       livenessProbe:
         httpGet:
-          path: /healthz
+          path: /
           port: 80
         initialDelaySeconds: 5
         periodSeconds: 10
@@ -456,7 +461,7 @@ k logs web -f --tail=50      # 마지막 50줄부터 실시간
 ```bash
 k exec -it web -- sh                                                      # 실행 중인 컨테이너 shell 접속
 k debug web -it --image=busybox --target=web                              # ephemeral container
-k debug web --copy-to=web-debug --share-processes                         # 복사본 Pod에서 프로세스 공유 디버깅
+k debug web -it --image=busybox --copy-to=web-debug --share-processes                # 복사본 Pod에서 프로세스 공유 디버깅
 k run tmp --image=busybox --restart=Never --rm -it -- wget -qO- http://web:80  # 임시 Pod에서 Service 호출 테스트
 ```
 
@@ -698,8 +703,8 @@ k run tmp --image=busybox --restart=Never --rm -it -- wget -qO- http://web-svc.<
 ### Ingress
 
 ```bash
-k create ingress web --class=nginx --rule="foo.com/=web-svc:80"  # host foo.com / 경로를 web-svc:80으로
-k create ingress web --rule="foo.com/api*=api-svc:8080"          # * -> pathType Prefix
+k create ingress web --class=nginx --rule="foo.com/=web-svc:80"  # host foo.com, 경로 / 만 정확히 일치 (pathType Exact)
+k create ingress web --rule="foo.com/api*=api-svc:8080"          # * 붙이면 pathType Prefix (/api 아래 전체)
 ```
 
 ```yaml

@@ -162,7 +162,12 @@ spec:
   initContainers:
     - name: wait-db
       image: busybox
-      command: ["sh", "-c", "until nslookup db; do sleep 2; done"]
+      command:
+        [
+          "sh",
+          "-c",
+          "until nslookup db.default.svc.cluster.local; do sleep 2; done",
+        ]
     - name: logshipper
       image: alpine
       restartPolicy: Always # sidecar
@@ -306,8 +311,8 @@ helm repo update                                                          # repo
 helm show values bitnami/nginx > values.yaml                              # chart のデフォルト values を確認・保存
 
 helm install web bitnami/nginx -n web --create-namespace --set replicaCount=2  # namespace を作成しつつインストール、値を override
-helm install web bitnami/nginx -f values.yaml                             # values ファイルでインストール
-helm upgrade web bitnami/nginx --set replicaCount=3                       # 値を変えてアップグレード
+helm install web bitnami/nginx -n web -f values.yaml                       # values ファイルでインストール
+helm upgrade web bitnami/nginx -n web --set replicaCount=3                 # 値を変えてアップグレード
 helm list -A                                                              # 全 namespace の release 一覧
 helm history web -n web                                                   # release の revision 一覧
 helm rollback web 1 -n web                                                # revision 1 にロールバック
@@ -407,7 +412,7 @@ spec:
         periodSeconds: 10
       livenessProbe:
         httpGet:
-          path: /healthz
+          path: /
           port: 80
         initialDelaySeconds: 5
         periodSeconds: 10
@@ -456,7 +461,7 @@ k logs web -f --tail=50      # 最後の 50 行からリアルタイム
 ```bash
 k exec -it web -- sh                                                      # 実行中のコンテナの shell に入る
 k debug web -it --image=busybox --target=web                              # ephemeral container
-k debug web --copy-to=web-debug --share-processes                         # コピーした Pod でプロセスを共有してデバッグ
+k debug web -it --image=busybox --copy-to=web-debug --share-processes                # コピーした Pod でプロセスを共有してデバッグ
 k run tmp --image=busybox --restart=Never --rm -it -- wget -qO- http://web:80  # 一時 Pod から Service の呼び出しをテスト
 ```
 
@@ -698,8 +703,8 @@ k run tmp --image=busybox --restart=Never --rm -it -- wget -qO- http://web-svc.<
 ### Ingress
 
 ```bash
-k create ingress web --class=nginx --rule="foo.com/=web-svc:80"  # host foo.com の / パスを web-svc:80 へ
-k create ingress web --rule="foo.com/api*=api-svc:8080"          # * -> pathType Prefix
+k create ingress web --class=nginx --rule="foo.com/=web-svc:80"  # host foo.com、パス / のみ完全一致 (pathType Exact)
+k create ingress web --rule="foo.com/api*=api-svc:8080"          # * を付けると pathType Prefix (/api 以下すべて)
 ```
 
 ```yaml
