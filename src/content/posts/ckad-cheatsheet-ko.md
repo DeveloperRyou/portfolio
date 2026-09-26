@@ -45,7 +45,11 @@ export do="--dry-run=client -o yaml"  # 생성 대신 YAML만 출력: $do
 ```
 
 - `k run web --image=nginx $do > pod.yaml` -- 파일로 뽑고 수정 후 `k apply -f`
-- 수정 불가 필드 변경: `k replace --force -f pod.yaml`
+- Pod spec은 생성 후 대부분 수정 불가, `apply` 시 `Forbidden: pod updates may not change fields ...` 에러
+  - 수정 가능: container `image`, `activeDeadlineSeconds`, `tolerations` 추가
+  - 수정 불가 예: probe, `resources`, `env`, `command`·`args`, `volumeMounts`, `securityContext`, `serviceAccountName`
+  - 해결: `k replace --force -f pod.yaml` -- 기존 Pod 삭제 후 같은 이름으로 재생성
+  - Deployment는 Pod template 수정 후 `apply`로 충분 (Pod 교체는 Deployment가 처리)
 
 ### kubectl explain
 
@@ -785,6 +789,7 @@ spec:
 
 - [CNCF curriculum: CKAD_Curriculum_v1.35.pdf](https://github.com/cncf/curriculum)
 - [Linux Foundation: Resources Allowed During the Exam](https://docs.linuxfoundation.org/tc-docs/certification/certification-resources-allowed)
+- [Pods: Pod update and replacement](https://kubernetes.io/docs/concepts/workloads/pods/#pod-update-and-replacement)
 - [kubectl Quick Reference](https://kubernetes.io/docs/reference/kubectl/quick-reference/)
 - [Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/), [CronJob](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/)
 - [Init Containers](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/), [Sidecar Containers](https://kubernetes.io/docs/concepts/workloads/pods/sidecar-containers/)
