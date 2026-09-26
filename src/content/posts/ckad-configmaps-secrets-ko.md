@@ -1,7 +1,7 @@
 ---
 title: "CKAD 개념 노트: ConfigMap과 Secret"
 description: "ConfigMap과 Secret을 만드는 방법, Pod에 넣는 세 가지 방식(env, envFrom, volume), 값이 바뀌었을 때 반영되는 경로, projected volume과 Downward API까지 공식 문서 기준으로 정리했습니다."
-pubDatetime: 2026-09-26T12:00:00
+pubDatetime: 2026-09-26T12:07:00
 topic: "project-cncf"
 subtopic: "ckad"
 tags: ["kubernetes", "ckad", "configmap", "secret", "downward-api"]

@@ -1,7 +1,7 @@
 ---
 title: "CKAD 개념 노트: Probe와 Pod lifecycle"
 description: "Pod phase, condition, container state, restartPolicy를 먼저 정리하고, liveness·readiness·startup probe가 실패했을 때 각각 무엇이 일어나는지 공식 문서 기준으로 비교합니다."
-pubDatetime: 2026-09-26T12:00:00
+pubDatetime: 2026-09-26T12:03:00
 topic: "project-cncf"
 subtopic: "ckad"
 tags: ["kubernetes", "ckad", "probe", "pod-lifecycle"]

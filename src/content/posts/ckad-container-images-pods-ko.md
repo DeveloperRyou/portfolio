@@ -1,7 +1,7 @@
 ---
 title: "CKAD 개념 노트: 컨테이너 이미지와 Pod"
 description: "이미지 이름·tag·digest, imagePullPolicy 기본값 규칙, private registry와 imagePullSecrets, 이미지 build·push, 그리고 Pod spec 기본을 공식 문서 기준으로 정리했습니다."
-pubDatetime: 2026-09-26T12:00:00
+pubDatetime: 2026-09-26T12:01:00
 topic: "project-cncf"
 subtopic: "ckad"
 tags: ["kubernetes", "ckad", "container-image", "pod"]

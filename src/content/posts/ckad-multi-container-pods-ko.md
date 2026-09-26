@@ -1,7 +1,7 @@
 ---
 title: "CKAD 개념 노트: 멀티 컨테이너 Pod 패턴"
 description: "init container, native sidecar와 기존 방식의 sidecar, ambassador·adapter 패턴, ephemeral container를 공식 문서 기준으로 비교했습니다."
-pubDatetime: 2026-09-26T12:00:00
+pubDatetime: 2026-09-26T12:02:00
 topic: "project-cncf"
 subtopic: "ckad"
 tags: ["kubernetes", "ckad", "pod", "init-container", "sidecar"]

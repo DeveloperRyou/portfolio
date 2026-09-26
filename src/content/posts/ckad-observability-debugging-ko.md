@@ -1,7 +1,7 @@
 ---
 title: "CKAD 개념 노트: 모니터링, 로그, 디버깅"
 description: "kubectl get/describe/events/top으로 상태를 보고, kubectl logs로 로그를 읽고, exec와 debug로 컨테이너 안을 들여다보는 흐름을 공식 문서 기준으로 정리했습니다."
-pubDatetime: 2026-09-26T12:00:00
+pubDatetime: 2026-09-26T12:13:00
 topic: "project-cncf"
 subtopic: "ckad"
 tags: ["kubernetes", "ckad", "kubectl", "logging", "debugging"]

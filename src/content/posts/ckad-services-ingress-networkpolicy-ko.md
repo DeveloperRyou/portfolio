@@ -1,7 +1,7 @@
 ---
 title: "CKAD 개념 노트: Service, Ingress, NetworkPolicy"
 description: "Service type과 selector에서 EndpointSlice로 이어지는 흐름, Service DNS 이름, 연결이 안 될 때 확인 순서, Ingress rule과 pathType, NetworkPolicy default deny와 selector 조합을 공식 문서 기준으로 정리했습니다."
-pubDatetime: 2026-09-26T12:00:00
+pubDatetime: 2026-09-26T12:12:00
 topic: "project-cncf"
 subtopic: "ckad"
 tags: ["kubernetes", "ckad", "service", "ingress", "networkpolicy", "dns"]

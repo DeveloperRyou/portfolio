@@ -1,7 +1,7 @@
 ---
 title: "CKAD 개념 노트: Rolling update와 배포 전략"
 description: "Deployment의 RollingUpdate·Recreate 동작, maxSurge·maxUnavailable 계산, rollout 명령, 그리고 Service selector와 replica 비율로 만드는 blue/green·canary 배포를 공식 문서 기준으로 정리했습니다."
-pubDatetime: 2026-09-26T12:00:00
+pubDatetime: 2026-09-26T12:05:00
 topic: "project-cncf"
 subtopic: "ckad"
 tags:

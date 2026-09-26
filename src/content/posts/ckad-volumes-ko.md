@@ -1,7 +1,7 @@
 ---
 title: "CKAD 개념 노트: persistent volume과 ephemeral volume"
 description: "container filesystem과 volume의 차이부터 emptyDir, hostPath, configMap volume, PV/PVC binding, access mode, reclaim policy, StorageClass, generic ephemeral volume까지 공식 문서 기준으로 정리했습니다."
-pubDatetime: 2026-09-26T12:00:00
+pubDatetime: 2026-09-26T12:11:00
 topic: "project-cncf"
 subtopic: "ckad"
 tags: ["kubernetes", "ckad", "volume", "persistentvolume", "storageclass"]

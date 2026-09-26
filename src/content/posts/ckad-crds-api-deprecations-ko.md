@@ -1,7 +1,7 @@
 ---
 title: "CKAD 개념 노트: CRD, Operator, API deprecation"
 description: "Kubernetes API를 확장하는 CRD·custom resource·Operator와, API 버전이 deprecated되고 제거되는 규칙 및 manifest 이전 방법을 공식 문서 기준으로 정리한 노트."
-pubDatetime: 2026-09-26T12:00:00
+pubDatetime: 2026-09-26T12:10:00
 topic: "project-cncf"
 subtopic: "ckad"
 tags: ["kubernetes", "ckad", "crd", "operator", "api-deprecation"]

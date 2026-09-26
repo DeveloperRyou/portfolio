@@ -1,7 +1,7 @@
 ---
 title: "CKAD 개념 노트: Helm과 Kustomize"
 description: "Helm의 chart·repository·release 개념과 install/upgrade/rollback/uninstall, values override, 그리고 Kustomize의 base/overlay·patches·generator와 kubectl apply -k를 공식 문서 기준으로 정리했습니다."
-pubDatetime: 2026-09-26T12:00:00
+pubDatetime: 2026-09-26T12:06:00
 topic: "project-cncf"
 subtopic: "ckad"
 tags: ["kubernetes", "ckad", "helm", "kustomize"]

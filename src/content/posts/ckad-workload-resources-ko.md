@@ -1,7 +1,7 @@
 ---
 title: "CKAD 개념 노트: 워크로드 리소스 고르기"
 description: "Deployment, StatefulSet, DaemonSet, Job, CronJob이 각각 무엇을 보장하는지, 언제 어느 것을 고르는지 공식 문서 기준으로 비교합니다."
-pubDatetime: 2026-09-26T12:00:00
+pubDatetime: 2026-09-26T12:04:00
 topic: "project-cncf"
 subtopic: "ckad"
 tags:

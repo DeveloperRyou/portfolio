@@ -1,7 +1,7 @@
 ---
 title: "CKAD 개념 노트: requests, limits, quota"
 description: "requests는 스케줄링, limits는 실행 중 강제. CPU throttling과 OOMKill의 차이, QoS class, LimitRange 기본값, namespace 단위 ResourceQuota를 공식 문서 기준으로 정리했습니다."
-pubDatetime: 2026-09-26T12:00:00
+pubDatetime: 2026-09-26T12:08:00
 topic: "project-cncf"
 subtopic: "ckad"
 tags: ["kubernetes", "ckad", "resources", "qos", "resourcequota", "limitrange"]

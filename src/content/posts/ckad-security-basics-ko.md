@@ -1,7 +1,7 @@
 ---
 title: "CKAD 개념 노트: ServiceAccount, 접근 제어, SecurityContext"
 description: "API 요청이 authentication, authorization, admission을 거치는 흐름과 ServiceAccount·RBAC·SecurityContext·Pod Security Standards를 공식 문서 기준으로 정리한 노트."
-pubDatetime: 2026-09-26T12:00:00
+pubDatetime: 2026-09-26T12:09:00
 topic: "project-cncf"
 subtopic: "ckad"
 tags:
