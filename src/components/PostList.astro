@@ -1,0 +1,204 @@
+---
+import type { Page } from "astro";
+import type { CollectionEntry } from "astro:content";
+import IconArrowLeft from "@/assets/icons/IconArrowLeft.svg";
+import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
+import Card from "./Card.astro";
+import { getSortedPosts } from "@/utils/getSortedPosts";
+import { compareSiteSeriesOrder } from "@/utils/seriesOrder";
+import { useTranslations } from "@/i18n";
+import config from "@/config";
+
+type Post = CollectionEntry<"posts">;
+
+type Sort = "newest" | "oldest" | "series";
+
+type Props = {
+  /** Every post in the list, in `defaultSort` order (what `page` paginates). */
+  posts: Post[];
+  page: Page<Post>;
+  /** The server-rendered order, used when the URL has no `sort` param. */
+  defaultSort?: Sort;
+};
+
+const { posts, page, defaultSort = "newest" } = Astro.props;
+
+const t = useTranslations(Astro.currentLocale);
+const perPage = config.posts.perPage;
+
+// Page 1's URL: the sort/page-size controls always restart from it.
+const basePath =
+  page.currentPage === 1 ? Astro.url.pathname : (page.url.first as string);
+
+const newest = getSortedPosts(posts);
+const oldest = [...posts].sort(
+  (a, b) => a.data.pubDatetime.getTime() - b.data.pubDatetime.getTime()
+);
+const series = [...posts].sort(compareSiteSeriesOrder);
+
+const sizeOptions = [...new Set([perPage, 10, 20, 50])].sort((a, b) => a - b);
+
+const selectClass =
+  "border-border bg-background text-foreground hover:border-border-strong focus-visible:outline-accent rounded-md border px-2 py-1 text-sm";
+---
+
+<form
+  method="get"
+  action={basePath}
+  class="text-muted-foreground mb-2 flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-sm"
+  data-post-list-controls
+>
+  <label class="flex items-center gap-2">
+    {t.postList.sort}
+    <select name="sort" class={selectClass}>
+      <option value="newest" selected={defaultSort === "newest"}>
+        {t.postList.newest}
+      </option>
+      <option value="oldest" selected={defaultSort === "oldest"}>
+        {t.postList.oldest}
+      </option>
+      <option value="series" selected={defaultSort === "series"}>
+        {t.postList.series}
+      </option>
+    </select>
+  </label>
+  <label class="flex items-center gap-2">
+    {t.postList.perPage}
+    <select name="size" class={selectClass}>
+      {
+        sizeOptions.map(size => (
+          <option value={size} selected={size === perPage}>
+            {size}
+          </option>
+        ))
+      }
+      <option value="all">{t.postList.all}</option>
+    </select>
+  </label>
+</form>
+
+<ul data-post-list data-per-page={perPage} data-default-sort={defaultSort}>
+  {
+    posts.map((post, i) => (
+      <Card
+        {...post}
+        itemAttrs={{
+          hidden: i < page.start || i > page.end,
+          "data-rank-newest": newest.indexOf(post),
+          "data-rank-oldest": oldest.indexOf(post),
+          "data-rank-series": series.indexOf(post),
+        }}
+      />
+    ))
+  }
+</ul>
+
+<nav
+  class="mt-auto mb-8 flex justify-center gap-4"
+  aria-label="Pagination Navigation"
+  data-pagination="client"
+  hidden
+>
+  <a
+    class="group inline-flex items-center gap-1 select-none"
+    aria-label={t.a11y.goToPreviousPage}
+    data-page-prev
+  >
+    <IconArrowLeft class="inline-block rtl:rotate-180" />
+    {t.pagination.prev}
+  </a>
+  <span data-page-status></span>
+  <a
+    class="group inline-flex items-center gap-1 select-none"
+    aria-label={t.a11y.goToNextPage}
+    data-page-next
+  >
+    {t.pagination.next}
+    <IconArrowRight class="inline-block rtl:rotate-180" />
+  </a>
+</nav>
+
+<script>
+  const SORTS = ["newest", "oldest", "series"];
+
+  function setupPostList() {
+    const form = document.querySelector<HTMLFormElement>(
+      "[data-post-list-controls]"
+    );
+    const list = document.querySelector<HTMLElement>("[data-post-list]");
+    const nav = document.querySelector<HTMLElement>(
+      "[data-pagination='client']"
+    );
+    if (!form || !list || !nav) return;
+
+    const sortSelect = form.elements.namedItem("sort") as HTMLSelectElement;
+    const sizeSelect = form.elements.namedItem("size") as HTMLSelectElement;
+    const sizeValues = [...sizeSelect.options].map(o => o.value);
+    const perPage = Number(list.dataset.perPage);
+    const defaultSort = list.dataset.defaultSort ?? "newest";
+
+    form.addEventListener("change", () => form.requestSubmit());
+
+    const params = new URLSearchParams(location.search);
+    const sortParam = params.get("sort") ?? "";
+    const sizeParam = params.get("size") ?? "";
+    const sort = SORTS.includes(sortParam) ? sortParam : defaultSort;
+    const sizeValue = sizeValues.includes(sizeParam)
+      ? sizeParam
+      : String(perPage);
+    sortSelect.value = sort;
+    sizeSelect.value = sizeValue;
+
+    const pageParam = Number(params.get("page") ?? "1");
+    // No params (or ones that spell out the default view): leave the
+    // server-rendered page and its path-based pagination untouched.
+    if (sort === defaultSort && sizeValue === String(perPage) && pageParam <= 1)
+      return;
+
+    const items = [...list.querySelectorAll<HTMLLIElement>(":scope > li")];
+    const rankKey = `rank${sort[0].toUpperCase()}${sort.slice(1)}`;
+    items.sort(
+      (a, b) => Number(a.dataset[rankKey]) - Number(b.dataset[rankKey])
+    );
+    list.append(...items);
+
+    const size = sizeValue === "all" ? items.length : Number(sizeValue);
+    const lastPage = Math.max(1, Math.ceil(items.length / size));
+    const current = Math.min(
+      Math.max(1, Number.isInteger(pageParam) ? pageParam : 1),
+      lastPage
+    );
+    items.forEach((item, i) => {
+      item.hidden = i < (current - 1) * size || i >= current * size;
+    });
+
+    document
+      .querySelector("[data-pagination='server']")
+      ?.setAttribute("hidden", "");
+    // Remember the sorted view (not just the path) for the post page's
+    // back button.
+    sessionStorage.setItem("backUrl", location.pathname + location.search);
+
+    if (lastPage === 1) return;
+    const hrefFor = (n: number) => {
+      const next = new URLSearchParams({ sort, size: sizeValue });
+      if (n > 1) next.set("page", String(n));
+      return `${form.getAttribute("action")}?${next}`;
+    };
+    const link = (el: HTMLAnchorElement | null, target: number) => {
+      if (!el) return;
+      const enabled = target >= 1 && target <= lastPage;
+      if (enabled) el.href = hrefFor(target);
+      el.setAttribute("aria-disabled", String(!enabled));
+      el.classList.toggle("opacity-50", !enabled);
+      el.classList.toggle("hover:text-accent", enabled);
+    };
+    link(nav.querySelector("[data-page-prev]"), current - 1);
+    link(nav.querySelector("[data-page-next]"), current + 1);
+    const status = nav.querySelector("[data-page-status]");
+    if (status) status.textContent = `${current} / ${lastPage}`;
+    nav.hidden = false;
+  }
+
+  document.addEventListener("astro:page-load", setupPostList);
+</script>

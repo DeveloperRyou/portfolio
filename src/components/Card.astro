@@ -1,4 +1,5 @@
 ---
+import type { HTMLAttributes } from "astro/types";
 import type { CollectionEntry } from "astro:content";
 import { getPostUrl } from "@/utils/getPostPaths";
 import { toTransitionName } from "@/utils/toTransitionName";
@@ -7,15 +8,20 @@ import Tag from "./Tag.astro";
 
 type Props = {
   variant?: "h2" | "h3";
+  /** Extra attributes for the `<li>`, e.g. `PostList`'s sort ranks. */
+  itemAttrs?: HTMLAttributes<"li">;
 } & CollectionEntry<"posts">;
 
-const { variant: Heading = "h2", id, data, filePath } = Astro.props;
+const { variant: Heading = "h2", itemAttrs, id, data, filePath } = Astro.props;
 
 const { title, description, coverImage, tags, ...props } = data;
 const postUrl = getPostUrl(id, filePath, Astro.currentLocale);
 ---
 
-<li class="border-border flex gap-4 border-b py-6 last:border-b-0 lg:gap-5">
+<li
+  class="border-border flex gap-4 border-b py-6 last:border-b-0 lg:gap-5"
+  {...itemAttrs}
+>
   {
     coverImage && (
       <a href={postUrl} tabindex="-1" aria-hidden="true" class="shrink-0">

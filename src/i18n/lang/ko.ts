@@ -28,6 +28,14 @@ export default {
     next: "다음",
     page: "페이지",
   },
+  postList: {
+    sort: "정렬",
+    newest: "최신순",
+    oldest: "오래된순",
+    series: "연재순",
+    perPage: "페이지당",
+    all: "전체",
+  },
   home: {
     socialLinks: "소셜 링크",
     featured: "주요 글",

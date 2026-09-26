@@ -1,4 +1,5 @@
 import type { CollectionEntry } from "astro:content";
+import { taxonomy } from "@/taxonomy";
 
 type Post = CollectionEntry<"posts">;
 
@@ -12,6 +13,29 @@ export function compareSeriesOrder(a: Post, b: Post) {
   const bo = b.data.order ?? Infinity;
   if (ao !== bo) return ao - bo;
   return a.data.pubDatetime.getTime() - b.data.pubDatetime.getTime();
+}
+
+/** A post's topic/subtopic position in `taxonomy`; untaxonomized sort last. */
+function taxonomyRank({ data }: Post): [number, number] {
+  const topicIndex = taxonomy.findIndex(t => t.slug === data.topic);
+  if (topicIndex === -1) return [Infinity, Infinity];
+  const subIndex = (taxonomy[topicIndex].subtopics ?? []).findIndex(
+    s => s.slug === data.subtopic
+  );
+  return [topicIndex, subIndex === -1 ? Infinity : subIndex];
+}
+
+/**
+ * Site-wide series order for the all-posts list: grouped by topic, then
+ * subtopic (both in `taxonomy` order), then `compareSeriesOrder` within a
+ * group -- so each series reads from its first episode.
+ */
+export function compareSiteSeriesOrder(a: Post, b: Post) {
+  const [at, as] = taxonomyRank(a);
+  const [bt, bs] = taxonomyRank(b);
+  if (at !== bt) return at === Infinity ? 1 : bt === Infinity ? -1 : at - bt;
+  if (as !== bs) return as === Infinity ? 1 : bs === Infinity ? -1 : as - bs;
+  return compareSeriesOrder(a, b);
 }
 
 export type AdjacentPost = {
