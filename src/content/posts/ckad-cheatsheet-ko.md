@@ -12,7 +12,18 @@ order: 1
 
 ## 요약
 
-CKAD v1.35 커리큘럼 5개 도메인 순서의 명령어·YAML 모음. 원칙은 imperative 명령어로 뼈대 생성, 명령어로 안 되는 필드만 YAML 수정, 모르는 필드는 `kubectl explain` 또는 공식 문서 예제 복사.
+CKAD v1.35 커리큘럼 5개 도메인 순서의 명령어·YAML 모음.
+
+문제 풀이 원칙은 imperative 명령어로 뼈대 생성, 명령어로 안 되는 혹은 모르는 필드만 YAML 수정. `kubectl explain` 또는 공식 문서 예제 복사.
+
+예시:
+
+```bash
+k run web --image=nginx --port=80 $do > web.yaml  # 1. 명령어로 Pod YAML 뼈대 생성
+vi web.yaml                                       # 2. 명령어로 안 되는 필드 (probe, volume 등) 추가
+k apply -f web.yaml                               # 3. 적용
+k get pod web                                     # 4. 결과 확인
+```
 
 | 도메인                                              | 비중 |
 | --------------------------------------------------- | ---- |
@@ -26,58 +37,40 @@ CKAD v1.35 커리큘럼 5개 도메인 순서의 명령어·YAML 모음. 원칙�
 
 ## 시험 환경 세팅
 
-### alias, completion
+### alias, dry-run
 
 ```bash
-alias k=kubectl
-source <(kubectl completion bash)
-complete -o default -F __start_kubectl k
-
-export do="--dry-run=client -o yaml"
-export now="--force --grace-period=0"
+alias k=kubectl                       # kubectl을 k로 줄여 쓰기
+export do="--dry-run=client -o yaml"  # 생성 대신 YAML만 출력: $do
 ```
 
 - `k run web --image=nginx $do > pod.yaml` -- 파일로 뽑고 수정 후 `k apply -f`
-- `k delete pod web $now` -- 즉시 삭제 (graceful termination 생략)
 - 수정 불가 필드 변경: `k replace --force -f pod.yaml`
 
 ### kubectl explain
 
 ```bash
-k explain pod.spec.containers.livenessProbe
-k explain deploy.spec.strategy.rollingUpdate
+k explain pod.spec.containers.livenessProbe  # 필드 설명
 k explain pod.spec --recursive | less        # 필드 트리 전체
-k explain networkpolicy.spec.ingress --recursive
-k api-resources | grep -i ingress            # 이름·shortname·apiVersion 확인
 ```
 
 ### context, namespace
 
 ```bash
-k config get-contexts
-k config current-context
-k config use-context <context>                       # 문제마다 첫 줄에 주어진 명령 그대로 실행
-k config set-context --current --namespace=<ns>      # 기본 namespace 고정
-k config view --minify | grep namespace
+k config use-context <context>                   # 문제마다 첫 줄에 주어진 명령 그대로 실행
+k config set-context --current --namespace=<ns>  # 기본 namespace 고정
 ```
 
-- 문제별 context 전환 누락이 가장 흔한 감점 원인
 - `-n <ns>` 명시가 set-context보다 안전한 경우 많음
 
 ### vim
 
 ```vim
 " ~/.vimrc
-set expandtab
-set tabstop=2
-set shiftwidth=2
+set expandtab     " Tab 입력을 공백으로 (YAML은 탭 불가)
+set tabstop=2     " Tab 하나 = 공백 2칸
+set shiftwidth=2  " >, < 들여쓰기 폭 2칸
 ```
-
-| 동작                               | 키                    |
-| ---------------------------------- | --------------------- |
-| 붙여넣기 모드 (자동 들여쓰기 방지) | `:set paste`          |
-| 여러 줄 들여쓰기                   | `V` 선택 후 `>` / `<` |
-| 줄 번호                            | `:set nu`             |
 
 ## Application Design and Build
 
@@ -86,10 +79,9 @@ set shiftwidth=2
 ### container image
 
 ```bash
-docker build -t myapp:v1 .          # 또는 podman build
-docker tag myapp:v1 registry.example.com/myapp:v1
-docker push registry.example.com/myapp:v1
-docker save myapp:v1 -o myapp.tar   # 이미지 파일로 저장
+docker build -t myapp:v1 .                         # 또는 podman build
+docker tag myapp:v1 registry.example.com/myapp:v1  # 원격 registry 경로로 태그 추가
+docker push registry.example.com/myapp:v1          # registry에 업로드
 ```
 
 ```dockerfile
@@ -97,7 +89,6 @@ FROM nginx:1.27
 COPY index.html /usr/share/nginx/html/index.html
 ```
 
-- 환경에 docker와 podman 중 무엇이 있는지 먼저 확인 (`which docker podman`)
 - 이미지 참조 규칙: kubernetes.io `concepts/containers/images`
 
 ### workload 선택
@@ -112,14 +103,14 @@ COPY index.html /usr/share/nginx/html/index.html
 | CronJob     | 스케줄 실행              | `k create cronjob`                                          |
 
 ```bash
-k run web --image=nginx --port=80 --labels=app=web,tier=fe
-k run tmp --image=busybox --restart=Never --rm -it -- sh
-k run box --image=busybox $do --command -- sh -c 'sleep 3600' > pod.yaml
+k run web --image=nginx --port=80 --labels=app=web,tier=fe        # Pod 생성 + port·label 지정
+k run tmp --image=busybox --restart=Never --rm -it -- sh          # 임시 Pod로 shell 접속, 종료 시 삭제
+k run box --image=busybox $do --command -- sh -c 'sleep 3600' > pod.yaml  # command 지정한 Pod YAML 생성
 
-k create deploy web --image=nginx --replicas=3 --port=80
-k create job hello --image=busybox -- echo "Hello World"
-k create cronjob hello --image=busybox --schedule="*/1 * * * *" -- echo "Hello World"
-k create job manual-run --from=cronjob/hello     # CronJob 즉시 1회 실행
+k create deploy web --image=nginx --replicas=3 --port=80          # replica 3개 Deployment
+k create job hello --image=busybox -- echo "Hello World"          # 1회 실행 Job
+k create cronjob hello --image=busybox --schedule="*/1 * * * *" -- echo "Hello World"  # 매분 실행 CronJob
+k create job manual-run --from=cronjob/hello                      # CronJob 즉시 1회 실행
 ```
 
 - `--command --` 없으면 뒤 인자가 `args`, 있으면 `command`
@@ -133,15 +124,11 @@ metadata:
   name: hello
 spec:
   schedule: "*/5 * * * *"
-  concurrencyPolicy: Forbid
-  successfulJobsHistoryLimit: 3
-  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       completions: 3
       parallelism: 2
       backoffLimit: 4
-      activeDeadlineSeconds: 60
       template:
         spec:
           restartPolicy: Never
@@ -263,17 +250,13 @@ spec:
 ### rolling update, rollout
 
 ```bash
-k set image deploy/web nginx=nginx:1.27          # 컨테이너명=이미지
-k annotate deploy/web kubernetes.io/change-cause="nginx 1.27"
-k rollout status deploy/web
-k rollout history deploy/web
-k rollout history deploy/web --revision=2
-k rollout undo deploy/web
-k rollout undo deploy/web --to-revision=1
-k rollout pause deploy/web      # 여러 변경 묶기
-k rollout resume deploy/web
-k rollout restart deploy/web    # 설정 변경 없이 Pod 재생성
-k scale deploy/web --replicas=5
+k set image deploy/web nginx=nginx:1.27    # 컨테이너명=이미지
+k rollout status deploy/web                # rollout 완료까지 대기·확인
+k rollout history deploy/web               # revision 목록
+k rollout undo deploy/web                  # 직전 revision으로 롤백
+k rollout undo deploy/web --to-revision=1  # 특정 revision으로 롤백
+k rollout restart deploy/web               # 설정 변경 없이 Pod 재생성
+k scale deploy/web --replicas=5            # replica 수 변경
 ```
 
 ```yaml
@@ -299,13 +282,13 @@ spec:
 
 ```bash
 # blue/green 전환
-k set selector svc web 'app=web,version=green'
+k set selector svc web 'app=web,version=green'                    # Service selector 교체
 # 또는
-k patch svc web -p '{"spec":{"selector":{"app":"web","version":"green"}}}'
+k patch svc web -p '{"spec":{"selector":{"app":"web","version":"green"}}}'  # 같은 변경을 patch로
 
 # canary: stable 9, canary 1 -> 약 10%
-k scale deploy/web-stable --replicas=9
-k scale deploy/web-canary --replicas=1
+k scale deploy/web-stable --replicas=9                            # stable 9개
+k scale deploy/web-canary --replicas=1                            # canary 1개
 ```
 
 - 확인: `k get endpointslices -l kubernetes.io/service-name=web`, `k get pod -l app=web --show-labels`
@@ -314,20 +297,17 @@ k scale deploy/web-canary --replicas=1
 ### Helm
 
 ```bash
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm repo update
-helm search repo nginx
-helm show values bitnami/nginx > values.yaml
+helm repo add bitnami https://charts.bitnami.com/bitnami          # chart repo 등록
+helm repo update                                                  # repo index 갱신
+helm show values bitnami/nginx > values.yaml                      # chart 기본 values 확인·저장
 
-helm install web bitnami/nginx -n web --create-namespace --set replicaCount=2
-helm install web bitnami/nginx -f values.yaml
-helm upgrade web bitnami/nginx --set replicaCount=3
-helm list -A
-helm history web -n web
-helm rollback web 1 -n web
-helm get values web -n web
-helm template web bitnami/nginx     # 렌더링만, 설치 없음
-helm uninstall web -n web
+helm install web bitnami/nginx -n web --create-namespace --set replicaCount=2  # namespace 생성하며 설치, 값 override
+helm install web bitnami/nginx -f values.yaml                     # values 파일로 설치
+helm upgrade web bitnami/nginx --set replicaCount=3               # 값 변경해 업그레이드
+helm list -A                                                      # 전체 namespace release 목록
+helm history web -n web                                           # release revision 목록
+helm rollback web 1 -n web                                        # revision 1로 롤백
+helm uninstall web -n web                                         # release 삭제
 ```
 
 - release는 namespace 단위, `-n` 누락 시 `helm list`에 안 보임
@@ -336,9 +316,9 @@ helm uninstall web -n web
 ### Kustomize
 
 ```bash
-k kustomize ./overlay        # 렌더링 결과 출력
-k apply -k ./overlay
-k delete -k ./overlay
+k kustomize ./overlay  # 렌더링 결과 출력
+k apply -k ./overlay   # overlay 적용
+k delete -k ./overlay  # overlay로 만든 리소스 삭제
 ```
 
 ```yaml
@@ -347,17 +327,12 @@ resources:
   - deployment.yaml
   - service.yaml
 namespace: prod
-namePrefix: prod-
 labels:
   - pairs:
       env: prod
 images:
   - name: nginx
     newTag: "1.27"
-configMapGenerator:
-  - name: app-config
-    literals:
-      - LOG_LEVEL=info
 patches:
   - target:
       kind: Deployment
@@ -369,7 +344,6 @@ patches:
 ```
 
 - `commonLabels`는 deprecated, `labels` 사용
-- `configMapGenerator` 결과 이름에 hash suffix 추가
 - 문서: `tasks/manage-kubernetes-objects/kustomization`
 
 ## Application Observability and Maintenance
@@ -379,10 +353,9 @@ patches:
 ### API deprecation
 
 ```bash
-k api-versions
-k api-resources -o wide
-k explain cronjob | head -5       # GROUP / VERSION 확인
-k convert -f old.yaml --output-version apps/v1   # kubectl-convert plugin 설치 필요
+k api-resources -o wide                         # 리소스별 group·version·verb 목록
+k explain cronjob | head -5                     # GROUP / VERSION 확인
+k convert -f old.yaml --output-version apps/v1  # kubectl-convert plugin 설치 필요
 ```
 
 - apply 시 deprecated API 경고 메시지 확인
@@ -434,15 +407,12 @@ spec:
 ### 모니터링 CLI
 
 ```bash
-k get pod -o wide
-k get pod -w
-k get pod --show-labels -l app=web
-k get pod --sort-by=.status.containerStatuses[0].restartCount
-k get events --sort-by=.metadata.creationTimestamp
-k events --for pod/web
-k top pod --sort-by=cpu          # metrics-server 필요
-k top node
-k describe pod web
+k get pod -o wide                                   # Pod IP·노드까지 표시
+k get pod --show-labels -l app=web                  # label로 필터 + label 표시
+k get events --sort-by=.metadata.creationTimestamp  # event 시간순
+k top pod --sort-by=cpu                             # metrics-server 필요
+k top node                                          # 노드 CPU·memory 사용량
+k describe pod web                                  # 상태·Events 상세
 ```
 
 - 문서: `reference/kubectl/quick-reference`, `tasks/debug/debug-cluster/resource-metrics-pipeline`
@@ -450,13 +420,11 @@ k describe pod web
 ### container log
 
 ```bash
-k logs web
-k logs web -c sidecar            # multi-container
-k logs web --all-containers
-k logs web --previous            # 재시작 전 컨테이너
-k logs web -f --tail=50
-k logs deploy/web
-k logs -l app=web --prefix
+k logs web                   # 기본 로그
+k logs web -c sidecar        # multi-container
+k logs web --all-containers  # 모든 컨테이너 로그
+k logs web --previous        # 재시작 전 컨테이너
+k logs web -f --tail=50      # 마지막 50줄부터 실시간
 ```
 
 ### 디버깅
@@ -470,12 +438,10 @@ k logs -l app=web --prefix
 | `CreateContainerConfigError` | 참조한 ConfigMap·Secret·key 누락                  |
 
 ```bash
-k exec -it web -- sh
-k debug web -it --image=busybox --target=web                   # ephemeral container
-k debug web --copy-to=web-debug --share-processes
-k debug web --copy-to=web-debug --set-image=web=busybox
-k debug node/<node> -it --image=busybox
-k run tmp --image=busybox --restart=Never --rm -it -- wget -qO- http://web:80
+k exec -it web -- sh                                              # 실행 중인 컨테이너 shell 접속
+k debug web -it --image=busybox --target=web                      # ephemeral container
+k debug web --copy-to=web-debug --share-processes                 # 복사본 Pod에서 프로세스 공유 디버깅
+k run tmp --image=busybox --restart=Never --rm -it -- wget -qO- http://web:80  # 임시 Pod에서 Service 호출 테스트
 ```
 
 - 문서: `tasks/debug/debug-application/debug-pods`, `.../debug-running-pod`, `.../debug-service`
@@ -487,11 +453,10 @@ k run tmp --image=busybox --restart=Never --rm -it -- wget -qO- http://web:80
 ### CRD, Operator
 
 ```bash
-k get crd
-k api-resources --api-group=<group>
-k explain <kind>.spec              # CRD schema 기반 필드 확인
-k get <plural> -A
-k describe crd <name>
+k get crd                            # CRD 목록
+k api-resources --api-group=<group>  # 특정 API group 리소스 목록
+k explain <kind>.spec                # CRD schema 기반 필드 확인
+k get <plural> -A                    # CR 전체 조회
 ```
 
 - CR은 일반 리소스처럼 `apply`·`get`·`delete`
@@ -500,14 +465,13 @@ k describe crd <name>
 ### authentication, authorization, admission control
 
 ```bash
-k create role pod-reader --verb=get,list,watch --resource=pods
-k create rolebinding pod-reader-rb --role=pod-reader --serviceaccount=default:app-sa
-k create clusterrole node-reader --verb=get,list --resource=nodes
-k create clusterrolebinding node-reader-rb --clusterrole=node-reader --user=jane
+k create role pod-reader --verb=get,list,watch --resource=pods    # namespace 권한 정의
+k create rolebinding pod-reader-rb --role=pod-reader --serviceaccount=default:app-sa  # Role을 ServiceAccount에 연결
+k create clusterrole node-reader --verb=get,list --resource=nodes  # 클러스터 전체 권한 정의
+k create clusterrolebinding node-reader-rb --clusterrole=node-reader --user=jane  # ClusterRole을 user에 연결
 
-k auth can-i list pods
-k auth can-i list pods --as=system:serviceaccount:default:app-sa -n default
-k auth whoami
+k auth can-i list pods                                            # 내 권한 확인
+k auth can-i list pods --as=system:serviceaccount:default:app-sa -n default  # ServiceAccount 권한으로 확인
 ```
 
 | 단계              | 역할                                                                  |
@@ -517,15 +481,14 @@ k auth whoami
 | admission control | 요청 변형·검증 (LimitRange, ResourceQuota, Pod Security Admission 등) |
 
 - `--serviceaccount` 형식은 `<namespace>:<name>`
-- admission plugin 확인: control plane 노드의 `/etc/kubernetes/manifests/kube-apiserver.yaml` 안 `--enable-admission-plugins` (kubeadm 클러스터 기준)
 - 문서: `reference/access-authn-authz/rbac`, `.../admission-controllers`, `concepts/security/controlling-access`
 
 ### requests, limits, quota
 
 ```bash
-k set resources deploy/web --requests=cpu=100m,memory=128Mi --limits=cpu=200m,memory=256Mi
-k create quota ns-quota --hard=pods=10,requests.cpu=1,requests.memory=1Gi,limits.cpu=2,limits.memory=2Gi
-k describe quota -n <ns>
+k set resources deploy/web --requests=cpu=100m,memory=128Mi --limits=cpu=200m,memory=256Mi  # requests·limits 설정
+k create quota ns-quota --hard=pods=10,requests.cpu=1,requests.memory=1Gi,limits.cpu=2,limits.memory=2Gi  # namespace ResourceQuota 생성
+k describe quota -n <ns>                                          # quota 사용량 확인
 ```
 
 ```yaml
@@ -554,9 +517,6 @@ spec:
       defaultRequest:
         cpu: 100m
         memory: 128Mi
-      max:
-        cpu: "1"
-        memory: 1Gi
 ```
 
 - ResourceQuota에 cpu·memory가 걸린 namespace는 requests·limits 없는 Pod 생성 거부 (LimitRange 기본값으로 보완 가능)
@@ -566,10 +526,9 @@ spec:
 ### ConfigMap
 
 ```bash
-k create cm app-config --from-literal=LOG_LEVEL=info --from-literal=PORT=8080
-k create cm app-file --from-file=app.properties
-k create cm app-env --from-env-file=app.env
-k set env deploy/web --from=configmap/app-config
+k create cm app-config --from-literal=LOG_LEVEL=info --from-literal=PORT=8080  # key=value로 생성
+k create cm app-file --from-file=app.properties                   # 파일 내용으로 생성 (key = 파일명)
+k set env deploy/web --from=configmap/app-config                  # ConfigMap 전체를 env로 주입
 ```
 
 ```yaml
@@ -601,11 +560,10 @@ spec:
 ### Secret
 
 ```bash
-k create secret generic db-secret --from-literal=user=admin --from-literal=password=pass123
-k create secret tls web-tls --cert=tls.crt --key=tls.key
-k create secret docker-registry regcred --docker-server=<registry> --docker-username=<u> --docker-password=<p>
-k get secret db-secret -o jsonpath='{.data.password}' | base64 -d
-k set env deploy/web --from=secret/db-secret
+k create secret generic db-secret --from-literal=user=admin --from-literal=password=pass123  # key=value로 생성
+k create secret docker-registry regcred --docker-server=<registry> --docker-username=<u> --docker-password=<p>  # private registry 인증용
+k get secret db-secret -o jsonpath='{.data.password}' | base64 -d  # 값 디코딩 확인
+k set env deploy/web --from=secret/db-secret                      # Secret 전체를 env로 주입
 ```
 
 ```yaml
@@ -638,9 +596,8 @@ spec:
 ### ServiceAccount
 
 ```bash
-k create sa app-sa
-k set serviceaccount deploy/web app-sa
-k create token app-sa --duration=1h
+k create sa app-sa                      # ServiceAccount 생성
+k set serviceaccount deploy/web app-sa  # Deployment에 ServiceAccount 지정
 ```
 
 ```yaml
@@ -693,11 +650,10 @@ spec:
 ### Service
 
 ```bash
-k expose deploy/web --port=80 --target-port=8080 --name=web-svc
-k expose deploy/web --port=80 --type=NodePort
-k expose pod web --port=80 --name=web-svc
-k create svc nodeport web --tcp=80:8080 --node-port=30080
-k run web --image=nginx --port=80 --expose          # Pod + ClusterIP Service
+k expose deploy/web --port=80 --target-port=8080 --name=web-svc  # ClusterIP Service, 80 -> 컨테이너 8080
+k expose deploy/web --port=80 --type=NodePort                    # NodePort Service
+k create svc nodeport web --tcp=80:8080 --node-port=30080        # nodePort 고정 지정
+k run web --image=nginx --port=80 --expose                       # Pod + ClusterIP Service
 ```
 
 | type         | 접근 범위                                     |
@@ -713,10 +669,10 @@ k run web --image=nginx --port=80 --expose          # Pod + ClusterIP Service
 트러블슈팅 순서:
 
 ```bash
-k get svc web-svc -o wide                                    # selector, port
-k get endpointslices -l kubernetes.io/service-name=web-svc   # endpoint 비었는지
-k get pod -l app=web --show-labels                           # selector와 label 일치 여부
-k run tmp --image=busybox --restart=Never --rm -it -- wget -qO- http://web-svc.<ns>.svc.cluster.local
+k get svc web-svc -o wide                                         # selector, port
+k get endpointslices -l kubernetes.io/service-name=web-svc        # endpoint 비었는지
+k get pod -l app=web --show-labels                                # selector와 label 일치 여부
+k run tmp --image=busybox --restart=Never --rm -it -- wget -qO- http://web-svc.<ns>.svc.cluster.local  # FQDN으로 Service 호출 테스트
 ```
 
 - endpoint 없음: selector 불일치 또는 readiness 실패
@@ -726,9 +682,8 @@ k run tmp --image=busybox --restart=Never --rm -it -- wget -qO- http://web-svc.<
 ### Ingress
 
 ```bash
-k create ingress web --class=nginx --rule="foo.com/=web-svc:80"
-k create ingress web --rule="foo.com/api*=api-svc:8080"            # * -> pathType Prefix
-k create ingress web --rule="foo.com/=web-svc:80,tls=web-tls"
+k create ingress web --class=nginx --rule="foo.com/=web-svc:80"  # host foo.com / 경로를 web-svc:80으로
+k create ingress web --rule="foo.com/api*=api-svc:8080"          # * -> pathType Prefix
 ```
 
 ```yaml
