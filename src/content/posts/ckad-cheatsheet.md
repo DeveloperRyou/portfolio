@@ -162,7 +162,12 @@ spec:
   initContainers:
     - name: wait-db
       image: busybox
-      command: ["sh", "-c", "until nslookup db; do sleep 2; done"]
+      command:
+        [
+          "sh",
+          "-c",
+          "until nslookup db.default.svc.cluster.local; do sleep 2; done",
+        ]
     - name: logshipper
       image: alpine
       restartPolicy: Always # sidecar
@@ -306,8 +311,8 @@ helm repo update                                                          # refr
 helm show values bitnami/nginx > values.yaml                              # view and save the chart's default values
 
 helm install web bitnami/nginx -n web --create-namespace --set replicaCount=2  # install, creating the namespace, with a value override
-helm install web bitnami/nginx -f values.yaml                             # install with a values file
-helm upgrade web bitnami/nginx --set replicaCount=3                       # upgrade with a changed value
+helm install web bitnami/nginx -n web -f values.yaml                       # install with a values file
+helm upgrade web bitnami/nginx -n web --set replicaCount=3                 # upgrade with a changed value
 helm list -A                                                              # releases across all namespaces
 helm history web -n web                                                   # list release revisions
 helm rollback web 1 -n web                                                # roll back to revision 1
@@ -407,7 +412,7 @@ spec:
         periodSeconds: 10
       livenessProbe:
         httpGet:
-          path: /healthz
+          path: /
           port: 80
         initialDelaySeconds: 5
         periodSeconds: 10
@@ -456,7 +461,7 @@ k logs web -f --tail=50      # follow, starting from the last 50 lines
 ```bash
 k exec -it web -- sh                                                      # shell into a running container
 k debug web -it --image=busybox --target=web                              # ephemeral container
-k debug web --copy-to=web-debug --share-processes                         # debug a copy of the Pod with a shared process namespace
+k debug web -it --image=busybox --copy-to=web-debug --share-processes                # debug a copy of the Pod with a shared process namespace
 k run tmp --image=busybox --restart=Never --rm -it -- wget -qO- http://web:80  # test calling a Service from a temporary Pod
 ```
 
@@ -698,8 +703,8 @@ k run tmp --image=busybox --restart=Never --rm -it -- wget -qO- http://web-svc.<
 ### Ingress
 
 ```bash
-k create ingress web --class=nginx --rule="foo.com/=web-svc:80"  # host foo.com, path / to web-svc:80
-k create ingress web --rule="foo.com/api*=api-svc:8080"          # * -> pathType Prefix
+k create ingress web --class=nginx --rule="foo.com/=web-svc:80"  # host foo.com, exact path / only (pathType Exact)
+k create ingress web --rule="foo.com/api*=api-svc:8080"          # trailing * -> pathType Prefix (everything under /api)
 ```
 
 ```yaml
