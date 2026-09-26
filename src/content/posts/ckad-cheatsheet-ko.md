@@ -19,10 +19,10 @@ CKAD v1.35 커리큘럼 5개 도메인 순서의 명령어·YAML 모음.
 예시:
 
 ```bash
-k run web --image=nginx --port=80 $do > web.yaml  # 1. 명령어로 Pod YAML 뼈대 생성
-vi web.yaml                                       # 2. 명령어로 안 되는 필드 (probe, volume 등) 추가
-k apply -f web.yaml                               # 3. 적용
-k get pod web                                     # 4. 결과 확인
+k run web --image=nginx --port=80 --dry-run=client -o yaml > web.yaml  # 1. 명령어로 Pod YAML 뼈대 생성
+vi web.yaml                                                            # 2. 명령어로 안 되는 필드 (probe, volume 등) 추가
+k apply -f web.yaml                                                    # 3. 적용
+k get pod web                                                          # 4. 결과 확인
 ```
 
 | 도메인                                              | 비중 |
@@ -35,16 +35,20 @@ k get pod web                                     # 4. 결과 확인
 
 시험 중 열람 가능 사이트: `kubernetes.io/docs`, `kubernetes.io/blog`, `helm.sh/docs` (Linux Foundation 허용 리소스 기준).
 
-## 시험 환경 세팅
+## 시험 환경
 
-### alias, dry-run
+- 문제마다 `ssh <host>`로 지정 호스트 접속 후 풀이, 끝나면 `exit`
+- 모든 ssh 호스트에 alias `k`, Bash 자동완성 기본 제공
+- 직접 추가한 alias·`export`·vim 설정은 호스트가 바뀌면 사라짐 -- 옵션은 매번 직접 입력
+- namespace는 명령마다 `-n <ns>` 명시
+
+### YAML 생성·수정
 
 ```bash
-alias k=kubectl                       # kubectl을 k로 줄여 쓰기
-export do="--dry-run=client -o yaml"  # 생성 대신 YAML만 출력: $do
+k run web --image=nginx --dry-run=client -o yaml > pod.yaml  # 생성 대신 YAML만 파일로 출력
+k apply -f pod.yaml                                          # 수정 후 적용
 ```
 
-- `k run web --image=nginx $do > pod.yaml` -- 파일로 뽑고 수정 후 `k apply -f`
 - Pod spec은 생성 후 대부분 수정 불가, `apply` 시 `Forbidden: pod updates may not change fields ...` 에러
   - 수정 가능: container `image`, `activeDeadlineSeconds`, `tolerations` 추가
   - 수정 불가 예: probe, `resources`, `env`, `command`·`args`, `volumeMounts`, `securityContext`, `serviceAccountName`
@@ -56,24 +60,6 @@ export do="--dry-run=client -o yaml"  # 생성 대신 YAML만 출력: $do
 ```bash
 k explain pod.spec.containers.livenessProbe  # 필드 설명
 k explain pod.spec --recursive | less        # 필드 트리 전체
-```
-
-### context, namespace
-
-```bash
-k config use-context <context>                   # 문제마다 첫 줄에 주어진 명령 그대로 실행
-k config set-context --current --namespace=<ns>  # 기본 namespace 고정
-```
-
-- `-n <ns>` 명시가 set-context보다 안전한 경우 많음
-
-### vim
-
-```vim
-" ~/.vimrc
-set expandtab     " Tab 입력을 공백으로 (YAML은 탭 불가)
-set tabstop=2     " Tab 하나 = 공백 2칸
-set shiftwidth=2  " >, < 들여쓰기 폭 2칸
 ```
 
 ## Application Design and Build
@@ -107,14 +93,14 @@ COPY index.html /usr/share/nginx/html/index.html
 | CronJob     | 스케줄 실행              | `k create cronjob`                                          |
 
 ```bash
-k run web --image=nginx --port=80 --labels=app=web,tier=fe        # Pod 생성 + port·label 지정
-k run tmp --image=busybox --restart=Never --rm -it -- sh          # 임시 Pod로 shell 접속, 종료 시 삭제
-k run box --image=busybox $do --command -- sh -c 'sleep 3600' > pod.yaml  # command 지정한 Pod YAML 생성
+k run web --image=nginx --port=80 --labels=app=web,tier=fe                # Pod 생성 + port·label 지정
+k run tmp --image=busybox --restart=Never --rm -it -- sh                  # 임시 Pod로 shell 접속, 종료 시 삭제
+k run box --image=busybox --dry-run=client -o yaml --command -- sh -c 'sleep 3600' > pod.yaml  # command 지정한 Pod YAML 생성
 
-k create deploy web --image=nginx --replicas=3 --port=80          # replica 3개 Deployment
-k create job hello --image=busybox -- echo "Hello World"          # 1회 실행 Job
+k create deploy web --image=nginx --replicas=3 --port=80                  # replica 3개 Deployment
+k create job hello --image=busybox -- echo "Hello World"                  # 1회 실행 Job
 k create cronjob hello --image=busybox --schedule="*/1 * * * *" -- echo "Hello World"  # 매분 실행 CronJob
-k create job manual-run --from=cronjob/hello                      # CronJob 즉시 1회 실행
+k create job manual-run --from=cronjob/hello                              # CronJob 즉시 1회 실행
 ```
 
 - `--command --` 없으면 뒤 인자가 `args`, 있으면 `command`
@@ -286,13 +272,13 @@ spec:
 
 ```bash
 # blue/green 전환
-k set selector svc web 'app=web,version=green'                    # Service selector 교체
+k set selector svc web 'app=web,version=green'                            # Service selector 교체
 # 또는
 k patch svc web -p '{"spec":{"selector":{"app":"web","version":"green"}}}'  # 같은 변경을 patch로
 
 # canary: stable 9, canary 1 -> 약 10%
-k scale deploy/web-stable --replicas=9                            # stable 9개
-k scale deploy/web-canary --replicas=1                            # canary 1개
+k scale deploy/web-stable --replicas=9                                    # stable 9개
+k scale deploy/web-canary --replicas=1                                    # canary 1개
 ```
 
 - 확인: `k get endpointslices -l kubernetes.io/service-name=web`, `k get pod -l app=web --show-labels`
@@ -301,17 +287,17 @@ k scale deploy/web-canary --replicas=1                            # canary 1개
 ### Helm
 
 ```bash
-helm repo add bitnami https://charts.bitnami.com/bitnami          # chart repo 등록
-helm repo update                                                  # repo index 갱신
-helm show values bitnami/nginx > values.yaml                      # chart 기본 values 확인·저장
+helm repo add bitnami https://charts.bitnami.com/bitnami                  # chart repo 등록
+helm repo update                                                          # repo index 갱신
+helm show values bitnami/nginx > values.yaml                              # chart 기본 values 확인·저장
 
 helm install web bitnami/nginx -n web --create-namespace --set replicaCount=2  # namespace 생성하며 설치, 값 override
-helm install web bitnami/nginx -f values.yaml                     # values 파일로 설치
-helm upgrade web bitnami/nginx --set replicaCount=3               # 값 변경해 업그레이드
-helm list -A                                                      # 전체 namespace release 목록
-helm history web -n web                                           # release revision 목록
-helm rollback web 1 -n web                                        # revision 1로 롤백
-helm uninstall web -n web                                         # release 삭제
+helm install web bitnami/nginx -f values.yaml                             # values 파일로 설치
+helm upgrade web bitnami/nginx --set replicaCount=3                       # 값 변경해 업그레이드
+helm list -A                                                              # 전체 namespace release 목록
+helm history web -n web                                                   # release revision 목록
+helm rollback web 1 -n web                                                # revision 1로 롤백
+helm uninstall web -n web                                                 # release 삭제
 ```
 
 - release는 namespace 단위, `-n` 누락 시 `helm list`에 안 보임
@@ -442,9 +428,9 @@ k logs web -f --tail=50      # 마지막 50줄부터 실시간
 | `CreateContainerConfigError` | 참조한 ConfigMap·Secret·key 누락                  |
 
 ```bash
-k exec -it web -- sh                                              # 실행 중인 컨테이너 shell 접속
-k debug web -it --image=busybox --target=web                      # ephemeral container
-k debug web --copy-to=web-debug --share-processes                 # 복사본 Pod에서 프로세스 공유 디버깅
+k exec -it web -- sh                                                      # 실행 중인 컨테이너 shell 접속
+k debug web -it --image=busybox --target=web                              # ephemeral container
+k debug web --copy-to=web-debug --share-processes                         # 복사본 Pod에서 프로세스 공유 디버깅
 k run tmp --image=busybox --restart=Never --rm -it -- wget -qO- http://web:80  # 임시 Pod에서 Service 호출 테스트
 ```
 
@@ -469,12 +455,12 @@ k get <plural> -A                    # CR 전체 조회
 ### authentication, authorization, admission control
 
 ```bash
-k create role pod-reader --verb=get,list,watch --resource=pods    # namespace 권한 정의
+k create role pod-reader --verb=get,list,watch --resource=pods            # namespace 권한 정의
 k create rolebinding pod-reader-rb --role=pod-reader --serviceaccount=default:app-sa  # Role을 ServiceAccount에 연결
-k create clusterrole node-reader --verb=get,list --resource=nodes  # 클러스터 전체 권한 정의
+k create clusterrole node-reader --verb=get,list --resource=nodes         # 클러스터 전체 권한 정의
 k create clusterrolebinding node-reader-rb --clusterrole=node-reader --user=jane  # ClusterRole을 user에 연결
 
-k auth can-i list pods                                            # 내 권한 확인
+k auth can-i list pods                                                    # 내 권한 확인
 k auth can-i list pods --as=system:serviceaccount:default:app-sa -n default  # ServiceAccount 권한으로 확인
 ```
 
@@ -492,7 +478,7 @@ k auth can-i list pods --as=system:serviceaccount:default:app-sa -n default  # S
 ```bash
 k set resources deploy/web --requests=cpu=100m,memory=128Mi --limits=cpu=200m,memory=256Mi  # requests·limits 설정
 k create quota ns-quota --hard=pods=10,requests.cpu=1,requests.memory=1Gi,limits.cpu=2,limits.memory=2Gi  # namespace ResourceQuota 생성
-k describe quota -n <ns>                                          # quota 사용량 확인
+k describe quota -n <ns>                                                  # quota 사용량 확인
 ```
 
 ```yaml
@@ -531,8 +517,8 @@ spec:
 
 ```bash
 k create cm app-config --from-literal=LOG_LEVEL=info --from-literal=PORT=8080  # key=value로 생성
-k create cm app-file --from-file=app.properties                   # 파일 내용으로 생성 (key = 파일명)
-k set env deploy/web --from=configmap/app-config                  # ConfigMap 전체를 env로 주입
+k create cm app-file --from-file=app.properties                           # 파일 내용으로 생성 (key = 파일명)
+k set env deploy/web --from=configmap/app-config                          # ConfigMap 전체를 env로 주입
 ```
 
 ```yaml
@@ -566,8 +552,8 @@ spec:
 ```bash
 k create secret generic db-secret --from-literal=user=admin --from-literal=password=pass123  # key=value로 생성
 k create secret docker-registry regcred --docker-server=<registry> --docker-username=<u> --docker-password=<p>  # private registry 인증용
-k get secret db-secret -o jsonpath='{.data.password}' | base64 -d  # 값 디코딩 확인
-k set env deploy/web --from=secret/db-secret                      # Secret 전체를 env로 주입
+k get secret db-secret -o jsonpath='{.data.password}' | base64 -d         # 값 디코딩 확인
+k set env deploy/web --from=secret/db-secret                              # Secret 전체를 env로 주입
 ```
 
 ```yaml
@@ -673,9 +659,9 @@ k run web --image=nginx --port=80 --expose                       # Pod + Cluster
 트러블슈팅 순서:
 
 ```bash
-k get svc web-svc -o wide                                         # selector, port
-k get endpointslices -l kubernetes.io/service-name=web-svc        # endpoint 비었는지
-k get pod -l app=web --show-labels                                # selector와 label 일치 여부
+k get svc web-svc -o wide                                                 # selector, port
+k get endpointslices -l kubernetes.io/service-name=web-svc                # endpoint 비었는지
+k get pod -l app=web --show-labels                                        # selector와 label 일치 여부
 k run tmp --image=busybox --restart=Never --rm -it -- wget -qO- http://web-svc.<ns>.svc.cluster.local  # FQDN으로 Service 호출 테스트
 ```
 
@@ -788,6 +774,7 @@ spec:
 ## 참고 문서
 
 - [CNCF curriculum: CKAD_Curriculum_v1.35.pdf](https://github.com/cncf/curriculum)
+- [Linux Foundation: CKA/CKAD Exam Environment Tips](https://docs.linuxfoundation.org/tc-docs/certification/tips-cka-and-ckad)
 - [Linux Foundation: Resources Allowed During the Exam](https://docs.linuxfoundation.org/tc-docs/certification/certification-resources-allowed)
 - [Pods: Pod update and replacement](https://kubernetes.io/docs/concepts/workloads/pods/#pod-update-and-replacement)
 - [kubectl Quick Reference](https://kubernetes.io/docs/reference/kubectl/quick-reference/)
