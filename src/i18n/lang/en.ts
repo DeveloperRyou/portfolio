@@ -35,7 +35,7 @@ export default {
     allPosts: "All Posts",
   },
   sidebar: {
-    bio: "Software engineer building web services.",
+    bio: "Software engineer building stuff",
     navigation: "Navigation",
     categories: "Categories",
     toggleSubtopics: "Show subtopics of {{topic}}",

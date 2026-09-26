@@ -35,7 +35,7 @@ export default {
     allPosts: "전체 글",
   },
   sidebar: {
-    bio: "웹 서비스를 만드는 소프트웨어 엔지니어입니다.",
+    bio: "이것저것 만드는 소프트웨어 엔지니어",
     navigation: "메뉴",
     categories: "카테고리",
     toggleSubtopics: "{{topic}} 하위 주제 펼치기",

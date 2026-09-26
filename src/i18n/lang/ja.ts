@@ -35,7 +35,7 @@ export default {
     allPosts: "すべての記事",
   },
   sidebar: {
-    bio: "ウェブサービスを作るソフトウェアエンジニアです。",
+    bio: "色々作るソフトウェアエンジニア",
     navigation: "メニュー",
     categories: "カテゴリー",
     toggleSubtopics: "{{topic}}のサブトピックを表示",
