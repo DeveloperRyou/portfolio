@@ -9,7 +9,7 @@ tags:
 order: 6
 ---
 
-> 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
+> 기준: Kubernetes v1.35 (kind `kindest/node:v1.35.8`에서 명령어·YAML 확인)
 
 ## 목차
 
@@ -155,6 +155,8 @@ kubectl get rs -l app=web
 ```
 
 `--record` 플래그는 deprecated. change-cause가 필요하면 annotation으로 직접 넣는다.
+
+undo로 되돌린 revision은 history에서 새 번호를 받는다. 위 순서대로 치면 첫 `undo`에서 revision 1이 3으로 옮겨 가서, 다음 줄 `--to-revision=1`은 `unable to find specified revision 1 in history`로 실패한다. undo 전에 `rollout history`로 번호부터 확인.
 
 ### blue/green: Service selector 전환
 

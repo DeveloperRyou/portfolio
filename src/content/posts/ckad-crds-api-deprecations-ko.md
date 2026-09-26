@@ -8,7 +8,7 @@ tags: ["kubernetes", "ckad", "crd", "operator", "api-deprecation"]
 order: 11
 ---
 
-> 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
+> 기준: Kubernetes v1.35 (kind `kindest/node:v1.35.8`에서 명령어·YAML 확인)
 
 ## 목차
 
@@ -201,7 +201,9 @@ spec:
 - 테스트: API server를 `--runtime-config=<group>/<version>=false`로 띄워 앞으로의 제거를 미리 재현
 - 찾기: 1.19+의 client warning, metric, audit 정보로 deprecated API 사용처 확인
 - 옮기기: YAML의 `apiVersion`과 바뀐 필드를 수정. 자동 변환은 `kubectl convert -f <file> --output-version <group>/<version>`
-  - `kubectl convert`는 기본 설치에 없는 별도 plugin. 변환 결과의 기본값이 이상적이지 않을 수 있음
+  - `kubectl convert`는 기본 설치에 없는 별도 plugin. 변환 결과의 기본값이 이상적이지 않을 수 있음. 위 v1beta1 Ingress를 kubectl-convert v1.35로 변환하면 `pathType`이 `ImplementationSpecific`으로 채워짐. `Prefix`를 원했다면 직접 고쳐야 함
+
+제거된 `apiVersion`을 그대로 apply하면 `no matches for kind "Ingress" in version "networking.k8s.io/v1beta1"`와 함께 `ensure CRDs are installed first`가 나온다. CRD 문제가 아니라 그 버전이 더 이상 서빙되지 않는다는 뜻.
 
 ## 헷갈리는 것 비교
 

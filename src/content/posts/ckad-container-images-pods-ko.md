@@ -8,7 +8,7 @@ tags: ["kubernetes", "ckad", "container-image", "pod"]
 order: 2
 ---
 
-> 기준: Kubernetes v1.35
+> 기준: Kubernetes v1.35 (kind `kindest/node:v1.35.8`에서 명령어·YAML 확인)
 
 ## 목차
 

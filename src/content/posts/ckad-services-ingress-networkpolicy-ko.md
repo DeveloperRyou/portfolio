@@ -8,7 +8,7 @@ tags: ["kubernetes", "ckad", "service", "ingress", "networkpolicy", "dns"]
 order: 13
 ---
 
-> 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
+> 기준: Kubernetes v1.35 (kind `kindest/node:v1.35.8`에서 명령어·YAML 확인)
 
 ## 목차
 
@@ -193,7 +193,7 @@ kubectl create service clusterip web2 --tcp=80:8080 --dry-run=client -o yaml
 ```
 
 - `kubectl expose`는 대상 리소스의 selector를 그대로 Service selector로 사용 (Deployment는 selector가 `matchLabels`만일 때 가능)
-- `kubectl create service`는 이름만 받고 기존 리소스의 selector를 읽지 않음 → `-o yaml`로 selector가 Pod label과 맞는지 확인
+- `kubectl create service`는 기존 리소스의 selector를 읽지 않고 selector를 `app: <Service 이름>`으로 채움 (위 `web2`면 `app: web2`) → `-o yaml`로 selector가 Pod label과 맞는지 확인
 
 ### named targetPort
 
@@ -352,8 +352,8 @@ kubectl get svc web -o yaml
 kubectl get endpointslices -l kubernetes.io/service-name=web
 kubectl get pods -l app=web --show-labels
 
-# 3. DNS가 풀리는가 (클러스터 안의 임시 Pod에서)
-kubectl run tmp --rm -it --image=busybox:1.36 --restart=Never -- nslookup web.default
+# 3. DNS가 풀리는가 (클러스터 안의 임시 Pod에서, FQDN으로)
+kubectl run tmp --rm -it --image=busybox:1.36 --restart=Never -- nslookup web.default.svc.cluster.local
 
 # 4. IP/포트로 직접 붙는가
 kubectl run tmp --rm -it --image=busybox:1.36 --restart=Never -- wget -qO- http://web.default:80
@@ -362,6 +362,8 @@ kubectl run tmp --rm -it --image=busybox:1.36 --restart=Never -- wget -qO- http:
 kubectl get networkpolicy -n default
 kubectl describe networkpolicy -n default
 ```
+
+busybox의 `nslookup`은 search 목록을 제대로 적용하지 않아서 `nslookup web.default`는 Service가 멀쩡해도 `NXDOMAIN`으로 실패한다(busybox:1.36, v1.35 kind에서 확인). 같은 이름이라도 `wget`은 search 목록대로 풀리므로 DNS 확인만큼은 FQDN으로.
 
 `targetPort` 점검 항목(공식 문서): Service `spec.ports[]`에 접근하려는 포트가 있는가, `targetPort`가 Pod가 실제로 듣는 포트인가, named port라면 Pod에 같은 이름의 포트가 있는가, `protocol`이 맞는가.
 

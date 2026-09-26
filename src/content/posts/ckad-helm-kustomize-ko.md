@@ -8,8 +8,8 @@ tags: ["kubernetes", "ckad", "helm", "kustomize"]
 order: 7
 ---
 
-> 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
-> Helm 명령·플래그는 helm.sh 문서 4.3.0 기준
+> 기준: Kubernetes v1.35 (kind `kindest/node:v1.35.8`에서 명령어·YAML 확인)
+> Helm 명령·플래그는 helm.sh 문서 4.3.0 기준. Helm 4.3.0과 3.19.0 둘 다로 실행해 봄
 
 ## 목차
 
@@ -49,7 +49,7 @@ helm install my-wp bitnami/wordpress
 - Helm 3부터 기본 repository가 없음. 필요한 repo를 직접 `helm repo add`
 - install 인자는 release 이름과 chart. 이름을 Helm이 정하게 하려면 `--generate-name`
 - chart 소스: repo 참조(`bitnami/wordpress`), 로컬 `.tgz`, 압축 풀린 디렉터리, URL, OCI registry(`oci://...`)
-- Helm은 기본적으로 resource가 다 뜰 때까지 기다리지 않고 종료. Helm 4의 `--wait`는 전략을 받음: 플래그를 안 주면 `hookOnly`, `--wait`만 주면 `watcher`. 대기 한도는 `--timeout` (기본 `5m0s`)
+- Helm은 기본적으로 resource가 다 뜰 때까지 기다리지 않고 종료. Helm 4의 `--wait`는 전략을 받음: 플래그를 안 주면 `hookOnly`, `--wait`만 주면 `watcher`. Helm 3의 `--wait`는 켜고 끄는 플래그일 뿐. 대기 한도는 둘 다 `--timeout` (기본 `5m0s`)
 
 ### values override
 
@@ -230,7 +230,7 @@ spec:
   - JSON 6902: 대상 정보가 파일에 없으므로 `target` **필수**
 - `patches`는 적힌 순서대로 적용. 문서 권장은 "한 가지만 하는 작은 patch"
 - `images`: patch 없이 image 이름·tag·digest 변경
-- `labels`는 selector에 label을 넣지 않음. selector에도 넣으려면 `includeSelectors: true` (또는 `commonLabels`, selector까지 수정)
+- `labels`는 selector에 label을 넣지 않음. selector에도 넣으려면 `includeSelectors: true`. 예전 `commonLabels`도 selector까지 바꾸지만 kubectl 1.35 번들 Kustomize는 `'commonLabels' is deprecated. Please use 'labels' instead` 경고를 냄
 
 ### generator
 

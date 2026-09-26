@@ -8,7 +8,7 @@ tags: ["kubernetes", "ckad", "configmap", "secret", "downward-api"]
 order: 8
 ---
 
-> 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
+> 기준: Kubernetes v1.35 (kind `kindest/node:v1.35.8`에서 명령어·YAML 확인)
 
 ## 목차
 
@@ -88,7 +88,7 @@ ConfigMap과 Secret 모두 `immutable: true`를 설정할 수 있음(v1.21부터
 | 파일                      | `volumes[].configMap` / `secret` + `volumeMounts`  | 키 하나당 파일 하나. `items`로 일부 키만 골라 경로 지정 |
 
 - `env`로 참조한 ConfigMap이나 키가 없으면 Pod가 시작되지 않음. `optional: true`로 표시하면 없어도 시작
-- `envFrom`에서 환경 변수 이름으로 쓸 수 없는 키는 건너뜀. Pod는 뜨고, 건너뛴 키는 `InvalidVariableNames` 이벤트에 기록됨
+- `envFrom`은 키를 그대로 변수 이름으로 씀. v1.34부터 변수 이름 규칙이 완화돼(`=`을 뺀 출력 가능한 ASCII) v1.35 클러스터에서는 `Y-Z`, `1abc`, `.dot` 같은 키도 건너뛰지 않고 변수가 됨. "쓸 수 없는 키는 건너뛰고 `InvalidVariableNames` 이벤트"라는 설명은 규칙이 엄격하던 버전 이야기
 - Secret volume의 파일 권한은 `defaultMode`(volume 전체) 또는 `items[].mode`(파일별)로 지정
 - `.`으로 시작하는 키는 숨김 파일이 됨(`ls -la`로 확인)
 
@@ -138,7 +138,7 @@ Pod와 컨테이너 자신의 필드를 컨테이너에 노출하는 방법. 환
 | `spec.nodeName`, `spec.serviceAccountName`                         | O   | X      |
 | `status.podIP`, `status.podIPs`, `status.hostIP`, `status.hostIPs` | O   | X      |
 
-`resourceFieldRef`로는 컨테이너의 `requests`/`limits` 값(`cpu`, `memory`, `ephemeral-storage`, `hugepages-*`)을 노출. limit을 설정하지 않았으면 노드의 allocatable 최대값이 나옴.
+`resourceFieldRef`로는 컨테이너의 `requests`/`limits` 값(`cpu`, `memory`, `ephemeral-storage`, `hugepages-*`)을 노출. limit을 설정하지 않았으면 노드의 allocatable 최대값이 나옴. `divisor` 기본값이 `1`이라 아래 예시의 `limits.cpu: 500m`은 `1`로 올림돼서 나옴. millicore로 보려면 `divisor: 1m`.
 
 label 전체, annotation 전체는 volume으로만 가능. 실행 중에 리소스가 resize되면 volume 쪽은 갱신되지만 env는 컨테이너가 재시작되기 전까지 그대로.
 

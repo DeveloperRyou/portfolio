@@ -16,7 +16,7 @@ tags:
 order: 10
 ---
 
-> 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
+> 기준: Kubernetes v1.35 (kind `kindest/node:v1.35.8`에서 명령어·YAML 확인)
 
 ## 목차
 

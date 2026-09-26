@@ -17,7 +17,7 @@ tags:
 order: 5
 ---
 
-> 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
+> 기준: Kubernetes v1.35 (kind `kindest/node:v1.35.8`에서 명령어·YAML 확인)
 
 ## 목차
 
@@ -323,7 +323,7 @@ spec:
 | Pod 이름             | `이름-hash-랜덤`                       | `이름-ordinal` 고정                          | 랜덤                                         | 랜덤 (`Indexed`면 hostname이 `이름-인덱스`) | CronJob 이름 기반      |
 | 저장소               | 공유 또는 없음                         | Pod별 PVC                                    | 보통 노드 로컬                               | -                                           | -                      |
 | 업데이트 전략 필드   | `strategy`: `RollingUpdate`/`Recreate` | `updateStrategy`: `RollingUpdate`/`OnDelete` | `updateStrategy`: `RollingUpdate`/`OnDelete` | -                                           | 수정은 새 Job부터 적용 |
-| 허용 `restartPolicy` | `Always`                               | -                                            | `Always`                                     | `OnFailure`, `Never`                        | `OnFailure`, `Never`   |
+| 허용 `restartPolicy` | `Always`                               | `Always`                                     | `Always`                                     | `OnFailure`, `Never`                        | `OnFailure`, `Never`   |
 | imperative 생성      | 가능                                   | 불가                                         | 불가                                         | 가능                                        | 가능                   |
 
 - Deployment는 `strategy`, StatefulSet·DaemonSet은 `updateStrategy`. 필드 이름부터 다르다

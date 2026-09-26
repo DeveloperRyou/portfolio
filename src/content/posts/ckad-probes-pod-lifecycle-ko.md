@@ -8,7 +8,7 @@ tags: ["kubernetes", "ckad", "probe", "pod-lifecycle"]
 order: 4
 ---
 
-> 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
+> 기준: Kubernetes v1.35 (kind `kindest/node:v1.35.8`에서 명령어·YAML 확인)
 
 ## 목차
 
@@ -156,7 +156,7 @@ spec:
 ```
 
 - 시작 후 최대 300초까지 startup probe가 `/healthz`를 본다. 한 번 성공하면 liveness·readiness가 넘겨받는다
-- 이미지와 `args`는 공식 문서 HTTP liveness 예시에서 가져온 것. 이 이미지의 `/healthz`는 처음 10초 동안만 200을 주고 그 뒤로는 500을 준다. 그래서 이 Pod는 liveness 실패로 재시작을 반복하는 게 정상
+- 이미지와 `args`는 공식 문서 HTTP liveness 예시에서 가져온 것. 이 이미지의 `/healthz`는 처음 10초 동안만 200을 주고 그 뒤로는 500을 준다. 그래서 이 Pod는 probe 실패로 재시작을 반복하는 게 정상. v1.35 kind 클러스터에서 돌려 보면 약 40초 뒤 첫 liveness 실패 재시작이 나오고, 재시작 뒤에는 startup probe가 첫 10초를 놓치면서 `Startup probe failed ... statuscode: 500` 이벤트가 쌓인다
 
 ### exec, grpc
 

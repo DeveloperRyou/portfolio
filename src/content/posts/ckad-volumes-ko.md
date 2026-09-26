@@ -8,7 +8,7 @@ tags: ["kubernetes", "ckad", "volume", "persistentvolume", "storageclass"]
 order: 12
 ---
 
-> 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
+> 기준: Kubernetes v1.35 (kind `kindest/node:v1.35.8`에서 명령어·YAML 확인)
 
 ## 목차
 
@@ -337,6 +337,8 @@ spec:
               requests:
                 storage: 1Gi
 ```
+
+위 `fast` class의 provisioner는 예시용 이름이라 이대로 띄우면 PVC와 Pod가 `Pending`에 머문다. kind에서 직접 돌려 볼 때는 `storageClassName`을 기본 class인 `standard`로 바꾸면 `my-app-scratch-volume` PVC가 Bound되고, Pod를 지우면 PVC도 같이 사라지는 걸 볼 수 있다.
 
 ### 확인용 kubectl
 

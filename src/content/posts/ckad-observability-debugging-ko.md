@@ -8,7 +8,7 @@ tags: ["kubernetes", "ckad", "kubectl", "logging", "debugging"]
 order: 14
 ---
 
-> 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
+> 기준: Kubernetes v1.35 (kind `kindest/node:v1.35.8`에서 명령어·YAML 확인)
 
 ## 목차
 
@@ -88,7 +88,7 @@ kubectl debug node/<node> --image=...         # 노드에 디버깅용 Pod 생�
 - ephemeral container 모드: `--target=<container>`로 대상 컨테이너의 process namespace를 공유. runtime이 지원하지 않으면 `ps`에 대상 프로세스가 안 보일 수 있음
 - copy 모드: 새 컨테이너 추가, `--container`로 기존 컨테이너의 command 교체, `--set-image`로 이미지 교체 가능. `--share-processes`로 Pod 안 컨테이너끼리 프로세스를 봄
 - node 모드: 노드 root filesystem이 `/host`에 마운트, host IPC/Network/PID namespace 사용. privileged는 아니라서 필요하면 `--profile=sysadmin`
-- `--profile` 값: `legacy`, `general`, `baseline`, `restricted`, `netadmin`, `sysadmin`. 문서 기준으로 지정 안 하면 `legacy`가 쓰이고, `general` 같은 다른 profile을 권장
+- `--profile` 값: `legacy`, `general`, `baseline`, `restricted`, `netadmin`, `sysadmin`. 지정 안 하면 `legacy`가 쓰이고, kubectl 1.35는 이때 `--profile=legacy is deprecated and will be removed in the future`라는 경고와 함께 `--profile=general`을 명시하라고 안내함
 - `-i`를 주면 새 컨테이너에 자동 attach. 연결이 끊기면 `kubectl attach`로 다시 붙음
 - `--container`를 안 주면 컨테이너 이름은 자동 생성 (`debugger-xxxxx`)
 

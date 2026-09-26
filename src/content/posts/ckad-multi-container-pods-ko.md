@@ -8,7 +8,7 @@ tags: ["kubernetes", "ckad", "pod", "init-container", "sidecar"]
 order: 3
 ---
 
-> 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
+> 기준: Kubernetes v1.35 (kind `kindest/node:v1.35.8`에서 명령어·YAML 확인)
 
 ## 목차
 
@@ -51,7 +51,7 @@ Pod 시작 전에 준비 작업을 하는 container. 문서가 드는 용도는 
 그 밖의 규칙:
 
 - init이 끝나기 전 Pod phase는 `Pending`, condition `Initialized`는 false. `kubectl get` STATUS에는 `Init:0/2` 형태로 표시
-- 일반 init container는 `lifecycle`, `livenessProbe`, `readinessProbe`, `startupProbe`를 쓸 수 없음. `readinessProbe`는 validation 단계에서 거부
+- 일반 init container는 `lifecycle`, `livenessProbe`, `readinessProbe`, `startupProbe`를 쓸 수 없음. 넣으면 API server가 `Forbidden: may not be set for init containers without restartPolicy=Always`로 거부
 - 다시 실행될 수 있으므로 idempotent하게 작성. `emptyDir`에 쓸 파일이 이미 있을 수 있음
 - 실행 중인 Pod에서 init container는 `image`만 바꿀 수 있고, 바꿔도 Pod가 재시작되지 않음
 - container 이름은 init·app 전체에서 유일해야 함
