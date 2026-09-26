@@ -42,7 +42,10 @@ export default defineConfig({
   markdown: {
     processor: unified({
       remarkPlugins: [
-        remarkToc,
+        [
+          remarkToc,
+          { heading: "(table[ -]of[ -])?contents?|toc|목차|目次", maxDepth: 2 },
+        ],
         [remarkCollapse, { test: "Table of contents" }],
       ],
       rehypePlugins: [rehypeCallouts],
