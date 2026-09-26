@@ -36,22 +36,23 @@ const homePath = getRelativeLocaleUrl(locale, "");
         <Avatar alt="Sungmin Ryou" size="lg" />
         <div>
           <h1 class="my-2 inline-block text-4xl font-bold sm:text-5xl">
-            Hi, I'm Sungmin Ryou
+            Hi, <span class="inline-block">I'm Sungmin Ryou</span>
           </h1>
           <p>
-            I'm a software engineer building web services. This blog collects
-            write-ups on the projects I've shipped — from a crypto trading bot
-            to a 42 Seoul team project.
+            I'm a software engineer who trembles at how fast AI is advancing,
+            yet can't go back to a life without it. Half portfolio, half blog —
+            this is where I keep notes on what I've studied and the projects
+            I've built.
           </p>
           <p class="mt-2">
-            Read the posts below, or see the{" "}
+            Read the posts below, or head to the{" "}
             <LinkButton
               class="hover:text-accent underline decoration-dashed underline-offset-4"
               href={getRelativeLocaleUrl(locale, "about")}
             >
               About
             </LinkButton>{" "}
-            page for my background and career.
+            page to learn more about me!
           </p>
         </div>
       </div>
