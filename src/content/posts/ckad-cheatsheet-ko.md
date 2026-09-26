@@ -143,7 +143,7 @@ spec:
 ```
 
 - Job Pod의 `restartPolicy`는 `Never` 또는 `OnFailure`만 허용
-- 문서: `concepts/workloads/controllers/job`, `.../cron-jobs`
+- 문서: [Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/), [CronJob](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/)
 
 ### multi-container Pod
 
@@ -189,7 +189,7 @@ spec:
 
 - 컨테이너 간 파일 공유는 같은 `emptyDir` 마운트
 - 특정 컨테이너 로그·exec: `k logs app -c logshipper`, `k exec -it app -c app -- sh`
-- 문서: `concepts/workloads/pods/init-containers`, `.../sidecar-containers`
+- 문서: [Init Containers](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/), [Sidecar Containers](https://kubernetes.io/docs/concepts/workloads/pods/sidecar-containers/)
 
 ### volume
 
@@ -245,7 +245,7 @@ spec:
 ```
 
 - PVC `Pending`: `storageClassName`·`accessModes`·용량 불일치 확인 (`k describe pvc`)
-- 문서: `tasks/configure-pod-container/configure-persistent-volume-storage` (PV·PVC·Pod 예제 한 번에), `concepts/storage/volumes`, `concepts/storage/ephemeral-volumes`
+- 문서: [Configure a Pod to Use a PersistentVolume for Storage](https://kubernetes.io/docs/tutorials/configuration/configure-persistent-volume-storage/) (PV·PVC·Pod 예제 한 번에), [Volumes](https://kubernetes.io/docs/concepts/storage/volumes/), [Ephemeral Volumes](https://kubernetes.io/docs/concepts/storage/ephemeral-volumes/)
 
 ## Application Deployment
 
@@ -273,7 +273,7 @@ spec:
 ```
 
 - `Recreate`로 바꿀 때 `rollingUpdate` 블록 삭제 필수
-- 문서: `concepts/workloads/controllers/deployment`
+- 문서: [Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
 
 ### blue/green, canary
 
@@ -296,7 +296,7 @@ k scale deploy/web-canary --replicas=1                                    # cana
 ```
 
 - 확인: `k get endpointslices -l kubernetes.io/service-name=web`, `k get pod -l app=web --show-labels`
-- 문서: `concepts/workloads/management` (canary deployments 절)
+- 문서: [Managing Workloads](https://kubernetes.io/docs/concepts/workloads/management/) (canary deployments 절)
 
 ### Helm
 
@@ -315,7 +315,7 @@ helm uninstall web -n web                                                 # rele
 ```
 
 - release는 namespace 단위, `-n` 누락 시 `helm list`에 안 보임
-- 문서: `helm.sh/docs` (Using Helm, `helm install` 명령어 페이지)
+- 문서: [Using Helm](https://helm.sh/docs/intro/using_helm/), [helm install](https://helm.sh/docs/helm/helm_install/)
 
 ### Kustomize
 
@@ -348,7 +348,7 @@ patches:
 ```
 
 - `commonLabels`는 deprecated, `labels` 사용
-- 문서: `tasks/manage-kubernetes-objects/kustomization`
+- 문서: [Declarative Management of Kubernetes Objects Using Kustomize](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/)
 
 ## Application Observability and Maintenance
 
@@ -363,7 +363,7 @@ k convert -f old.yaml --output-version apps/v1  # kubectl-convert plugin 설치 
 ```
 
 - apply 시 deprecated API 경고 메시지 확인
-- 문서: `reference/using-api/deprecation-guide`, `reference/using-api/deprecation-policy`, kubectl-convert 설치는 `tasks/tools/install-kubectl-linux`
+- 문서: [Deprecated API Migration Guide](https://kubernetes.io/docs/reference/using-api/deprecation-guide/), [Kubernetes Deprecation Policy](https://kubernetes.io/docs/reference/using-api/deprecation-policy/), kubectl-convert 설치는 [Install and Set Up kubectl on Linux](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
 
 ### probe
 
@@ -406,7 +406,7 @@ spec:
 ```
 
 - probe는 container 단위 필드 (`spec.containers[].livenessProbe`)
-- 문서: `tasks/configure-pod-container/configure-liveness-readiness-startup-probes`
+- 문서: [Configure Liveness, Readiness and Startup Probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
 
 ### 모니터링 CLI
 
@@ -419,7 +419,7 @@ k top node                                          # 노드 CPU·memory 사용�
 k describe pod web                                  # 상태·Events 상세
 ```
 
-- 문서: `reference/kubectl/quick-reference`, `tasks/debug/debug-cluster/resource-metrics-pipeline`
+- 문서: [kubectl Quick Reference](https://kubernetes.io/docs/reference/kubectl/quick-reference/), [Resource metrics pipeline](https://kubernetes.io/docs/tasks/debug/debug-cluster/resource-metrics-pipeline/)
 
 ### container log
 
@@ -448,7 +448,7 @@ k debug web --copy-to=web-debug --share-processes                         # 복�
 k run tmp --image=busybox --restart=Never --rm -it -- wget -qO- http://web:80  # 임시 Pod에서 Service 호출 테스트
 ```
 
-- 문서: `tasks/debug/debug-application/debug-pods`, `.../debug-running-pod`, `.../debug-service`
+- 문서: [Debug Pods](https://kubernetes.io/docs/tasks/debug/debug-application/debug-pods/), [Debug Running Pods](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/), [Debug Services](https://kubernetes.io/docs/tasks/debug/debug-application/debug-service/)
 
 ## Application Environment, Configuration and Security
 
@@ -464,7 +464,7 @@ k get <plural> -A                    # CR 전체 조회
 ```
 
 - CR은 일반 리소스처럼 `apply`·`get`·`delete`
-- 문서: `concepts/extend-kubernetes/api-extension/custom-resources`, `concepts/extend-kubernetes/operator`, `tasks/extend-kubernetes/custom-resources/custom-resource-definitions`
+- 문서: [Custom Resources](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/), [Operator pattern](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/), [Extend the Kubernetes API with CustomResourceDefinitions](https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/)
 
 ### authentication, authorization, admission control
 
@@ -485,7 +485,7 @@ k auth can-i list pods --as=system:serviceaccount:default:app-sa -n default  # S
 | admission control | 요청 변형·검증 (LimitRange, ResourceQuota, Pod Security Admission 등) |
 
 - `--serviceaccount` 형식은 `<namespace>:<name>`
-- 문서: `reference/access-authn-authz/rbac`, `.../admission-controllers`, `concepts/security/controlling-access`
+- 문서: [Using RBAC Authorization](https://kubernetes.io/docs/reference/access-authn-authz/rbac/), [Admission Control](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/), [Controlling Access to the Kubernetes API](https://kubernetes.io/docs/concepts/security/controlling-access/)
 
 ### requests, limits, quota
 
@@ -525,7 +525,7 @@ spec:
 
 - ResourceQuota에 cpu·memory가 걸린 namespace는 requests·limits 없는 Pod 생성 거부 (LimitRange 기본값으로 보완 가능)
 - memory limit 초과 시 OOMKilled, cpu limit 초과 시 throttling
-- 문서: `concepts/configuration/manage-resources-containers`, `concepts/policy/resource-quotas`, `concepts/policy/limit-range`
+- 문서: [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/), [Resource Quotas](https://kubernetes.io/docs/concepts/policy/resource-quotas/), [Limit Ranges](https://kubernetes.io/docs/concepts/policy/limit-range/)
 
 ### ConfigMap
 
@@ -559,7 +559,7 @@ spec:
 ```
 
 - env로 주입한 값은 ConfigMap 수정 후 Pod 재시작 전까지 반영 안 됨, volume 마운트는 자동 갱신 (`subPath` 마운트 제외)
-- 문서: `tasks/configure-pod-container/configure-pod-configmap`
+- 문서: [Configure a Pod to Use a ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/)
 
 ### Secret
 
@@ -595,7 +595,7 @@ spec:
 
 - YAML `data`는 base64, `stringData`는 평문
 - volume 필드명 차이: ConfigMap은 `configMap.name`, Secret은 `secret.secretName`
-- 문서: `concepts/configuration/secret`, `tasks/inject-data-application/distribute-credentials-secure`
+- 문서: [Secrets](https://kubernetes.io/docs/concepts/configuration/secret/), [Distribute Credentials Securely Using Secrets](https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/)
 
 ### ServiceAccount
 
@@ -611,7 +611,7 @@ spec:
 ```
 
 - Pod의 `serviceAccountName`은 생성 후 변경 불가, Deployment 수정으로 재생성
-- 문서: `tasks/configure-pod-container/configure-service-account`
+- 문서: [Configure Service Accounts for Pods](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/)
 
 ### SecurityContext, capabilities
 
@@ -645,7 +645,7 @@ spec:
 | `capabilities`, `allowPrivilegeEscalation`, `readOnlyRootFilesystem`, `privileged` | container만          |
 
 - 확인: `k exec secure -- id`
-- 문서: `tasks/configure-pod-container/security-context`
+- 문서: [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
 
 ## Services and Networking
 
@@ -681,7 +681,7 @@ k run tmp --image=busybox --restart=Never --rm -it -- wget -qO- http://web-svc.<
 
 - endpoint 없음: selector 불일치 또는 readiness 실패
 - 연결 거부: `targetPort`와 `containerPort` 불일치
-- 문서: `concepts/services-networking/service`, `tasks/debug/debug-application/debug-service`, DNS 이름 규칙은 `concepts/services-networking/dns-pod-service`
+- 문서: [Service](https://kubernetes.io/docs/concepts/services-networking/service/), [Debug Services](https://kubernetes.io/docs/tasks/debug/debug-application/debug-service/), DNS 이름 규칙은 [DNS for Services and Pods](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/)
 
 ### Ingress
 
@@ -712,7 +712,7 @@ spec:
 
 - 확인: `k describe ingress web` (backend endpoint), `curl -H 'Host: foo.com' http://<ingress-ip>/api`
 - Ingress controller 없으면 규칙만 있고 동작 안 함
-- 문서: `concepts/services-networking/ingress`, `reference/kubectl/generated/kubectl_create/kubectl_create_ingress`
+- 문서: [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/), [kubectl create ingress](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_create/kubectl_create_ingress/)
 
 ### NetworkPolicy
 
@@ -783,7 +783,7 @@ spec:
 - `policyTypes`에 `Egress` 넣고 DNS 허용 누락 시 Service 이름 해석 실패
 - CNI가 NetworkPolicy 미지원이면 적용 안 됨
 - namespace label 확인: `k get ns --show-labels` (`kubernetes.io/metadata.name` 자동 부여)
-- 문서: `concepts/services-networking/network-policies`
+- 문서: [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
 
 ## 참고 문서
 
@@ -795,7 +795,7 @@ spec:
 - [kubectl Quick Reference](https://kubernetes.io/docs/reference/kubectl/quick-reference/)
 - [Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/), [CronJob](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/)
 - [Init Containers](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/), [Sidecar Containers](https://kubernetes.io/docs/concepts/workloads/pods/sidecar-containers/)
-- [Configure a Pod to Use a PersistentVolume for Storage](https://kubernetes.io/docs/tasks/configure-pod-container/configure-persistent-volume-storage/), [Volumes](https://kubernetes.io/docs/concepts/storage/volumes/), [Ephemeral Volumes](https://kubernetes.io/docs/concepts/storage/ephemeral-volumes/)
+- [Configure a Pod to Use a PersistentVolume for Storage](https://kubernetes.io/docs/tutorials/configuration/configure-persistent-volume-storage/), [Volumes](https://kubernetes.io/docs/concepts/storage/volumes/), [Ephemeral Volumes](https://kubernetes.io/docs/concepts/storage/ephemeral-volumes/)
 - [Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/), [Managing Workloads](https://kubernetes.io/docs/concepts/workloads/management/)
 - [Helm Docs](https://helm.sh/docs/)
 - [Declarative Management of Kubernetes Objects Using Kustomize](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/)
