@@ -4,19 +4,24 @@ import type { CollectionEntry } from "astro:content";
 import IconArrowLeft from "@/assets/icons/IconArrowLeft.svg";
 import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
 import Card from "./Card.astro";
+import { getSortedPosts } from "@/utils/getSortedPosts";
 import { compareSiteSeriesOrder } from "@/utils/seriesOrder";
 import { useTranslations } from "@/i18n";
 import config from "@/config";
 
 type Post = CollectionEntry<"posts">;
 
+type Sort = "newest" | "oldest" | "series";
+
 type Props = {
-  /** Every post in the list, in the default (newest-first) order. */
+  /** Every post in the list, in `defaultSort` order (what `page` paginates). */
   posts: Post[];
   page: Page<Post>;
+  /** The server-rendered order, used when the URL has no `sort` param. */
+  defaultSort?: Sort;
 };
 
-const { posts, page } = Astro.props;
+const { posts, page, defaultSort = "newest" } = Astro.props;
 
 const t = useTranslations(Astro.currentLocale);
 const perPage = config.posts.perPage;
@@ -25,6 +30,7 @@ const perPage = config.posts.perPage;
 const basePath =
   page.currentPage === 1 ? Astro.url.pathname : (page.url.first as string);
 
+const newest = getSortedPosts(posts);
 const oldest = [...posts].sort(
   (a, b) => a.data.pubDatetime.getTime() - b.data.pubDatetime.getTime()
 );
@@ -45,9 +51,15 @@ const selectClass =
   <label class="flex items-center gap-2">
     {t.postList.sort}
     <select name="sort" class={selectClass}>
-      <option value="newest" selected>{t.postList.newest}</option>
-      <option value="oldest">{t.postList.oldest}</option>
-      <option value="series">{t.postList.series}</option>
+      <option value="newest" selected={defaultSort === "newest"}>
+        {t.postList.newest}
+      </option>
+      <option value="oldest" selected={defaultSort === "oldest"}>
+        {t.postList.oldest}
+      </option>
+      <option value="series" selected={defaultSort === "series"}>
+        {t.postList.series}
+      </option>
     </select>
   </label>
   <label class="flex items-center gap-2">
@@ -65,14 +77,14 @@ const selectClass =
   </label>
 </form>
 
-<ul data-post-list data-per-page={perPage}>
+<ul data-post-list data-per-page={perPage} data-default-sort={defaultSort}>
   {
     posts.map((post, i) => (
       <Card
         {...post}
         itemAttrs={{
           hidden: i < page.start || i > page.end,
-          "data-rank-newest": i,
+          "data-rank-newest": newest.indexOf(post),
           "data-rank-oldest": oldest.indexOf(post),
           "data-rank-series": series.indexOf(post),
         }}
@@ -123,13 +135,14 @@ const selectClass =
     const sizeSelect = form.elements.namedItem("size") as HTMLSelectElement;
     const sizeValues = [...sizeSelect.options].map(o => o.value);
     const perPage = Number(list.dataset.perPage);
+    const defaultSort = list.dataset.defaultSort ?? "newest";
 
     form.addEventListener("change", () => form.requestSubmit());
 
     const params = new URLSearchParams(location.search);
     const sortParam = params.get("sort") ?? "";
     const sizeParam = params.get("size") ?? "";
-    const sort = SORTS.includes(sortParam) ? sortParam : "newest";
+    const sort = SORTS.includes(sortParam) ? sortParam : defaultSort;
     const sizeValue = sizeValues.includes(sizeParam)
       ? sizeParam
       : String(perPage);
@@ -139,7 +152,7 @@ const selectClass =
     const pageParam = Number(params.get("page") ?? "1");
     // No params (or ones that spell out the default view): leave the
     // server-rendered page and its path-based pagination untouched.
-    if (sort === "newest" && sizeValue === String(perPage) && pageParam <= 1)
+    if (sort === defaultSort && sizeValue === String(perPage) && pageParam <= 1)
       return;
 
     const items = [...list.querySelectorAll<HTMLLIElement>(":scope > li")];
