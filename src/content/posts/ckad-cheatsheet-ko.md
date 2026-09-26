@@ -319,29 +319,41 @@ helm uninstall web -n web                                                 # rele
 
 ### Kustomize
 
+원본 YAML은 그대로 두고 `kustomization.yaml`의 변형 규칙을 적용한 결과를 배포. 템플릿 문법 없음, `kubectl`에 내장.
+
+```
+app/
+├── base/                       # 공통 원본
+│   ├── deployment.yaml
+│   ├── service.yaml
+│   └── kustomization.yaml      # resources: [deployment.yaml, service.yaml]
+└── overlay/
+    └── prod/
+        └── kustomization.yaml  # base를 가져와 prod용으로 변형
+```
+
 ```bash
-k kustomize ./overlay  # 렌더링 결과 출력
-k apply -k ./overlay   # overlay 적용
-k delete -k ./overlay  # overlay로 만든 리소스 삭제
+k kustomize ./app/overlay/prod  # 변형 결과 YAML 출력만 (적용 전 확인)
+k apply -k ./app/overlay/prod   # 변형 결과 적용 (-k = kustomization.yaml 있는 디렉터리)
+k delete -k ./app/overlay/prod  # 그 결과로 만든 리소스 삭제
 ```
 
 ```yaml
-# kustomization.yaml
-resources:
-  - deployment.yaml
-  - service.yaml
-namespace: prod
-labels:
+# app/overlay/prod/kustomization.yaml
+resources: # 변형할 원본 (파일 또는 디렉터리)
+  - ../../base
+namespace: prod # 모든 리소스의 namespace를 prod로
+labels: # 모든 리소스에 label 추가
   - pairs:
       env: prod
-images:
+images: # 이미지 nginx의 태그 교체
   - name: nginx
     newTag: "1.27"
-patches:
-  - target:
+patches: # 특정 리소스의 특정 필드만 수정
+  - target: # 대상: Deployment web
       kind: Deployment
       name: web
-    patch: |-
+    patch: |- # JSON patch: replicas를 3으로
       - op: replace
         path: /spec/replicas
         value: 3
