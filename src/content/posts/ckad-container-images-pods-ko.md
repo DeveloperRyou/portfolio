@@ -10,14 +10,7 @@ order: 2
 
 > 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
 
-## 요약
-
-- 커리큘럼 위치: Application Design and Build -- Define, build and modify container images
-- 이미지 참조 = `[registry[:port]/]name[:tag][@digest]`. registry 생략 시 Docker Hub, tag 생략 시 `latest`
-- `imagePullPolicy`는 생략하면 Pod 생성 시점의 tag 기준으로 한 번 정해지고, 이후 image를 바꿔도 다시 계산되지 않음
-- private registry는 같은 namespace의 `docker-registry` 타입 Secret을 `spec.imagePullSecrets`에 지정
-- Pod는 배포 가능한 가장 작은 단위. 안의 container들은 network namespace(IP·포트)와 volume을 공유
-- 실행 중인 Pod에서 바꿀 수 있는 필드는 image 등 몇 개뿐이라, 나머지는 지우고 다시 만들어야 함
+## 목차
 
 ## 이미지 이름
 

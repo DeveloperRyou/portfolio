@@ -10,12 +10,7 @@ order: 14
 
 > 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
 
-## 요약
-
-- 커리큘럼 위치: **Application Observability and Maintenance** (15%) 중 "Use built-in CLI tools to monitor Kubernetes applications", "Utilize container logs", "Debugging in Kubernetes"
-- 순서는 거의 고정. `get`으로 STATUS 확인 → `describe`의 State/Reason/Events → `logs` (재시작됐으면 `--previous`) → `exec`, 안 되면 `debug`
-- `kubectl top`은 Metrics API가 있어야 동작. 기본 CLI만으로는 CPU/메모리 수치가 안 나옴
-- ephemeral container는 v1.25부터 stable. shell 없는 이미지나 이미 죽은 컨테이너를 볼 때 사용
+## 목차
 
 ## 개념
 

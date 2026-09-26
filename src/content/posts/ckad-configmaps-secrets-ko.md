@@ -10,13 +10,7 @@ order: 8
 
 > 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
 
-## 요약
-
-- 커리큘럼 위치: **Application Environment, Configuration and Security** -- Understand ConfigMaps / Create & consume Secrets
-- ConfigMap은 설정값, Secret은 민감한 값. Pod에 넣는 방법(env, envFrom, volume)은 거의 같음
-- 값 변경 반영: volume 마운트는 시간차를 두고 반영, env는 Pod를 다시 띄워야 반영, `subPath` 마운트는 반영 안 됨
-- Secret의 base64는 인코딩일 뿐 암호화가 아님. 기본 설정에서는 etcd에 암호화 없이 저장됨
-- 여러 소스를 한 디렉터리에 모으려면 projected volume, Pod 자신의 정보(이름, namespace, label, 리소스 값)를 넣으려면 Downward API
+## 목차
 
 ## 개념
 

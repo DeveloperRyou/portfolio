@@ -10,14 +10,7 @@ order: 13
 
 > 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
 
-## 요약
-
-- 커리큘럼 위치: CKAD v1.35 **Services and Networking** (20%)
-  - Provide and troubleshoot access to applications via services
-  - Use Ingress rules to expose applications
-  - Demonstrate basic understanding of NetworkPolicies
-- 핵심 한 줄: Service는 label selector로 Pod 집합에 고정 이름·IP를 붙이고, Ingress는 HTTP host/path로 Service를 고르고, NetworkPolicy는 Pod 사이 L4 연결을 허용 목록으로 제한
-- 세 리소스 모두 **실제 동작은 다른 컴포넌트가 담당**: Service는 kube-proxy 등 virtual IP 구현, Ingress는 Ingress controller, NetworkPolicy는 network plugin. 리소스만 만들고 구현체가 없으면 아무 일도 안 일어남
+## 목차
 
 ## 개념
 

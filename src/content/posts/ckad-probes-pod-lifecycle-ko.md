@@ -10,13 +10,7 @@ order: 4
 
 > 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
 
-## 요약
-
-- 커리큘럼 위치: Application Observability and Maintenance -- Implement probes and health checks
-- Pod 상태는 세 층으로 본다. Pod 전체의 `phase`, Pod의 `conditions`, 컨테이너별 state
-- probe는 kubelet이 컨테이너에 주기적으로 하는 진단. 결과에 따라 컨테이너를 재시작하거나 트래픽에서 뺀다
-- liveness/startup probe 실패는 컨테이너 kill 후 `restartPolicy` 적용, readiness probe 실패는 재시작 없이 Service endpoint에서 제외
-- init container는 앱 컨테이너보다 먼저 끝까지 실행되고 끝나는 작업. probe를 붙일 수 없다
+## 목차
 
 ## Pod phase
 

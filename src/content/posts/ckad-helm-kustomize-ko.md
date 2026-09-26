@@ -11,12 +11,7 @@ order: 7
 > 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
 > Helm 명령·플래그는 helm.sh 문서 4.3.0 기준
 
-## 요약
-
-- 커리큘럼 위치: **Application Deployment** -- "Use the Helm package manager to deploy existing packages", "Kustomize"
-- Helm: 템플릿 + values로 manifest를 만들어 설치하고, 설치 단위(release)의 revision을 Helm이 관리
-- Kustomize: 템플릿 없이 원본 YAML 위에 patch·공통 필드·generator를 얹는 방식. `kubectl`에 내장 (`kubectl apply -k`)
-- Helm 쪽 커리큘럼 문구는 "deploy existing packages". 이 노트도 chart 작성이 아니라 기존 chart 사용에 집중
+## 목차
 
 ## Helm 개념
 

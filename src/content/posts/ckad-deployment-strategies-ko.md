@@ -11,13 +11,7 @@ order: 6
 
 > 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
 
-## 요약
-
-- 커리큘럼 위치: **Application Deployment** -- "Understand Deployments and how to perform rolling updates", "Use Kubernetes primitives to implement common deployment strategies (e.g. blue/green or canary)"
-- Deployment는 ReplicaSet을 갈아끼우는 방식으로 Pod를 교체
-- 교체 방식은 `.spec.strategy.type` 두 가지: `RollingUpdate`(기본값), `Recreate`
-- rollout은 `.spec.template`이 바뀔 때만 시작. scale은 rollout이 아님
-- blue/green, canary는 Deployment 기능이 아니라 label + Service selector 조합으로 만드는 패턴
+## 목차
 
 ## 개념
 

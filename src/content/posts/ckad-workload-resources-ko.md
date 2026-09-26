@@ -19,13 +19,7 @@ order: 5
 
 > 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
 
-## 요약
-
-- 커리큘럼 위치: Application Design and Build -- Choose and use the right workload resource (Deployment, DaemonSet, CronJob, etc.)
-- 계속 떠 있어야 하는 서비스인가, 끝나야 하는 작업인가를 먼저 가른다
-- 계속 떠 있는 쪽: 상태 없는 replica는 Deployment, Pod마다 고정 이름·저장소가 필요하면 StatefulSet, 노드마다 하나씩이면 DaemonSet
-- 끝나는 쪽: 한 번 돌리면 Job, 일정에 따라 반복하면 CronJob
-- 서비스형 셋은 Pod template의 `restartPolicy`가 `Always`여야 하고, Job은 `OnFailure`나 `Never`만 쓸 수 있다
+## 목차
 
 ## 고르는 기준
 

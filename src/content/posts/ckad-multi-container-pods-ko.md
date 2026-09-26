@@ -10,15 +10,7 @@ order: 3
 
 > 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
 
-## 요약
-
-- 커리큘럼 위치: Application Design and Build -- Understand multi-container Pod design patterns (e.g. sidecar, init and others)
-- 같은 Pod의 container는 같은 노드에 뜨고, network namespace(IP·포트, `localhost`)와 volume을 공유
-- init container: `spec.initContainers`에 정의, 순서대로 하나씩 끝까지 실행된 뒤에야 app container 시작
-- native sidecar: `initContainers` 항목에 container 단위 `restartPolicy: Always`. 앱보다 먼저 떠서 Pod가 끝날 때까지 유지
-- 기존 방식의 sidecar: 그냥 `containers`에 하나 더 넣은 것. 시작·종료 순서 보장 없음
-- ambassador, adapter: Kubernetes 필드가 아니라 설계 패턴. 구현은 결국 container 추가
-- ephemeral container: 디버깅용으로 실행 중인 Pod에 `kubectl debug`로 붙이는 임시 container
+## 목차
 
 ## Pod 안의 container 종류
 

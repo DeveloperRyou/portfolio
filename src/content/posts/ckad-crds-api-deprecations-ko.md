@@ -10,14 +10,7 @@ order: 11
 
 > 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
 
-## 요약
-
-- 커리큘럼 위치
-  - Application Environment, Configuration and Security: Discover and use resources that extend Kubernetes (CRD, Operators)
-  - Application Observability and Maintenance: Understand API deprecations
-- CRD: 새 리소스 종류를 API server에 등록하는 객체. custom resource: 그렇게 등록된 종류의 실제 객체
-- Operator: custom resource + 그걸 지켜보는 controller. 사람 운영자의 반복 작업을 control loop로 자동화
-- API는 group별로 버전(alpha/beta/GA)이 따로 있고, beta 이하는 정해진 기간 뒤 제거됨. 제거된 버전으로 쓴 manifest는 `apply` 자체가 실패
+## 목차
 
 ## 개념
 

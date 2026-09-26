@@ -49,7 +49,7 @@
 자격증 커리큘럼(github.com/cncf/curriculum)의 역량 항목 하나를 한 편으로 정리한다. 공식 문서(kubernetes.io)를 기준으로 쓰고, 파일명은 `<자격증>-<주제>` (예: `ckad-multi-container-pods-ko.md`), `order`로 순서를 매긴다.
 
 ```
-## 요약               -- 다룬 주제, 커리큘럼상 위치, 핵심 한 줄
+## 목차               -- 본문 비워 둠. remark-toc가 `##` 섹션 링크 목록으로 자동 생성
 ## 개념               -- 공식 문서 기준 설명
 ## 동작 방식
 ## 예시               -- YAML·kubectl (Kubernetes 버전 명시)

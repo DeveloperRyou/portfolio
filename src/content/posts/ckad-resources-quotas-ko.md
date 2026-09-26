@@ -10,15 +10,7 @@ order: 9
 
 > 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
 
-## 요약
-
-- 커리큘럼 위치: **Application Environment, Configuration and Security** -- Understand requests, limits, quotas / Define resource requirements
-- `requests`: scheduler가 노드를 고를 때 쓰는 값
-- `limits`: 실행 중 kernel이 강제하는 상한. CPU는 throttling, memory는 OOM kill
-- QoS class(`Guaranteed`, `Burstable`, `BestEffort`)는 requests/limits 조합으로 자동 결정되고, 노드 자원이 부족할 때 eviction 순서를 정함
-- LimitRange: namespace 안의 개별 Pod/컨테이너 단위 기본값과 min/max
-- ResourceQuota: namespace 전체 합계 상한
-- 둘 다 admission 단계에서만 검사. 이미 떠 있는 Pod에는 영향 없음
+## 목차
 
 ## 개념
 

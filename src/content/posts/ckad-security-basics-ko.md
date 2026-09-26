@@ -18,15 +18,7 @@ order: 10
 
 > 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
 
-## 요약
-
-- 커리큘럼 위치: Application Environment, Configuration and Security
-  - Understand authentication, authorization and admission control
-  - Understand ServiceAccounts
-  - Understand Application Security (SecurityContexts, Capabilities, etc.)
-- API 요청 흐름: authentication → authorization → admission → etcd 저장
-- "누가 무엇을 할 수 있나"는 RBAC(Role/RoleBinding), "Pod가 노드 위에서 어떤 권한으로 도나"는 SecurityContext
-- Pod가 API server를 부를 때의 신원이 ServiceAccount
+## 목차
 
 ## 요청 흐름
 

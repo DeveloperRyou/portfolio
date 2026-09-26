@@ -10,11 +10,7 @@ order: 12
 
 > 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
 
-## 요약
-
-- 커리큘럼 위치: CKAD v1.35 **Application Design and Build** (20%) -- "Utilize persistent and ephemeral volumes"
-- 핵심 한 줄: volume은 Pod의 container들이 접근하는 디렉터리. 수명이 Pod에 묶이면 ephemeral, Pod보다 오래 살면 persistent
-- 이 편 범위: container filesystem과의 차이, `emptyDir`/`hostPath`/`configMap` volume, PV/PVC binding, access mode, reclaim policy, StorageClass와 dynamic provisioning, generic ephemeral volume
+## 목차
 
 ## 개념
 
