@@ -27,6 +27,16 @@ export interface UIStrings {
     next: string;
     page: string;
   };
+  postList: {
+    sort: string;
+    newest: string;
+    oldest: string;
+    /** Sort by topic/subtopic, then each series' `order`. */
+    series: string;
+    perPage: string;
+    /** Page-size option that shows every post on one page. */
+    all: string;
+  };
   home: {
     socialLinks: string;
     featured: string;

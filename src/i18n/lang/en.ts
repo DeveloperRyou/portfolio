@@ -28,6 +28,14 @@ export default {
     next: "Next",
     page: "Page",
   },
+  postList: {
+    sort: "Sort",
+    newest: "Newest",
+    oldest: "Oldest",
+    series: "Series order",
+    perPage: "Per page",
+    all: "All",
+  },
   home: {
     socialLinks: "Social Links",
     featured: "Featured",

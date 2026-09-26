@@ -21,6 +21,7 @@ const t = useTranslations(Astro.currentLocale);
       class="mt-auto mb-8 flex justify-center gap-4"
       role="navigation"
       aria-label="Pagination Navigation"
+      data-pagination="server"
     >
       <LinkButton
         disabled={!page.url.prev}

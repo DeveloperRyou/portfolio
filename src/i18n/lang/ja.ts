@@ -28,6 +28,14 @@ export default {
     next: "次へ",
     page: "ページ",
   },
+  postList: {
+    sort: "並び順",
+    newest: "新しい順",
+    oldest: "古い順",
+    series: "連載順",
+    perPage: "表示件数",
+    all: "すべて",
+  },
   home: {
     socialLinks: "ソーシャルリンク",
     featured: "注目の記事",
