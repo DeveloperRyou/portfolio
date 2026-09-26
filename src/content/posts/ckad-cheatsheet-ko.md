@@ -14,8 +14,8 @@ order: 1
 
 CKAD 명령어·YAML 모음.
 
-문제 풀이 원칙은 imperative 명령어로 뼈대 생성, 
-명령어로 안 되는 혹은 모르는 필드만 YAML 수정. 
+문제 풀이 원칙은 imperative 명령어로 뼈대 생성,
+명령어로 안 되는 혹은 모르는 필드만 YAML 수정.
 `kubectl explain` 또는 공식 문서 예제 복사.
 
 예시:
