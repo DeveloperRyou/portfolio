@@ -8,13 +8,15 @@ tags: ["kubernetes", "ckad", "kubectl", "cheatsheet"]
 order: 1
 ---
 
-> 기준: Kubernetes v1.35 (명령어·YAML 클러스터 검증 전)
+> 기준: Kubernetes v1.35
 
 ## 요약
 
-CKAD v1.35 커리큘럼 5개 도메인 순서의 명령어·YAML 모음.
+CKAD 명령어·YAML 모음.
 
-문제 풀이 원칙은 imperative 명령어로 뼈대 생성, 명령어로 안 되는 혹은 모르는 필드만 YAML 수정. `kubectl explain` 또는 공식 문서 예제 복사.
+문제 풀이 원칙은 imperative 명령어로 뼈대 생성, 
+명령어로 안 되는 혹은 모르는 필드만 YAML 수정. 
+`kubectl explain` 또는 공식 문서 예제 복사.
 
 예시:
 
@@ -79,8 +81,6 @@ FROM nginx:1.27
 COPY index.html /usr/share/nginx/html/index.html
 ```
 
-- 이미지 참조 규칙: kubernetes.io `concepts/containers/images`
-
 ### workload 선택
 
 | 리소스      | 용도                     | 생성                                                        |
@@ -103,7 +103,21 @@ k create cronjob hello --image=busybox --schedule="*/1 * * * *" -- echo "Hello W
 k create job manual-run --from=cronjob/hello                              # CronJob 즉시 1회 실행
 ```
 
-- `--command --` 없으면 뒤 인자가 `args`, 있으면 `command`
+`--` 뒤 인자가 들어가는 위치:
+
+| 이미지 (Dockerfile) | Pod spec  | 역할                           |
+| ------------------- | --------- | ------------------------------ |
+| `ENTRYPOINT`        | `command` | 실행할 프로그램                |
+| `CMD`               | `args`    | 그 프로그램에 넘기는 기본 인자 |
+
+```bash
+k run box --image=busybox -- sleep 3600            # args: ["sleep", "3600"] -- ENTRYPOINT 유지, CMD만 교체
+k run box --image=busybox --command -- sleep 3600  # command: ["sleep", "3600"] -- ENTRYPOINT 교체
+```
+
+- busybox는 `ENTRYPOINT`가 없어서 둘 다 `sleep 3600` 실행
+- `ENTRYPOINT ["python"]` 이미지에 `--command` 없이 주면 `python sleep 3600` 실행 -> 에러
+- "이 명령 실행" 요구면 `--command` 사용
 
 Job·CronJob 추가 필드 (명령어 옵션 없음):
 
@@ -776,6 +790,7 @@ spec:
 - [CNCF curriculum: CKAD_Curriculum_v1.35.pdf](https://github.com/cncf/curriculum)
 - [Linux Foundation: CKA/CKAD Exam Environment Tips](https://docs.linuxfoundation.org/tc-docs/certification/tips-cka-and-ckad)
 - [Linux Foundation: Resources Allowed During the Exam](https://docs.linuxfoundation.org/tc-docs/certification/certification-resources-allowed)
+- [Define a Command and Arguments for a Container](https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/)
 - [Pods: Pod update and replacement](https://kubernetes.io/docs/concepts/workloads/pods/#pod-update-and-replacement)
 - [kubectl Quick Reference](https://kubernetes.io/docs/reference/kubectl/quick-reference/)
 - [Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/), [CronJob](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/)
