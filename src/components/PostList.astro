@@ -4,6 +4,7 @@ import type { CollectionEntry } from "astro:content";
 import IconArrowLeft from "@/assets/icons/IconArrowLeft.svg";
 import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
 import Card from "./Card.astro";
+import Select from "./Select.astro";
 import { getSortedPosts } from "@/utils/getSortedPosts";
 import { compareSiteSeriesOrder } from "@/utils/seriesOrder";
 import { useTranslations } from "@/i18n";
@@ -37,9 +38,6 @@ const oldest = [...posts].sort(
 const series = [...posts].sort(compareSiteSeriesOrder);
 
 const sizeOptions = [...new Set([perPage, 10, 20, 50])].sort((a, b) => a - b);
-
-const selectClass =
-  "border-border bg-background text-foreground hover:border-border-strong focus-visible:outline-accent rounded-md border px-2 py-1 text-sm";
 ---
 
 <form
@@ -48,33 +46,25 @@ const selectClass =
   class="text-muted-foreground mb-2 flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-sm"
   data-post-list-controls
 >
-  <label class="flex items-center gap-2">
-    {t.postList.sort}
-    <select name="sort" class={selectClass}>
-      <option value="newest" selected={defaultSort === "newest"}>
-        {t.postList.newest}
-      </option>
-      <option value="oldest" selected={defaultSort === "oldest"}>
-        {t.postList.oldest}
-      </option>
-      <option value="series" selected={defaultSort === "series"}>
-        {t.postList.series}
-      </option>
-    </select>
-  </label>
-  <label class="flex items-center gap-2">
-    {t.postList.perPage}
-    <select name="size" class={selectClass}>
-      {
-        sizeOptions.map(size => (
-          <option value={size} selected={size === perPage}>
-            {size}
-          </option>
-        ))
-      }
-      <option value="all">{t.postList.all}</option>
-    </select>
-  </label>
+  <Select
+    name="sort"
+    label={t.postList.sort}
+    value={defaultSort}
+    options={[
+      { value: "newest", label: t.postList.newest },
+      { value: "oldest", label: t.postList.oldest },
+      { value: "series", label: t.postList.series },
+    ]}
+  />
+  <Select
+    name="size"
+    label={t.postList.perPage}
+    value={perPage}
+    options={[
+      ...sizeOptions.map(size => ({ value: size, label: String(size) })),
+      { value: "all", label: t.postList.all },
+    ]}
+  />
 </form>
 
 <ul data-post-list data-per-page={perPage} data-default-sort={defaultSort}>
@@ -148,6 +138,9 @@ const selectClass =
       : String(perPage);
     sortSelect.value = sort;
     sizeSelect.value = sizeValue;
+    for (const select of [sortSelect, sizeSelect]) {
+      select.dispatchEvent(new Event("select:sync"));
+    }
 
     const pageParam = Number(params.get("page") ?? "1");
     // No params (or ones that spell out the default view): leave the

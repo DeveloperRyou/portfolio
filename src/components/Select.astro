@@ -1,0 +1,310 @@
+---
+/**
+ * Themed select, modeled on Radix Themes' Select (surface trigger with a
+ * chevron, popover listbox with a check indicator and a solid accent
+ * highlight). A real `<select>` stays underneath as the source of truth:
+ * it's what the form submits and what's shown if the script never runs.
+ * Once enhanced, it's hidden and a select-only combobox (WAI-ARIA APG)
+ * drives it, firing a bubbling `change` on it like a native pick would.
+ *
+ * Code that sets the native select's `.value` directly should dispatch
+ * `select:sync` on it so the trigger's label follows.
+ */
+type Option = { value: string | number; label: string };
+
+type Props = {
+  name: string;
+  label: string;
+  options: Option[];
+  value?: string | number;
+  class?: string;
+};
+
+const { name, label, options, value, class: className } = Astro.props;
+
+const id = `select-${name}-${Math.random().toString(36).slice(2, 8)}`;
+const selected =
+  options.find(o => String(o.value) === String(value)) ?? options[0];
+---
+
+<div class:list={["flex items-center gap-2", className]} data-select>
+  <label for={`${id}-native`} id={`${id}-label`}>{label}</label>
+  <select
+    id={`${id}-native`}
+    name={name}
+    class="border-border bg-background text-foreground hover:border-border-strong focus-visible:outline-accent rounded-md border px-2 py-1 text-sm"
+    data-select-native
+  >
+    {
+      options.map(o => (
+        <option value={o.value} selected={o === selected}>
+          {o.label}
+        </option>
+      ))
+    }
+  </select>
+  <div class="relative" data-select-root hidden>
+    <button
+      type="button"
+      role="combobox"
+      aria-haspopup="listbox"
+      aria-expanded="false"
+      aria-controls={`${id}-listbox`}
+      aria-labelledby={`${id}-label ${id}-value`}
+      class="border-border bg-background text-foreground hover:border-border-strong focus-visible:outline-accent aria-expanded:border-border-strong inline-flex h-8 items-center gap-2 rounded-md border pr-2 pl-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2"
+      data-select-trigger
+    >
+      {
+        /* Every label stacked in one grid cell, only the current one visible,
+          so the trigger is as wide as the widest option and doesn't jump. */
+      }
+      <span class="grid text-left">
+        {
+          options.map(o => (
+            <span
+              class="invisible col-start-1 row-start-1 whitespace-nowrap"
+              aria-hidden="true"
+            >
+              {o.label}
+            </span>
+          ))
+        }
+        <span
+          id={`${id}-value`}
+          class="col-start-1 row-start-1 whitespace-nowrap"
+          data-select-value
+        >
+          {selected?.label}
+        </span>
+      </span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="text-muted-foreground size-4 shrink-0"
+        aria-hidden="true"
+      >
+        <path d="M6 9l6 6l6 -6"></path>
+      </svg>
+    </button>
+    <div
+      id={`${id}-listbox`}
+      role="listbox"
+      aria-labelledby={`${id}-label`}
+      tabindex="-1"
+      class="border-border bg-background absolute top-full left-0 z-30 mt-1 w-max min-w-full rounded-md border p-1 shadow-lg data-[align=end]:right-0 data-[align=end]:left-auto data-[side=top]:top-auto data-[side=top]:bottom-full data-[side=top]:mt-0 data-[side=top]:mb-1"
+      hidden
+      data-select-listbox
+    >
+      {
+        options.map((o, i) => (
+          <div
+            id={`${id}-option-${i}`}
+            role="option"
+            aria-selected={o === selected ? "true" : "false"}
+            data-value={o.value}
+            class="text-foreground data-highlighted:bg-accent data-highlighted:text-accent-foreground relative flex h-8 cursor-default items-center rounded-sm pr-3 pl-7 text-sm whitespace-nowrap select-none"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="absolute left-2 hidden size-3.5 [[aria-selected=true]>&]:block"
+              aria-hidden="true"
+            >
+              <path d="M5 12l5 5l10 -10" />
+            </svg>
+            {o.label}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</div>
+
+<script>
+  function enhance(root: HTMLElement) {
+    if (root.dataset.selectEnhanced) return;
+    root.dataset.selectEnhanced = "true";
+
+    const native = root.querySelector<HTMLSelectElement>(
+      "[data-select-native]"
+    )!;
+    const wrapper = root.querySelector<HTMLElement>("[data-select-root]")!;
+    const trigger = root.querySelector<HTMLButtonElement>(
+      "[data-select-trigger]"
+    )!;
+    const valueEl = root.querySelector<HTMLElement>("[data-select-value]")!;
+    const listbox = root.querySelector<HTMLElement>("[data-select-listbox]")!;
+    const items = [...listbox.querySelectorAll<HTMLElement>("[role=option]")];
+    const label = root.querySelector("label")!;
+
+    native.hidden = true;
+    wrapper.hidden = false;
+    // The label now names the combobox (via aria-labelledby); clicking it
+    // should focus the trigger, not the hidden native select.
+    label.removeAttribute("for");
+    label.addEventListener("click", () => trigger.focus());
+
+    let active = -1;
+    let typed = "";
+    let typedTimer: number | undefined;
+
+    const isOpen = () => !listbox.hidden;
+
+    function sync() {
+      const i = Math.max(0, native.selectedIndex);
+      items.forEach((item, j) =>
+        item.setAttribute("aria-selected", String(i === j))
+      );
+      valueEl.textContent = items[i]?.textContent?.trim() ?? "";
+    }
+
+    function highlight(i: number) {
+      active = Math.min(Math.max(i, 0), items.length - 1);
+      items.forEach((item, j) =>
+        item.toggleAttribute("data-highlighted", j === active)
+      );
+      trigger.setAttribute("aria-activedescendant", items[active].id);
+      items[active].scrollIntoView({ block: "nearest" });
+    }
+
+    function open() {
+      if (isOpen()) return;
+      listbox.hidden = false;
+      trigger.setAttribute("aria-expanded", "true");
+      // Flip to whichever side has room, like Radix's popper positioning.
+      const t = trigger.getBoundingClientRect();
+      const l = listbox.getBoundingClientRect();
+      listbox.dataset.side =
+        t.bottom + l.height + 8 > innerHeight && t.top > l.height + 8
+          ? "top"
+          : "bottom";
+      listbox.dataset.align =
+        t.left + l.width > innerWidth - 8 ? "end" : "start";
+      highlight(Math.max(0, native.selectedIndex));
+      document.addEventListener("pointerdown", onOutside, true);
+    }
+
+    function close() {
+      if (!isOpen()) return;
+      listbox.hidden = true;
+      trigger.setAttribute("aria-expanded", "false");
+      trigger.removeAttribute("aria-activedescendant");
+      items.forEach(item => item.removeAttribute("data-highlighted"));
+      document.removeEventListener("pointerdown", onOutside, true);
+    }
+
+    function choose(i: number) {
+      close();
+      trigger.focus();
+      if (i === native.selectedIndex) return;
+      native.selectedIndex = i;
+      sync();
+      native.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
+    function onOutside(e: Event) {
+      if (!root.contains(e.target as Node)) close();
+    }
+
+    function typeahead(key: string) {
+      clearTimeout(typedTimer);
+      typed += key.toLowerCase();
+      typedTimer = window.setTimeout(() => (typed = ""), 500);
+      const from = isOpen() ? active : native.selectedIndex;
+      const order = [...items.slice(from + 1), ...items.slice(0, from + 1)];
+      const match = order.find(item =>
+        item.textContent!.trim().toLowerCase().startsWith(typed)
+      );
+      if (!match) return;
+      const i = items.indexOf(match);
+      if (isOpen()) highlight(i);
+      else choose(i);
+    }
+
+    trigger.addEventListener("click", () => (isOpen() ? close() : open()));
+
+    trigger.addEventListener("keydown", e => {
+      if (!isOpen()) {
+        if (["ArrowDown", "ArrowUp", "Enter", " "].includes(e.key)) {
+          e.preventDefault();
+          open();
+        } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+          typeahead(e.key);
+        }
+        return;
+      }
+      switch (e.key) {
+        case "ArrowDown":
+          e.preventDefault();
+          highlight(active + 1);
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          highlight(active - 1);
+          break;
+        case "Home":
+        case "PageUp":
+          e.preventDefault();
+          highlight(0);
+          break;
+        case "End":
+        case "PageDown":
+          e.preventDefault();
+          highlight(items.length - 1);
+          break;
+        case "Enter":
+        case " ":
+          e.preventDefault();
+          choose(active);
+          break;
+        case "Escape":
+          e.preventDefault();
+          close();
+          break;
+        case "Tab":
+          choose(active);
+          break;
+        default:
+          if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+            typeahead(e.key);
+          }
+      }
+    });
+
+    trigger.addEventListener("blur", e => {
+      if (!listbox.contains(e.relatedTarget as Node)) close();
+    });
+
+    items.forEach((item, i) => {
+      item.addEventListener("pointermove", () => {
+        if (active !== i) highlight(i);
+      });
+      // Keep focus on the trigger so aria-activedescendant stays valid.
+      item.addEventListener("pointerdown", e => e.preventDefault());
+      item.addEventListener("click", () => choose(i));
+    });
+
+    native.addEventListener("change", sync);
+    native.addEventListener("select:sync", sync);
+    sync();
+  }
+
+  function setupSelects() {
+    document
+      .querySelectorAll<HTMLElement>("[data-select]")
+      .forEach(root => enhance(root));
+  }
+
+  setupSelects();
+  document.addEventListener("astro:page-load", setupSelects);
+</script>
