@@ -3,8 +3,6 @@ import type { CollectionEntry } from "astro:content";
 import Datetime from "@/components/Datetime.astro";
 import Tag from "@/components/Tag.astro";
 import EditPost from "@/components/post/EditPost.astro";
-import { tplStr, useTranslations } from "@/i18n";
-import { getReadingMinutes } from "@/utils/readingTime";
 import { toTransitionName } from "@/utils/toTransitionName";
 import config from "@/config";
 
@@ -16,10 +14,6 @@ const { post } = Astro.props;
 const { title, pubDatetime, modDatetime, timezone, tags, hideEditPost } =
   post.data;
 
-const t = useTranslations(Astro.currentLocale);
-const readingTime = tplStr(t.post.readingTime, {
-  minutes: getReadingMinutes(post.body),
-});
 const showEditPost = config.features.editPost?.enabled && !hideEditPost;
 ---
 
@@ -35,8 +29,6 @@ const showEditPost = config.features.editPost?.enabled && !hideEditPost;
     class="text-muted-foreground mt-4 flex flex-wrap items-center gap-x-3 gap-y-1"
   >
     <Datetime {pubDatetime} {modDatetime} {timezone} />
-    <span aria-hidden="true">·</span>
-    <span class="text-sm">{readingTime}</span>
     {
       showEditPost && (
         <>

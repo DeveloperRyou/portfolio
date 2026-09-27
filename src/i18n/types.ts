@@ -18,8 +18,6 @@ export interface UIStrings {
     editPage: string;
     previousPost: string;
     nextPost: string;
-    /** `{{minutes}}` is the estimated reading time in whole minutes. */
-    readingTime: string;
     tableOfContents: string;
   };
   pagination: {
