@@ -16,6 +16,7 @@ import { Font } from "astro:assets";
 import { Code } from "astro:components";
 import Layout from "@/layouts/Layout.astro";
 import LinkButton from "@/components/LinkButton.astro";
+import Select from "@/components/Select.astro";
 import Chip from "@/components/about/Chip.astro";
 import TechStack from "@/components/about/TechStack.astro";
 import Cards from "@/components/about/Cards.astro";
@@ -50,6 +51,7 @@ const navItems = [
   { href: "#typography", label: "Typography" },
   { href: "#prose", label: "Prose" },
   { href: "#buttons", label: "Buttons & Links" },
+  { href: "#select", label: "Select" },
   { href: "#chips", label: "Chips" },
   { href: "#tech-stack", label: "Tech Stack" },
   { href: "#cards", label: "Cards" },
@@ -238,6 +240,35 @@ const sampleProjects = [
         >
           Disabled
         </LinkButton>
+      </div>
+    </section>
+
+    <section id="select" class="mt-12 scroll-mt-24">
+      <h2 class="text-foreground mb-4 text-xl font-semibold">Select</h2>
+      <div
+        class="border-border text-muted-foreground flex flex-wrap items-center gap-x-6 gap-y-3 rounded-lg border p-4 text-sm"
+      >
+        <Select
+          name="sg-sort"
+          label="Sort"
+          value="newest"
+          options={[
+            { value: "newest", label: "Newest" },
+            { value: "oldest", label: "Oldest" },
+            { value: "series", label: "Series order" },
+          ]}
+        />
+        <Select
+          name="sg-size"
+          label="Per page"
+          value={10}
+          options={[
+            { value: 10, label: "10" },
+            { value: 20, label: "20" },
+            { value: 50, label: "50" },
+            { value: "all", label: "All" },
+          ]}
+        />
       </div>
     </section>
 
