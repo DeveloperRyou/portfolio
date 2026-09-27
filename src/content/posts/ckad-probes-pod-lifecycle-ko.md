@@ -105,7 +105,24 @@ probe 하나에 아래 네 가지 중 정확히 하나를 지정한다.
 
 결과는 `Success`, `Failure`, `Unknown`. `Unknown`은 진단 자체가 실패한 경우라 아무 조치 없이 다음 체크로 넘어간다.
 
-`httpGet`과 `tcpSocket`의 `port`에는 숫자 대신 `ports[].name`(named port)을 쓸 수 있다.
+### named port
+
+container 포트에 이름을 붙여 두고, 다른 곳에서 번호 대신 그 이름으로 가리키는 방식. `httpGet`과 `tcpSocket`의 `port`에 쓸 수 있다.
+
+```yaml
+ports:
+  - name: http # 8080에 "http"라는 이름을 붙임
+    containerPort: 8080
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: http # 숫자 대신 이름으로 지정
+```
+
+- 포트 번호를 `containerPort` 한 곳에서만 관리. 8080이 9090으로 바뀌어도 probe는 그대로 둔다
+- 같은 이름은 Service `targetPort`, NetworkPolicy `ports.port`에서도 참조할 수 있다. Service는 Pod마다 그 이름의 포트를 찾아가서, Pod끼리 번호가 달라도 하나로 묶인다
+- 이름 규칙: 최대 15자, 소문자·숫자·`-`, 문자 하나 이상, `-`로 시작하거나 끝나지 않음. 한 Pod 안에서 중복 불가
+- `grpc` 핸들러는 named port를 받지 않는다. 숫자만
 
 ## 타이밍 필드
 

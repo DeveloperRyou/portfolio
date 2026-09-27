@@ -105,7 +105,24 @@ Each probe specifies exactly one of these four.
 
 The result is `Success`, `Failure`, or `Unknown`. `Unknown` means the diagnostic itself failed, so nothing happens and it moves on to the next check.
 
-For `httpGet` and `tcpSocket`, `port` can take a `ports[].name` (named port) instead of a number.
+### named ports
+
+You give a container port a name, then refer to it by that name instead of the number elsewhere. `port` in `httpGet` and `tcpSocket` accepts it.
+
+```yaml
+ports:
+  - name: http # name port 8080 "http"
+    containerPort: 8080
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: http # refer to it by name, not number
+```
+
+- the port number lives only in `containerPort`. If 8080 becomes 9090, the probes stay as they are
+- the same name can be referenced from a Service `targetPort` and a NetworkPolicy `ports.port`. A Service looks up the port with that name in each Pod, so Pods using different numbers still sit behind one Service
+- naming rules: at most 15 characters, lowercase letters, digits, and `-`, at least one letter, can't start or end with `-`. Must be unique within a Pod
+- the `grpc` handler doesn't accept named ports. Numbers only
 
 ## Timing fields
 

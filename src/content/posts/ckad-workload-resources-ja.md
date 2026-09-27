@@ -57,6 +57,33 @@ Deployment は Pod と ReplicaSet の宣言的な更新を提供する。望む�
 - `maxSurge`: 望む数を超えて作れる Pod の最大数。デフォルト 25%、パーセントは切り上げ
 - 両方 0 にはできない
 
+例: `replicas: 3`、デフォルト 25%
+
+```text
+maxSurge       = ceil(3 * 0.25)  = ceil(0.75)  = 1  -> Pod は全体で最大 4 個
+maxUnavailable = floor(3 * 0.25) = floor(0.75) = 0  -> 利用可能な Pod は最低 3 個
+```
+
+- 既存の Pod を先に落とす余裕がないので、新しい Pod を 1 個立ち上げて ready になってから既存の Pod を 1 個落とす。これを 3 回繰り返す
+- `maxUnavailable` は切り捨てなので利用可能な Pod を減らしにくい側、`maxSurge` は切り上げなので replicas が少なくても最低 1 個は追加で立ち上げられる側。デフォルト値なら更新が止まらない
+- 両方 0 だと、Pod を追加で作ることも既存の Pod を落とすこともできず、更新が進まない。だから API が拒否する
+
+### Deployment のロールアウト
+
+```bash
+kubectl set image deployment/web nginx=nginx:1.16.1
+kubectl rollout status deployment/web
+kubectl rollout history deployment/web
+kubectl rollout undo deployment/web
+kubectl rollout undo deployment/web --to-revision=2
+kubectl rollout pause deployment/web
+kubectl rollout resume deployment/web
+kubectl scale deployment/web --replicas=5
+kubectl annotate deployment/web kubernetes.io/change-cause="image updated to 1.16.1"
+```
+
+`CHANGE-CAUSE` は `kubernetes.io/change-cause` annotation から来る。`--record` フラグは deprecated。
+
 ## StatefulSet
 
 StatefulSet は Pod ごとに固定の identity を保つ。次のどれか一つ以上が必要なときに使う。
@@ -88,6 +115,57 @@ StatefulSet は Pod ごとに固定の identity を保つ。次のどれか一�
 - StatefulSet を削除・スケールダウンしてもボリュームは消さない。`.spec.persistentVolumeClaimRetentionPolicy` の `whenDeleted`、`whenScaled` のデフォルトが `Retain`
 - StatefulSet を削除するとき、Pod の終了順序は保証されない。順番に落としたいなら先に replicas を 0 にスケール
 
+### StatefulSet と headless Service
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+spec:
+  clusterIP: None # headless Service。Pod ごとに DNS レコードができる
+  selector:
+    app: nginx
+  ports:
+    - port: 80
+      name: web
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web
+spec:
+  serviceName: nginx # Pod の DNS (web-0.nginx) に使う headless Service
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: registry.k8s.io/nginx-slim:0.24
+          ports:
+            - containerPort: 80
+              name: web
+          volumeMounts:
+            - name: www
+              mountPath: /usr/share/nginx/html
+  volumeClaimTemplates: # Pod ごとに PVC を 1 つずつ作成 (www-web-0, www-web-1, …)
+    - metadata:
+        name: www
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+```
+
+`storageClassName` を空にすると default StorageClass が使われる。
+
 ## DaemonSet
 
 DaemonSet は、すべての (または一部の) ノードで Pod のコピーが一つずつ動くことを保証する。
@@ -99,6 +177,30 @@ DaemonSet は、すべての (または一部の) ノードで Pod のコピー�
 - `.spec.selector` は作成後に変更不可、template のラベルと一致が必要
 - `.spec.updateStrategy.type`: `RollingUpdate` (デフォルト) または `OnDelete`
 - replica 数のフィールドがない。数は条件に合うノードの数で決まる
+
+### YAML の例
+
+```yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-agent
+spec:
+  selector:
+    matchLabels:
+      app: node-agent
+  template:
+    metadata:
+      labels:
+        app: node-agent
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+      containers:
+        - name: agent
+          image: busybox:1.28
+          command: ["sh", "-c", "sleep 3600"]
+```
 
 ## Job
 
@@ -135,6 +237,28 @@ Job は Pod を一つ以上作り、指定した数だけ正常終了するま�
 - `kubectl delete job <name>` で消すと Pod も一緒に消える
 - `.spec.ttlSecondsAfterFinished` を指定すると、終わってからその時間が経つと自動削除
 
+### YAML の例
+
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: batch-demo
+spec:
+  completions: 5
+  parallelism: 2
+  backoffLimit: 4 # 失敗時のリトライ上限。超えると Job は失敗
+  activeDeadlineSeconds: 120 # Job 全体の制限時間 (秒)。超えると Pod を終了し Job は失敗
+  ttlSecondsAfterFinished: 100 # 終了後この秒数が経つと Job と Pod を自動削除
+  template:
+    spec:
+      containers:
+        - name: worker
+          image: busybox:1.28
+          command: ["sh", "-c", "echo done"]
+      restartPolicy: Never
+```
+
 ## CronJob
 
 CronJob は繰り返しのスケジュールに従って Job を作る。crontab の一行に相当。
@@ -143,6 +267,21 @@ CronJob は繰り返しのスケジュールに従って Job を作る。crontab
 - `.spec.jobTemplate` (必須): Job spec と同じスキーマで、`apiVersion`・`kind` だけがない
 - `.spec.timeZone`: 指定しなければ kube-controller-manager のローカルタイムゾーン基準。`schedule` の中に `CRON_TZ` や `TZ` を書くと validation エラー
 - 名前は 52 文字以下。controller が Job 名に 11 文字を付け足し、Job 名の上限が 63 文字だから
+
+### schedule の step
+
+`/` は step (間隔)。`範囲/間隔` と読み、`*` はそのフィールドの全範囲。分フィールドの `*/2` は 0-59 を 0 から 2 ずつ飛ばして 0, 2, 4, …, 58 分。
+
+| schedule           | 意味                               |
+| ------------------ | ---------------------------------- |
+| `*/2 * * * *`      | 2 分ごと (0, 2, 4…分)              |
+| `*/15 * * * *`     | 15 分ごと (0, 15, 30, 45 分)       |
+| `0 */6 * * *`      | 6 時間ごとの正時 (0, 6, 12, 18 時) |
+| `0 9-18/3 * * 1-5` | 平日 9, 12, 15, 18 時の正時        |
+
+- 「実行から 2 分後」ではなく時計基準。1 分 40 秒に作っても最初の実行は 2 分
+- 割り切れないと境界で間隔が崩れる。分フィールドの `*/7` は 56 分の次が次の時間の 0 分なので、その間だけ 4 分
+- `* */2 * * *` は「2 時間ごと」ではなく、偶数時の間に毎分実行。2 時間ごとに 1 回なら `0 */2 * * *`
 
 ### 同時実行と遅延
 
@@ -160,6 +299,31 @@ CronJob は繰り返しのスケジュールに従って Job を作る。crontab
 - CronJob を修正しても、すでに始まった Job はそのまま。変更は次の新しい Job から
 - 一回のスケジュールで Job が二つできたり一つもできなかったりすることがあるので、Job は idempotent に作る
 
+### YAML の例
+
+```yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hello
+spec:
+  schedule: "*/5 * * * *"
+  timeZone: "Etc/UTC" # schedule を解釈するタイムゾーン
+  concurrencyPolicy: Forbid # 前の Job がまだ動いていれば今回の実行はスキップ (Allow/Forbid/Replace)
+  startingDeadlineSeconds: 200 # 予定時刻を逃しても、この秒数以内なら遅れて実行
+  successfulJobsHistoryLimit: 3 # 残しておく成功 Job の数
+  failedJobsHistoryLimit: 1 # 残しておく失敗 Job の数
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: hello
+              image: busybox:1.28
+              command: ["/bin/sh", "-c", "date; echo Hello"]
+          restartPolicy: OnFailure
+```
+
 ## 例
 
 ### imperative で骨組みを作る
@@ -175,144 +339,6 @@ kubectl create job pi --image=perl:5.34.0 --dry-run=client -o yaml > job.yaml
 ```
 
 `kubectl create` には `statefulset`、`daemonset` のサブコマンドがない。YAML を直接書くか、Deployment の YAML を書き出して直す。DaemonSet にするときは `kind` を変え、`replicas` と `strategy` を消す (DaemonSet のフィールド名は `updateStrategy`)。
-
-### Deployment のロールアウト
-
-```bash
-kubectl set image deployment/web nginx=nginx:1.16.1
-kubectl rollout status deployment/web
-kubectl rollout history deployment/web
-kubectl rollout undo deployment/web
-kubectl rollout undo deployment/web --to-revision=2
-kubectl rollout pause deployment/web
-kubectl rollout resume deployment/web
-kubectl scale deployment/web --replicas=5
-kubectl annotate deployment/web kubernetes.io/change-cause="image updated to 1.16.1"
-```
-
-`CHANGE-CAUSE` は `kubernetes.io/change-cause` annotation から来る。`--record` フラグは deprecated。
-
-### Job
-
-```yaml
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: batch-demo
-spec:
-  completions: 5
-  parallelism: 2
-  backoffLimit: 4
-  activeDeadlineSeconds: 120
-  ttlSecondsAfterFinished: 100
-  template:
-    spec:
-      containers:
-        - name: worker
-          image: busybox:1.28
-          command: ["sh", "-c", "echo done"]
-      restartPolicy: Never
-```
-
-### CronJob
-
-```yaml
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: hello
-spec:
-  schedule: "*/5 * * * *"
-  timeZone: "Etc/UTC"
-  concurrencyPolicy: Forbid
-  startingDeadlineSeconds: 200
-  successfulJobsHistoryLimit: 3
-  failedJobsHistoryLimit: 1
-  jobTemplate:
-    spec:
-      template:
-        spec:
-          containers:
-            - name: hello
-              image: busybox:1.28
-              command: ["/bin/sh", "-c", "date; echo Hello"]
-          restartPolicy: OnFailure
-```
-
-### StatefulSet と headless Service
-
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: nginx
-spec:
-  clusterIP: None
-  selector:
-    app: nginx
-  ports:
-    - port: 80
-      name: web
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: web
-spec:
-  serviceName: nginx
-  replicas: 3
-  selector:
-    matchLabels:
-      app: nginx
-  template:
-    metadata:
-      labels:
-        app: nginx
-    spec:
-      containers:
-        - name: nginx
-          image: registry.k8s.io/nginx-slim:0.24
-          ports:
-            - containerPort: 80
-              name: web
-          volumeMounts:
-            - name: www
-              mountPath: /usr/share/nginx/html
-  volumeClaimTemplates:
-    - metadata:
-        name: www
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        resources:
-          requests:
-            storage: 1Gi
-```
-
-`storageClassName` を空にすると default StorageClass が使われる。
-
-### DaemonSet
-
-```yaml
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: node-agent
-spec:
-  selector:
-    matchLabels:
-      app: node-agent
-  template:
-    metadata:
-      labels:
-        app: node-agent
-    spec:
-      nodeSelector:
-        kubernetes.io/os: linux
-      containers:
-        - name: agent
-          image: busybox:1.28
-          command: ["sh", "-c", "sleep 3600"]
-```
 
 ## 紛らわしいものの比較
 

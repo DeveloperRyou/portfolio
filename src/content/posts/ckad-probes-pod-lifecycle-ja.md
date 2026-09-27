@@ -105,7 +105,24 @@ startup probe が成功するまで liveness と readiness の probe は実行�
 
 結果は `Success`、`Failure`、`Unknown`。`Unknown` は診断自体が失敗した場合なので、何もせず次のチェックに進む。
 
-`httpGet` と `tcpSocket` の `port` には、数字の代わりに `ports[].name` (named port) を使える。
+### named port
+
+container のポートに名前を付けておき、ほかの場所では番号の代わりにその名前で参照する方法。`httpGet` と `tcpSocket` の `port` で使える。
+
+```yaml
+ports:
+  - name: http # 8080 に "http" という名前を付ける
+    containerPort: 8080
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: http # 番号の代わりに名前で指定
+```
+
+- ポート番号は `containerPort` の 1 か所だけで管理する。8080 が 9090 に変わっても probe はそのまま
+- 同じ名前は Service の `targetPort`、NetworkPolicy の `ports.port` からも参照できる。Service は Pod ごとにその名前のポートを探すので、Pod 間で番号が違っても 1 つにまとめられる
+- 命名規則: 最大 15 文字、小文字・数字・`-`、英字を 1 文字以上含む、`-` で始まったり終わったりしない。1 つの Pod 内で重複不可
+- `grpc` ハンドラは named port を受け付けない。数字のみ
 
 ## タイミングのフィールド
 

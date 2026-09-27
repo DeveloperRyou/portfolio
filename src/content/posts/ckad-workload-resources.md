@@ -57,6 +57,33 @@ A Deployment provides declarative updates for Pods and ReplicaSets. You write th
 - `maxSurge`: max Pods that can be created above the desired count. Default 25%, percentages round up
 - they can't both be 0
 
+Example: `replicas: 3`, default 25%
+
+```text
+maxSurge       = ceil(3 * 0.25)  = ceil(0.75)  = 1  -> at most 4 Pods in total
+maxUnavailable = floor(3 * 0.25) = floor(0.75) = 0  -> at least 3 available Pods
+```
+
+- there's no room to take an old Pod down first, so one new Pod comes up and only after it's ready does one old Pod go away. This repeats 3 times
+- `maxUnavailable` rounds down, so it errs toward taking fewer Pods out; `maxSurge` rounds up, so even with few replicas at least one extra Pod can start. With the defaults, an update never gets stuck
+- if both were 0, the Deployment could neither create an extra Pod nor take an old one down, so the update could never move. That's why the API rejects it
+
+### Deployment rollout
+
+```bash
+kubectl set image deployment/web nginx=nginx:1.16.1
+kubectl rollout status deployment/web
+kubectl rollout history deployment/web
+kubectl rollout undo deployment/web
+kubectl rollout undo deployment/web --to-revision=2
+kubectl rollout pause deployment/web
+kubectl rollout resume deployment/web
+kubectl scale deployment/web --replicas=5
+kubectl annotate deployment/web kubernetes.io/change-cause="image updated to 1.16.1"
+```
+
+`CHANGE-CAUSE` comes from the `kubernetes.io/change-cause` annotation. The `--record` flag is deprecated.
+
 ## StatefulSet
 
 A StatefulSet keeps a stable identity for each Pod. Use it when you need one or more of:
@@ -88,6 +115,57 @@ A StatefulSet keeps a stable identity for each Pod. Use it when you need one or 
 - deleting or scaling down a StatefulSet doesn't delete its volumes. The `whenDeleted` and `whenScaled` defaults in `.spec.persistentVolumeClaimRetentionPolicy` are `Retain`
 - deleting a StatefulSet doesn't guarantee any Pod termination order. To bring them down in order, scale replicas to 0 first
 
+### StatefulSet and headless Service
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+spec:
+  clusterIP: None # headless Service. Each Pod gets its own DNS record
+  selector:
+    app: nginx
+  ports:
+    - port: 80
+      name: web
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web
+spec:
+  serviceName: nginx # headless Service used for Pod DNS (web-0.nginx)
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: registry.k8s.io/nginx-slim:0.24
+          ports:
+            - containerPort: 80
+              name: web
+          volumeMounts:
+            - name: www
+              mountPath: /usr/share/nginx/html
+  volumeClaimTemplates: # one PVC per Pod (www-web-0, www-web-1, …)
+    - metadata:
+        name: www
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+```
+
+If `storageClassName` is left empty, the default StorageClass is used.
+
 ## DaemonSet
 
 A DaemonSet ensures that all (or some) nodes run one copy of a Pod.
@@ -99,6 +177,30 @@ A DaemonSet ensures that all (or some) nodes run one copy of a Pod.
 - `.spec.selector` can't be changed after creation and must match the template labels
 - `.spec.updateStrategy.type`: `RollingUpdate` (default) or `OnDelete`
 - there's no replica count field. The count comes from the number of matching nodes
+
+### YAML example
+
+```yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-agent
+spec:
+  selector:
+    matchLabels:
+      app: node-agent
+  template:
+    metadata:
+      labels:
+        app: node-agent
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+      containers:
+        - name: agent
+          image: busybox:1.28
+          command: ["sh", "-c", "sleep 3600"]
+```
 
 ## Job
 
@@ -135,6 +237,28 @@ A Job creates one or more Pods and keeps retrying until a given number of them t
 - `kubectl delete job <name>` deletes the Pods as well
 - set `.spec.ttlSecondsAfterFinished` to have it deleted automatically that long after it finishes
 
+### YAML example
+
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: batch-demo
+spec:
+  completions: 5
+  parallelism: 2
+  backoffLimit: 4 # retry limit on failure. Past it, the Job fails
+  activeDeadlineSeconds: 120 # time limit (s) for the whole Job. Past it, Pods are killed and the Job fails
+  ttlSecondsAfterFinished: 100 # delete the Job and its Pods this many seconds after it finishes
+  template:
+    spec:
+      containers:
+        - name: worker
+          image: busybox:1.28
+          command: ["sh", "-c", "echo done"]
+      restartPolicy: Never
+```
+
 ## CronJob
 
 A CronJob creates Jobs on a repeating schedule. It's one line of a crontab.
@@ -143,6 +267,21 @@ A CronJob creates Jobs on a repeating schedule. It's one line of a crontab.
 - `.spec.jobTemplate` (required): the same schema as a Job spec, minus `apiVersion` and `kind`
 - `.spec.timeZone`: without it, the kube-controller-manager's local time zone is used. Putting `CRON_TZ` or `TZ` inside `schedule` is a validation error
 - the name can be at most 52 characters, because the controller appends 11 characters to form Job names and Job names are limited to 63
+
+### schedule steps
+
+`/` is a step (interval). Read it as `range/interval`, where `*` is the field's full range. `*/2` in the minute field walks 0-59 from 0 in steps of 2: minutes 0, 2, 4, …, 58.
+
+| schedule           | meaning                                  |
+| ------------------ | ---------------------------------------- |
+| `*/2 * * * *`      | every 2 minutes (minute 0, 2, 4…)        |
+| `*/15 * * * *`     | every 15 minutes (minute 0, 15, 30, 45)  |
+| `0 */6 * * *`      | every 6 hours on the hour (0, 6, 12, 18) |
+| `0 9-18/3 * * 1-5` | weekdays at 9, 12, 15, 18 on the hour    |
+
+- it follows the clock, not "2 minutes after the last run". Created at 1:40, the first run is still at minute 2
+- if the step doesn't divide the range evenly, the interval breaks at the boundary. `*/7` in the minute field goes from minute 56 to minute 0 of the next hour, only 4 minutes apart
+- `* */2 * * *` isn't "every 2 hours" but every minute during even hours. For once every 2 hours, use `0 */2 * * *`
 
 ### Concurrency and delays
 
@@ -160,6 +299,31 @@ A CronJob creates Jobs on a repeating schedule. It's one line of a crontab.
 - editing a CronJob doesn't touch Jobs already started. Changes apply from the next new Job
 - a single scheduled run can produce two Jobs or none, so Jobs should be idempotent
 
+### YAML example
+
+```yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hello
+spec:
+  schedule: "*/5 * * * *"
+  timeZone: "Etc/UTC" # time zone the schedule is read in
+  concurrencyPolicy: Forbid # skip this run if the previous Job is still running (Allow/Forbid/Replace)
+  startingDeadlineSeconds: 200 # if the scheduled time is missed, still run it late within this many seconds
+  successfulJobsHistoryLimit: 3 # successful Jobs to keep
+  failedJobsHistoryLimit: 1 # failed Jobs to keep
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: hello
+              image: busybox:1.28
+              command: ["/bin/sh", "-c", "date; echo Hello"]
+          restartPolicy: OnFailure
+```
+
 ## Examples
 
 ### Imperative skeletons
@@ -175,144 +339,6 @@ kubectl create job pi --image=perl:5.34.0 --dry-run=client -o yaml > job.yaml
 ```
 
 `kubectl create` has no `statefulset` or `daemonset` subcommand. Write the YAML yourself, or dump a Deployment YAML and edit it. To turn it into a DaemonSet, change `kind` and delete `replicas` and `strategy` (the DaemonSet field is called `updateStrategy`).
-
-### Deployment rollout
-
-```bash
-kubectl set image deployment/web nginx=nginx:1.16.1
-kubectl rollout status deployment/web
-kubectl rollout history deployment/web
-kubectl rollout undo deployment/web
-kubectl rollout undo deployment/web --to-revision=2
-kubectl rollout pause deployment/web
-kubectl rollout resume deployment/web
-kubectl scale deployment/web --replicas=5
-kubectl annotate deployment/web kubernetes.io/change-cause="image updated to 1.16.1"
-```
-
-`CHANGE-CAUSE` comes from the `kubernetes.io/change-cause` annotation. The `--record` flag is deprecated.
-
-### Job
-
-```yaml
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: batch-demo
-spec:
-  completions: 5
-  parallelism: 2
-  backoffLimit: 4
-  activeDeadlineSeconds: 120
-  ttlSecondsAfterFinished: 100
-  template:
-    spec:
-      containers:
-        - name: worker
-          image: busybox:1.28
-          command: ["sh", "-c", "echo done"]
-      restartPolicy: Never
-```
-
-### CronJob
-
-```yaml
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: hello
-spec:
-  schedule: "*/5 * * * *"
-  timeZone: "Etc/UTC"
-  concurrencyPolicy: Forbid
-  startingDeadlineSeconds: 200
-  successfulJobsHistoryLimit: 3
-  failedJobsHistoryLimit: 1
-  jobTemplate:
-    spec:
-      template:
-        spec:
-          containers:
-            - name: hello
-              image: busybox:1.28
-              command: ["/bin/sh", "-c", "date; echo Hello"]
-          restartPolicy: OnFailure
-```
-
-### StatefulSet and headless Service
-
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: nginx
-spec:
-  clusterIP: None
-  selector:
-    app: nginx
-  ports:
-    - port: 80
-      name: web
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: web
-spec:
-  serviceName: nginx
-  replicas: 3
-  selector:
-    matchLabels:
-      app: nginx
-  template:
-    metadata:
-      labels:
-        app: nginx
-    spec:
-      containers:
-        - name: nginx
-          image: registry.k8s.io/nginx-slim:0.24
-          ports:
-            - containerPort: 80
-              name: web
-          volumeMounts:
-            - name: www
-              mountPath: /usr/share/nginx/html
-  volumeClaimTemplates:
-    - metadata:
-        name: www
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        resources:
-          requests:
-            storage: 1Gi
-```
-
-If `storageClassName` is left empty, the default StorageClass is used.
-
-### DaemonSet
-
-```yaml
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: node-agent
-spec:
-  selector:
-    matchLabels:
-      app: node-agent
-  template:
-    metadata:
-      labels:
-        app: node-agent
-    spec:
-      nodeSelector:
-        kubernetes.io/os: linux
-      containers:
-        - name: agent
-          image: busybox:1.28
-          command: ["sh", "-c", "sleep 3600"]
-```
 
 ## Easily confused
 

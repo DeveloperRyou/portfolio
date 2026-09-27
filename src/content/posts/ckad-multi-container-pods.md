@@ -78,6 +78,19 @@ The approach introduced by the `SidecarContainers` feature gate (enabled by defa
 - in a Job, once the main container finishes the Job completes even if the sidecar is still running
 - changing the image restarts just that container, not the Pod
 - if the main containers use up the whole grace period during shutdown, sidecars can get SIGKILL right away. A non-zero exit code in that case can be treated as normal
+  - grace period: how long the Pod gets between the delete request and a forced kill. Set with `spec.terminationGracePeriodSeconds`, 30 seconds by default. Any container still running when it runs out gets SIGKILL
+  - it's one timer shared by the whole Pod, not one per container. The clock keeps running while the main container handles its SIGTERM, so the longer the main container takes, the less time is left for sidecars
+  - example: 30-second grace period, the main container needs 28 seconds to clean up, and a log-shipping sidecar needs 5 seconds to flush its remaining logs
+
+    ```text
+    t=0s   Pod delete requested. SIGTERM to the main container
+    t=28s  main container exits (exit 0). Only now does the sidecar get SIGTERM
+    t=30s  deadline reached. SIGKILL to the sidecar mid-cleanup -> exit 137 (128+9)
+    ```
+
+    if the main container uses all 30 seconds, the sidecar never gets SIGTERM at all and is SIGKILLed along with the main container
+
+  - a sidecar only exists to support the main container, so if the main container shut down cleanly, the Pod's shutdown did its job. The official docs also say external tooling should generally ignore a sidecar's non-zero exit code here. Make sure monitoring doesn't flag a sidecar's 137 as a failure
 
 ### classic sidecars
 

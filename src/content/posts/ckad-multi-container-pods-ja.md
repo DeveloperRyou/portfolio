@@ -78,6 +78,19 @@ Pod の起動前に準備作業をする container。ドキュメントが挙げ
 - Job ではメイン container が終われば、sidecar が残っていても Job は完了する
 - image を変えると Pod ではなくその container だけが再起動
 - 終了処理でメイン container が grace period を使い切ると、sidecar はすぐに SIGKILL を受けることがある。その場合の 0 以外の exit code は正常とみなしてよい
+  - grace period: Pod の削除リクエストから強制終了までの猶予時間。`spec.terminationGracePeriodSeconds` で指定し、デフォルトは 30 秒。この間に終わらなかった container は SIGKILL で終了する
+  - container ごとではなく、Pod 全体で 1 つのタイマーを共有する。メインが SIGTERM を受けて後処理をしている間も時間は進むので、メインが長引くほど sidecar の持ち時間が減る
+  - 例: grace period 30 秒、メインの後処理に 28 秒、ログ収集 sidecar は残りのログを送るのに 5 秒かかる場合
+
+    ```text
+    t=0s   Pod 削除リクエスト。メインに SIGTERM
+    t=28s  メイン終了 (exit 0)。ここでやっと sidecar に SIGTERM
+    t=30s  期限到達。後処理中の sidecar に SIGKILL -> exit 137 (128+9)
+    ```
+
+    メインが 30 秒を使い切ると、sidecar は SIGTERM すら受けずにメインと一緒に SIGKILL を受ける
+
+  - sidecar はメインを補助する container なので、メインが正常に終了していれば Pod の終了は役目を果たしている。公式ドキュメントも、この場合の sidecar の 0 以外の exit code は外部ツールで無視するよう案内している。モニタリングが sidecar の 137 を障害として検知しないようにしておく
 
 ### 従来型の sidecar
 
