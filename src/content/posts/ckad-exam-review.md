@@ -14,6 +14,8 @@ For prep I reviewed the concepts twice, did killer.sh twice (30%, 66%), and ran 
 
 ![CKAD exam result: 80%, passing score 66%](/assets/blog/ckad-exam-review/result.png)
 
+![CKAD certificate](/assets/blog/ckad-exam-review/certificate.png)
+
 ## Preparation
 
 I use Kubernetes at work every day, so rather than learning the concepts from scratch I started by skimming the exam scope once.

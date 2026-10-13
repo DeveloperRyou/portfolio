@@ -14,6 +14,8 @@ order: 15
 
 ![CKAD 시험 결과: 80%, 합격선 66%](/assets/blog/ckad-exam-review/result.png)
 
+![CKAD 자격증](/assets/blog/ckad-exam-review/certificate.png)
+
 ## 준비 과정
 
 Kubernetes는 업무에서 매일 쓰고 있어서 개념을 처음부터 공부한다기보다는 시험 범위를 한 번 훑는 것부터 시작했습니다.

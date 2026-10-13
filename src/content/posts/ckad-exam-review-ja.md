@@ -14,6 +14,8 @@ order: 15
 
 ![CKAD 試験結果: 80%、合格ライン 66%](/assets/blog/ckad-exam-review/result.png)
 
+![CKAD 認定証](/assets/blog/ckad-exam-review/certificate.png)
+
 ## 準備
 
 Kubernetes は業務で毎日使っているので、概念を一から勉強するというよりは、試験範囲を一度ざっと見るところから始めました。
