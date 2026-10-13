@@ -1,7 +1,7 @@
 ---
 title: "CKAD 合格体験記"
 description: "2026年10月12日に受けた CKAD 試験に 80% で合格しました。準備の過程、試験を受けて感じたこと、解けなかった NetworkPolicy の問題を整理し直した復習ノートを残します。"
-pubDatetime: 2026-10-13T23:00:00
+pubDatetime: 2026-10-13T12:00:00
 topic: "project-cncf"
 subtopic: "ckad"
 tags: ["kubernetes", "ckad", "certification", "killer-sh"]

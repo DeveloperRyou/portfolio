@@ -1,7 +1,7 @@
 ---
 title: "CKAD exam review"
 description: "I passed the CKAD exam I took on October 12, 2026, with a score of 80%. Notes on how I prepared, what the exam felt like, and a write-up of the NetworkPolicy question I couldn't solve."
-pubDatetime: 2026-10-13T23:00:00
+pubDatetime: 2026-10-13T12:00:00
 topic: "project-cncf"
 subtopic: "ckad"
 tags: ["kubernetes", "ckad", "certification", "killer-sh"]
