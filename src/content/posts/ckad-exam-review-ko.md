@@ -1,7 +1,7 @@
 ---
 title: "CKAD 합격 후기"
 description: "2026년 10월 12일 CKAD 시험을 80%로 합격했습니다. 준비 과정, 시험을 보며 느낀 점, 못 푼 NetworkPolicy 문제를 다시 정리한 오답 노트를 남깁니다."
-pubDatetime: 2026-10-13T23:00:00
+pubDatetime: 2026-10-13T12:00:00
 topic: "project-cncf"
 subtopic: "ckad"
 tags: ["kubernetes", "ckad", "certification", "killer-sh"]
