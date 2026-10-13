@@ -12,17 +12,16 @@ draft: true
 
 2026년 10월 12일에 CKAD 시험을 봤고, 다음 날인 13일에 80%로 합격했다는 결과와 자격증을 받았습니다.
 준비는 개념 복습 두 번, killer.sh 두 번(30%, 66%), 직접 만든 [cncf-practice](https://github.com/DeveloperRyou/cncf-practice)에서 30분짜리 모의 세션 다섯 번 정도였습니다.
-돌아보면 점수를 올린 건 개념 공부보다 손으로 직접 푸는 연습이었어요.
 
 ![CKAD 시험 결과: 80%, 합격선 66%](/assets/blog/ckad-exam-review/result.png)
 
 ## 준비 과정
 
-Kubernetes는 업무에서 매일 쓰고 있어서, 개념을 처음부터 공부한다기보다는 시험 범위를 한 번 훑는 것부터 시작했습니다.
+Kubernetes는 업무에서 쓰고 있어서 시험 범위를 한 번 훑는 것부터 시작했습니다.
 Linux Foundation의 트레이닝 포털에 있는 CKAD 내용을 쭉 읽고, AI와 함께 커리큘럼 항목별로 [개념 노트](/ko/topics/project-cncf/ckad)를 정리했어요. 노트를 쓰면서 한 번, 다 쓰고 처음부터 다시 읽으면서 한 번, 그렇게 두 바퀴 정도 복습했습니다.
 
 실습은 따로 문제집 없이 바로 killer.sh로 들어갔습니다. 첫 점수가 30%였어요.
-업무에서 쓰는 내용이라 어느 정도는 나올 줄 알았는데, 시간 안에 명령어를 치고 YAML을 고치는 건 완전히 다른 일이었습니다. 이 점수를 보고 연습을 훨씬 많이 해야겠다고 판단했어요.
+점수가 낮아서 연습을 훨씬 많이 해야겠다고 판단했어요.
 
 그런데 killer.sh 세션은 시험 한 번에 두 번만 주어집니다. 그래서 실제 시험처럼 풀어 볼 수 있는 로컬 모의고사 환경인 cncf-practice를 만들었어요. 만든 이유와 구조는 [cncf-practice 소개 글](/ko/posts/cncf-practice-intro)에 따로 정리해 두었습니다.
 두 번째 killer.sh는 66%였고, cncf-practice에서는 30분짜리 세션을 다섯 번 정도 풀었습니다. 실전처럼 풀어 보는 연습이 제일 중요했던 것 같아요.
@@ -42,10 +41,10 @@ Linux Foundation의 트레이닝 포털에 있는 CKAD 내용을 쭉 읽고, AI�
 ## 오답 노트: NetworkPolicy와 Pod label
 
 못 푼 문제 하나가 NetworkPolicy였습니다. 시험 내용은 공개할 수 없으니 문제 대신, 시험이 끝나고 다시 찾아본 개념을 정리해 둡니다.
-제가 놓친 건 **NetworkPolicy와 Pod는 label로만 연결된다**는 점이었어요.
+NetworkPolicy와 Pod는 label로 연결됩니다.
 
 NetworkPolicy는 `spec.podSelector`로 자기가 적용될 Pod를 고르고, `ingress.from`과 `egress.to` 안의 `podSelector`(필요하면 `namespaceSelector`)로 통신 상대 Pod를 고릅니다. 둘 다 label selector예요.
-Pod 쪽에는 "이 정책을 적용해 줘" 같은 필드가 없습니다. 그러니 정책이 이미 만들어져 있는 상황이라면, 손댈 곳은 정책이 아니라 Pod의 label일 수 있어요. Pod에 정책이 기대하는 label을 붙이면 그 순간부터 정책이 적용됩니다.
+Pod 쪽에는 "이 정책을 적용해 줘" 같은 필드가 없습니다. 그래서 정책이 기대하는 label을 붙이면 그 순간부터 정책이 적용됩니다.
 
 ```yaml
 apiVersion: networking.k8s.io/v1
@@ -90,7 +89,7 @@ Deployment가 관리하는 Pod라면 Pod에 직접 붙이는 대신 `spec.templa
 ## 회고
 
 난이도는 전반적으로 중하 정도로 느꼈어요. 대부분 업무에서 쓰는 내용이었으니까요.
-다만 개념이 쉽다고 해서 문제가 쉬운 건 아니었습니다. 머릿속으로는 아는 걸 제한 시간 안에 정확한 명령어로 옮기고, 결과를 확인하고, 틀린 데를 다시 고치는 과정이 생각보다 머리를 많이 썼어요. killer.sh 첫 점수가 30%였던 것도 결국 이 차이였습니다.
+개념은 쉬운데, 실제로 명령어를 넣어 가면서 수정하는 게 생각보다 머리를 많이 썼어요.
 
 오랜만에 AI 없이 직접 클러스터를 만지면서 기초 체력을 확인해 본 느낌이라 좋았습니다.
 다음 목표는 CKA입니다.
