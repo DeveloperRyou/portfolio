@@ -7,7 +7,6 @@ subtopic: "ckad"
 tags: ["kubernetes", "ckad", "certification", "killer-sh"]
 coverImage: "/assets/blog/ckad-exam-review/certificate.png"
 order: 15
-draft: true
 ---
 
 2026년 10월 12일에 CKAD 시험을 봤고 다음 날인 13일에 80%로 합격했다는 결과와 자격증을 받았습니다.
@@ -57,18 +56,18 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      role: api          # 이 label이 붙은 Pod에 적용
+      role: api # 이 label이 붙은 Pod에 적용
   policyTypes: ["Ingress", "Egress"]
   ingress:
     - from:
         - podSelector:
             matchLabels:
-              role: frontend   # 이 label이 붙은 Pod에서 오는 것만 허용
+              role: frontend # 이 label이 붙은 Pod에서 오는 것만 허용
   egress:
     - to:
         - podSelector:
             matchLabels:
-              role: db         # 이 label이 붙은 Pod로 가는 것만 허용
+              role: db # 이 label이 붙은 Pod로 가는 것만 허용
 ```
 
 이 정책이 있다면, 어떤 Pod를 "frontend에서만 받고 db로만 보내게" 만드는 방법은 그 Pod에 `role=api`를 붙이는 거예요. 상대 Pod에도 각각 `role=frontend`, `role=db`가 붙어 있어야 허용 규칙이 맞아떨어집니다.
