@@ -170,12 +170,12 @@ Operator = CRD + 그 CRD를 watch하는 controller. 사람이 하던 운영 절�
 
 Calico는 operator 방식으로 설치했음.
 
-| 구성                | 이 클러스터                                    |
-| ------------------- | ---------------------------------------------- |
-| operator Deployment | `tigera-operator/tigera-operator`              |
-| CRD                 | `operator.tigera.io` 그룹 등 (`kubectl get crd | grep tigera` → 9개) |
-| custom resource     | `Installation default`, `APIServer default` 등 |
-| 상태                | `kubectl get tigerastatus`                     |
+| 구성                | 이 클러스터                                                           |
+| ------------------- | --------------------------------------------------------------------- |
+| operator Deployment | `tigera-operator/tigera-operator`                                     |
+| CRD                 | `operator.tigera.io` 그룹 등 (`kubectl get crd \| grep tigera` → 9개) |
+| custom resource     | `Installation default`, `APIServer default` 등                        |
+| 상태                | `kubectl get tigerastatus`                                            |
 
 ```bash
 kubectl get installation default -o jsonpath='{.spec.calicoNetwork.ipPools}'

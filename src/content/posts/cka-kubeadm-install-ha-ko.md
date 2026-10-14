@@ -303,7 +303,7 @@ sudo kubeadm join 192.168.122.100:6443 --token <token> \
 - 올린 인증서와 키는 2시간 뒤 삭제됨. 그 뒤에 control plane을 추가하려면 `sudo kubeadm init phase upload-certs --upload-certs`로 다시 올리고 새 키를 받음
 - worker join은 `--control-plane`, `--certificate-key` 없이 같은 endpoint로
 
-결과: control plane 3대, etcd member 3개.
+결과: control plane 3대, etcd member 3개. HA 실습은 VM 3대를 모두 control plane으로 다시 구성해서, 이름은 그대로지만 cka-w1, cka-w2도 control plane.
 
 ```text
 $ etcdctl member list -w table
