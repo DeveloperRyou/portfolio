@@ -6,7 +6,6 @@ topic: "project-cncf"
 subtopic: "cka"
 tags: ["kubernetes", "cka", "kubeadm", "upgrade", "etcd", "certificates"]
 order: 4
-draft: true
 ---
 
 > 기준: kubeadm 클러스터 v1.34.12 → v1.35.9 (libvirt VM 3대: control plane 1, worker 2), etcd 3.6.5 / 3.6.6, etcdctl·etcdutl 3.6.5에서 명령어 확인

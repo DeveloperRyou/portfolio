@@ -6,7 +6,6 @@ topic: "project-cncf"
 subtopic: "cka"
 tags: ["kubernetes", "cka", "cni", "csi", "cri", "operator", "helm"]
 order: 6
-draft: true
 ---
 
 > 기준: kubeadm 클러스터 v1.35.9 (libvirt VM 3대), containerd 2.4.1, Calico v3.33.0, Helm v4.3.0에서 명령어 확인

@@ -7,7 +7,6 @@ subtopic: "cka"
 tags:
   ["kubernetes", "cka", "troubleshooting", "kubelet", "crictl", "static-pod"]
 order: 11
-draft: true
 ---
 
 > 기준: kubeadm 클러스터 v1.35.9 (libvirt VM 3대), containerd 2.4.1, crictl v1.35.0에서 직접 고장 내고 확인

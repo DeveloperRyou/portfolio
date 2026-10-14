@@ -6,7 +6,6 @@ topic: "project-cncf"
 subtopic: "cka"
 tags: ["kubernetes", "cka", "scheduling", "affinity", "taint", "priorityclass"]
 order: 7
-draft: true
 ---
 
 > 기준: kubeadm 클러스터 v1.35.9 (control plane 1 + worker 2, worker당 CPU 2)에서 명령어 확인

@@ -6,7 +6,6 @@ topic: "project-cncf"
 subtopic: "cka"
 tags: ["kubernetes", "cka", "rbac", "csr", "kubeconfig"]
 order: 5
-draft: true
 ---
 
 > 기준: kubeadm 클러스터 v1.35.9 (libvirt VM 3대)에서 명령어 확인

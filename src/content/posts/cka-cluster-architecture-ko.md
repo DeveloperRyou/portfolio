@@ -6,7 +6,6 @@ topic: "project-cncf"
 subtopic: "cka"
 tags: ["kubernetes", "cka", "control-plane", "kubelet", "static-pod"]
 order: 2
-draft: true
 ---
 
 > 기준: kubeadm 클러스터 v1.35.9 (libvirt VM 3대: control plane 1, worker 2), containerd 2.4.1에서 명령어 확인

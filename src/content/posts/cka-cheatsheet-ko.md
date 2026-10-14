@@ -6,7 +6,6 @@ topic: "project-cncf"
 subtopic: "cka"
 tags: ["kubernetes", "cka", "kubectl", "kubeadm", "cheatsheet"]
 order: 1
-draft: true
 ---
 
 > 기준: Kubernetes v1.35. 명령어는 kubeadm 클러스터(v1.34.12 → v1.35.9, libvirt VM 3대)에서 확인

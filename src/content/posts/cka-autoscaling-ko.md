@@ -6,7 +6,6 @@ topic: "project-cncf"
 subtopic: "cka"
 tags: ["kubernetes", "cka", "hpa", "autoscaling", "metrics-server"]
 order: 8
-draft: true
 ---
 
 > 기준: kubeadm 클러스터 v1.35.9, kubectl v1.35.9, metrics-server 0.9.0 (Helm chart 3.14.0)에서 명령어 확인

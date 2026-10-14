@@ -6,7 +6,6 @@ topic: "project-cncf"
 subtopic: "cka"
 tags: ["kubernetes", "cka", "networking", "kube-proxy", "coredns", "dns"]
 order: 9
-draft: true
 ---
 
 > 기준: kubeadm 클러스터 v1.35.9 (libvirt VM 3대, 노드 네트워크 192.168.122.0/24), Calico v3.33.0, CoreDNS v1.13.1에서 명령어 확인

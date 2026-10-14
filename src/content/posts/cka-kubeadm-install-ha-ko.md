@@ -6,7 +6,6 @@ topic: "project-cncf"
 subtopic: "cka"
 tags: ["kubernetes", "cka", "kubeadm", "containerd", "high-availability"]
 order: 3
-draft: true
 ---
 
 > 기준: Kubernetes v1.34.12 / v1.35.9, kubeadm. libvirt VM 3대(Ubuntu 24.04, 2 vCPU, 2.5~3GB), containerd 2.4.1, Calico v3.33.0에서 명령어 확인

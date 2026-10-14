@@ -6,7 +6,6 @@ topic: "project-cncf"
 subtopic: "cka"
 tags: ["kubernetes", "cka", "gateway-api", "ingress", "httproute"]
 order: 10
-draft: true
 ---
 
 > 기준: kubeadm 클러스터 v1.35.9, Gateway API v1.6.1 CRD (standard channel), NGINX Gateway Fabric v2.7.2, ingress-nginx chart 4.15.1 (controller 1.15.1)에서 명령어 확인

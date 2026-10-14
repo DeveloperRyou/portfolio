@@ -7,7 +7,6 @@ subtopic: "cka"
 tags:
   ["kubernetes", "cka", "troubleshooting", "logging", "kubectl-top", "service"]
 order: 12
-draft: true
 ---
 
 > 기준: kubeadm 클러스터 v1.35.9, metrics-server 0.9.0, Calico v3.33.0에서 직접 고장 내고 확인
