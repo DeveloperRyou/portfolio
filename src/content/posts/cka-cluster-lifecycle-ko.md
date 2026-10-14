@@ -17,13 +17,13 @@ draft: true
 
 upgrade 순서는 "어떤 컴포넌트가 apiserver보다 얼마나 앞서거나 뒤처져도 되는가"에서 나옴.
 
-| 컴포넌트 | kube-apiserver 대비 허용 범위 |
-| --- | --- |
-| kube-apiserver (HA) | apiserver끼리 minor 1 차이까지 |
-| kube-controller-manager, kube-scheduler | 같거나 1 minor 낮음. 높으면 안 됨 |
-| kubelet | 같거나 최대 3 minor 낮음. 높으면 안 됨 |
-| kube-proxy | 같거나 최대 3 minor 낮음. 높으면 안 됨 |
-| kubectl | ±1 minor |
+| 컴포넌트                                | kube-apiserver 대비 허용 범위          |
+| --------------------------------------- | -------------------------------------- |
+| kube-apiserver (HA)                     | apiserver끼리 minor 1 차이까지         |
+| kube-controller-manager, kube-scheduler | 같거나 1 minor 낮음. 높으면 안 됨      |
+| kubelet                                 | 같거나 최대 3 minor 낮음. 높으면 안 됨 |
+| kube-proxy                              | 같거나 최대 3 minor 낮음. 높으면 안 됨 |
+| kubectl                                 | ±1 minor                               |
 
 여기서 나오는 규칙:
 
@@ -32,12 +32,12 @@ upgrade 순서는 "어떤 컴포넌트가 apiserver보다 얼마나 앞서거나
 
 ## upgrade 순서
 
-| 순서 | 노드 | 명령 |
-| --- | --- | --- |
-| 1 | 첫 control plane | 저장소 변경 → kubeadm 설치 → `kubeadm upgrade plan` → `kubeadm upgrade apply v1.35.9` |
-| 2 | 나머지 control plane | kubeadm 설치 → `kubeadm upgrade node` |
-| 3 | 각 control plane | drain → kubelet, kubectl 설치 → kubelet 재시작 → uncordon |
-| 4 | worker 하나씩 | kubeadm 설치 → `kubeadm upgrade node` → drain → kubelet, kubectl 설치 → kubelet 재시작 → uncordon |
+| 순서 | 노드                 | 명령                                                                                              |
+| ---- | -------------------- | ------------------------------------------------------------------------------------------------- |
+| 1    | 첫 control plane     | 저장소 변경 → kubeadm 설치 → `kubeadm upgrade plan` → `kubeadm upgrade apply v1.35.9`             |
+| 2    | 나머지 control plane | kubeadm 설치 → `kubeadm upgrade node`                                                             |
+| 3    | 각 control plane     | drain → kubelet, kubectl 설치 → kubelet 재시작 → uncordon                                         |
+| 4    | worker 하나씩        | kubeadm 설치 → `kubeadm upgrade node` → drain → kubelet, kubectl 설치 → kubelet 재시작 → uncordon |
 
 `kubeadm upgrade apply`는 클러스터 전체에서 한 번만. 나머지 노드는 전부 `kubeadm upgrade node`.
 
@@ -145,11 +145,11 @@ worker의 `kubeadm upgrade node`는 kubelet 설정(`/var/lib/kubelet/config.yaml
 
 ## drain, cordon, uncordon
 
-| 명령 | 스케줄 막기 | 기존 Pod |
-| --- | --- | --- |
-| `kubectl cordon <node>` | O | 그대로 |
-| `kubectl drain <node>` | O (먼저 cordon) | eviction으로 내보냄 |
-| `kubectl uncordon <node>` | 해제 | 변화 없음 |
+| 명령                      | 스케줄 막기     | 기존 Pod            |
+| ------------------------- | --------------- | ------------------- |
+| `kubectl cordon <node>`   | O               | 그대로              |
+| `kubectl drain <node>`    | O (먼저 cordon) | eviction으로 내보냄 |
+| `kubectl uncordon <node>` | 해제            | 변화 없음           |
 
 옵션 없이 drain하면 거부되는 경우:
 
@@ -159,12 +159,12 @@ cannot delete DaemonSet-managed Pods (use --ignore-daemonsets to ignore):
 cannot delete Pods that declare no controller (use --force to override): default/plain
 ```
 
-| 상황 | 옵션 | 결과 |
-| --- | --- | --- |
-| DaemonSet Pod | `--ignore-daemonsets` | 건너뜀. 노드에 그대로 남음 |
-| controller 없는 Pod | `--force` | 삭제. 다시 만들어지지 않음 |
-| emptyDir 쓰는 Pod | `--delete-emptydir-data` | 삭제. emptyDir 데이터는 사라짐 |
-| PodDisruptionBudget 위반 | (없음) | 계속 재시도 |
+| 상황                     | 옵션                     | 결과                           |
+| ------------------------ | ------------------------ | ------------------------------ |
+| DaemonSet Pod            | `--ignore-daemonsets`    | 건너뜀. 노드에 그대로 남음     |
+| controller 없는 Pod      | `--force`                | 삭제. 다시 만들어지지 않음     |
+| emptyDir 쓰는 Pod        | `--delete-emptydir-data` | 삭제. emptyDir 데이터는 사라짐 |
+| PodDisruptionBudget 위반 | (없음)                   | 계속 재시도                    |
 
 - drain이 실패해도 cordon은 이미 걸려 있음. 다시 drain하면 `node/cka-w2 already cordoned`
 - `minAvailable: 2`인 PDB가 걸린 replicas 2 Deployment의 노드를 drain하면 `Cannot evict pod as it would violate the pod's disruption budget.`가 5초마다 반복됨. `--timeout=10s`를 주면 `global timeout reached: 10s`로 끝남
@@ -174,10 +174,10 @@ cannot delete Pods that declare no controller (use --force to override): default
 
 ### 도구
 
-| 도구 | 용도 | 비고 |
-| --- | --- | --- |
-| `etcdctl` | 실행 중인 etcd에 네트워크로 접속 | `snapshot save` |
-| `etcdutl` | etcd 데이터 파일을 직접 다룸 | `snapshot status`, `snapshot restore` |
+| 도구      | 용도                             | 비고                                  |
+| --------- | -------------------------------- | ------------------------------------- |
+| `etcdctl` | 실행 중인 etcd에 네트워크로 접속 | `snapshot save`                       |
+| `etcdutl` | etcd 데이터 파일을 직접 다룸     | `snapshot status`, `snapshot restore` |
 
 etcd 3.6.5의 `etcdctl snapshot`에는 `save` 하나만 남아 있음. status와 restore는 `etcdutl`로.
 
@@ -236,9 +236,9 @@ sudo vi /etc/kubernetes/manifests/etcd.yaml
 ```
 
 ```yaml
-  volumes:
+volumes:
   - hostPath:
-      path: /var/lib/etcd-from-backup   # 원래 /var/lib/etcd
+      path: /var/lib/etcd-from-backup # 원래 /var/lib/etcd
       type: DirectoryOrCreate
     name: etcd-data
 ```
@@ -299,10 +299,10 @@ front-proxy-ca          Oct 10, 2036 16:21 UTC   9y
 
 ### 갱신
 
-| 방법 | 언제 |
-| --- | --- |
+| 방법                                     | 언제                                                                 |
+| ---------------------------------------- | -------------------------------------------------------------------- |
 | `kubeadm upgrade apply` / `upgrade node` | upgrade할 때 자동 갱신. 1년 안에 한 번씩 upgrade하면 따로 할 일 없음 |
-| `kubeadm certs renew all` | 수동 갱신. 이름을 주면 하나만 (`kubeadm certs renew apiserver`) |
+| `kubeadm certs renew all`                | 수동 갱신. 이름을 주면 하나만 (`kubeadm certs renew apiserver`)      |
 
 ```bash
 sudo kubeadm certs renew all
@@ -315,15 +315,15 @@ sudo kubeadm certs renew all
 
 ## 헷갈리는 것 비교
 
-| 비교 | A | B |
-| --- | --- | --- |
+| 비교                                      | A                                                | B                                                                  |
+| ----------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------ |
 | `kubeadm upgrade apply` vs `upgrade node` | 첫 control plane에서 한 번. 클러스터 버전을 올림 | 나머지 control plane과 worker. 그 노드의 manifest와 kubelet 설정만 |
-| `kubectl get nodes` VERSION | kubelet 버전 | control plane 버전은 `kubectl version`이나 static Pod 이미지 |
-| cordon vs drain | 스케줄만 막음 | 스케줄 막고 Pod 내보냄 |
-| `--ignore-daemonsets` vs `--force` | DaemonSet Pod를 건너뜀 | controller 없는 Pod를 지움 |
-| `etcdctl` vs `etcdutl` | 실행 중인 etcd에 접속. save | 파일 직접. status, restore |
-| `--data-dir` vs hostPath | 컨테이너 안 경로. 그대로 둠 | 호스트 경로. 복원한 디렉터리로 바꿈 |
-| leaf vs CA 인증서 | 1년. renew로 갱신 | 10년. renew 대상 아님 |
+| `kubectl get nodes` VERSION               | kubelet 버전                                     | control plane 버전은 `kubectl version`이나 static Pod 이미지       |
+| cordon vs drain                           | 스케줄만 막음                                    | 스케줄 막고 Pod 내보냄                                             |
+| `--ignore-daemonsets` vs `--force`        | DaemonSet Pod를 건너뜀                           | controller 없는 Pod를 지움                                         |
+| `etcdctl` vs `etcdutl`                    | 실행 중인 etcd에 접속. save                      | 파일 직접. status, restore                                         |
+| `--data-dir` vs hostPath                  | 컨테이너 안 경로. 그대로 둠                      | 호스트 경로. 복원한 디렉터리로 바꿈                                |
+| leaf vs CA 인증서                         | 1년. renew로 갱신                                | 10년. renew 대상 아님                                              |
 
 ## 시험 포인트
 

@@ -4,7 +4,8 @@ description: "kubectl top으로 리소스 사용량을 보고, kubectl logs의 �
 pubDatetime: 2026-10-14T01:12:00
 topic: "project-cncf"
 subtopic: "cka"
-tags: ["kubernetes", "cka", "troubleshooting", "logging", "kubectl-top", "service"]
+tags:
+  ["kubernetes", "cka", "troubleshooting", "logging", "kubectl-top", "service"]
 order: 12
 draft: true
 ---
@@ -52,16 +53,16 @@ calico-system   calico-node-lnw7f        32m          122Mi
 
 컨테이너 두 개(`out`: 2초마다 stdout과 stderr에 한 줄씩, `crash`: 5초 뒤 exit 3)짜리 Pod로 확인.
 
-| 명령 | 결과 |
-| --- | --- |
-| `kubectl logs logger` | `Defaulted container "out" out of: out, crash` 후 첫 번째 컨테이너 로그 |
-| `kubectl logs logger -c out --tail=2` | `out-19`, `err-19` (stdout과 stderr가 섞여서 나옴) |
-| `kubectl logs logger --all-containers --prefix --tail=1` | `[pod/logger/out] err-19`, `[pod/logger/crash] boom` |
-| `kubectl logs logger -c out --since=5s --timestamps` | 앞에 RFC3339 시각 |
-| `kubectl logs <pod> --previous` | 재시작 전 컨테이너 로그 |
-| `kubectl logs -f` | 따라가기 |
-| `kubectl logs deploy/web` | Deployment의 Pod 하나 |
-| `kubectl logs -l app=web` | label로 여러 Pod |
+| 명령                                                     | 결과                                                                    |
+| -------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `kubectl logs logger`                                    | `Defaulted container "out" out of: out, crash` 후 첫 번째 컨테이너 로그 |
+| `kubectl logs logger -c out --tail=2`                    | `out-19`, `err-19` (stdout과 stderr가 섞여서 나옴)                      |
+| `kubectl logs logger --all-containers --prefix --tail=1` | `[pod/logger/out] err-19`, `[pod/logger/crash] boom`                    |
+| `kubectl logs logger -c out --since=5s --timestamps`     | 앞에 RFC3339 시각                                                       |
+| `kubectl logs <pod> --previous`                          | 재시작 전 컨테이너 로그                                                 |
+| `kubectl logs -f`                                        | 따라가기                                                                |
+| `kubectl logs deploy/web`                                | Deployment의 Pod 하나                                                   |
+| `kubectl logs -l app=web`                                | label로 여러 Pod                                                        |
 
 `--previous` 확인: 25초 뒤 exit 1로 끝나는 컨테이너가 한 번 재시작한 뒤
 
@@ -104,14 +105,14 @@ $ sudo sh -c 'tail -n2 /var/log/pods/app_logger_*/out/0.log'
 
 nginx Deployment(`app=web`, replicas 2)와 busybox 클라이언트로, 하나씩 망가뜨려 `wget` 결과를 비교함.
 
-| 고장 | EndpointSlice | 클라이언트 결과 |
-| --- | --- | --- |
-| 정상 | Pod IP 2개, port 80 | `Welcome to nginx!` |
-| selector 불일치 | `<unset>` (endpoint 없음) | `Connection refused` |
-| targetPort 틀림 (8080) | Pod IP 2개, port 8080 | `Connection refused` |
-| readiness 실패 Pod | 그 Pod만 `ready=false` | 나머지 Pod로 정상 응답 |
-| CoreDNS replicas 0 | `kube-dns` endpoint 없음 | 이름은 `bad address`, ClusterIP로는 정상 |
-| NetworkPolicy default deny ingress | 정상 | `download timed out` |
+| 고장                               | EndpointSlice             | 클라이언트 결과                          |
+| ---------------------------------- | ------------------------- | ---------------------------------------- |
+| 정상                               | Pod IP 2개, port 80       | `Welcome to nginx!`                      |
+| selector 불일치                    | `<unset>` (endpoint 없음) | `Connection refused`                     |
+| targetPort 틀림 (8080)             | Pod IP 2개, port 8080     | `Connection refused`                     |
+| readiness 실패 Pod                 | 그 Pod만 `ready=false`    | 나머지 Pod로 정상 응답                   |
+| CoreDNS replicas 0                 | `kube-dns` endpoint 없음  | 이름은 `bad address`, ClusterIP로는 정상 |
+| NetworkPolicy default deny ingress | 정상                      | `download timed out`                     |
 
 ### selector 불일치
 
@@ -164,15 +165,15 @@ kubectl run t --image=busybox:1.36 --rm -it --restart=Never -- nslookup kubernet
 
 ## 헷갈리는 것 비교
 
-| 비교 | A | B |
-| --- | --- | --- |
-| `kubectl top node` vs `describe node`의 Allocated | 실제 사용량 | request/limit 합계 |
-| `logs` vs `logs --previous` | 현재(또는 마지막) 컨테이너 | 그 이전 컨테이너 |
-| `-c <name>` vs `--all-containers` | 한 컨테이너 | 전부. `--prefix`로 구분 |
-| `/var/log/pods` vs `/var/log/containers` | 실제 파일 | symlink |
-| `Connection refused` vs `timed out` | 그 주소에서 듣는 게 없음 (endpoint 없음, port 틀림) | 패킷이 막힘 (NetworkPolicy 등) |
-| `bad address` | 이름 해석 실패 | DNS(CoreDNS, dnsPolicy) 확인 |
-| endpoint 없음 vs `ready=false` | selector 불일치 또는 Pod 없음 | Pod는 있지만 readiness 실패 |
+| 비교                                              | A                                                   | B                              |
+| ------------------------------------------------- | --------------------------------------------------- | ------------------------------ |
+| `kubectl top node` vs `describe node`의 Allocated | 실제 사용량                                         | request/limit 합계             |
+| `logs` vs `logs --previous`                       | 현재(또는 마지막) 컨테이너                          | 그 이전 컨테이너               |
+| `-c <name>` vs `--all-containers`                 | 한 컨테이너                                         | 전부. `--prefix`로 구분        |
+| `/var/log/pods` vs `/var/log/containers`          | 실제 파일                                           | symlink                        |
+| `Connection refused` vs `timed out`               | 그 주소에서 듣는 게 없음 (endpoint 없음, port 틀림) | 패킷이 막힘 (NetworkPolicy 등) |
+| `bad address`                                     | 이름 해석 실패                                      | DNS(CoreDNS, dnsPolicy) 확인   |
+| endpoint 없음 vs `ready=false`                    | selector 불일치 또는 Pod 없음                       | Pod는 있지만 readiness 실패    |
 
 ## 시험 포인트
 

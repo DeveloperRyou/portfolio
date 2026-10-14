@@ -19,11 +19,11 @@ Role, RoleBinding, ServiceAccount, `kubectl auth can-i` 기본은 [CKAD 개념 �
 
 Kubernetes에는 User 객체가 없음. apiserver는 요청에 붙은 인증 정보에서 username과 group을 꺼내 쓸 뿐.
 
-| 인증 방법 | username | group |
-| --- | --- | --- |
-| X.509 클라이언트 인증서 | `CN` | `O` (여러 개 가능) |
-| ServiceAccount token | `system:serviceaccount:<ns>:<name>` | `system:serviceaccounts`, `system:serviceaccounts:<ns>` |
-| OIDC 등 | 설정한 claim | 설정한 claim |
+| 인증 방법               | username                            | group                                                   |
+| ----------------------- | ----------------------------------- | ------------------------------------------------------- |
+| X.509 클라이언트 인증서 | `CN`                                | `O` (여러 개 가능)                                      |
+| ServiceAccount token    | `system:serviceaccount:<ns>:<name>` | `system:serviceaccounts`, `system:serviceaccounts:<ns>` |
+| OIDC 등                 | 설정한 claim                        | 설정한 claim                                            |
 
 그래서 "사용자 jane을 만든다"는 건 `CN=jane`인 인증서를 클러스터 CA로 서명받는 것. RBAC binding의 subject `kind: User`, `name: jane`은 이 문자열과 맞춰질 뿐.
 
@@ -48,15 +48,15 @@ spec:
   signerName: kubernetes.io/kube-apiserver-client
   expirationSeconds: 86400
   usages:
-  - client auth
+    - client auth
 ```
 
-| 필드 | 값 |
-| --- | --- |
-| `request` | PEM CSR 파일을 base64로 한 줄로 |
-| `signerName` | 사용자 클라이언트 인증서는 `kubernetes.io/kube-apiserver-client` |
-| `usages` | `client auth` |
-| `expirationSeconds` | 선택. 위 예는 24시간 |
+| 필드                | 값                                                               |
+| ------------------- | ---------------------------------------------------------------- |
+| `request`           | PEM CSR 파일을 base64로 한 줄로                                  |
+| `signerName`        | 사용자 클라이언트 인증서는 `kubernetes.io/kube-apiserver-client` |
+| `usages`            | `client auth`                                                    |
+| `expirationSeconds` | 선택. 위 예는 24시간                                             |
 
 ### 3. 승인과 인증서 꺼내기
 
@@ -120,12 +120,12 @@ kubectl create role pod-reader -n dev --verb=get,list,watch --resource=pods
 kubectl create rolebinding jane-pod-reader -n dev --role=pod-reader --user=jane
 ```
 
-| Role 종류 | Binding 종류 | 효과 |
-| --- | --- | --- |
-| Role | RoleBinding | 그 namespace 안에서만 |
-| ClusterRole | RoleBinding | ClusterRole의 규칙을 RoleBinding이 있는 namespace 안에서만 |
-| ClusterRole | ClusterRoleBinding | 모든 namespace + 클러스터 범위 리소스 |
-| Role | ClusterRoleBinding | 불가 |
+| Role 종류   | Binding 종류       | 효과                                                       |
+| ----------- | ------------------ | ---------------------------------------------------------- |
+| Role        | RoleBinding        | 그 namespace 안에서만                                      |
+| ClusterRole | RoleBinding        | ClusterRole의 규칙을 RoleBinding이 있는 namespace 안에서만 |
+| ClusterRole | ClusterRoleBinding | 모든 namespace + 클러스터 범위 리소스                      |
+| Role        | ClusterRoleBinding | 불가                                                       |
 
 ClusterRole + RoleBinding으로는 클러스터 범위 리소스(nodes, PV, namespace 등)를 줄 수 없음. 직접 해 봄.
 
@@ -149,20 +149,20 @@ kubectl create rolebinding ... --serviceaccount=dev:ci           # <namespace>:<
 
 ## 기본 ClusterRole
 
-| ClusterRole | 용도 | 비고 |
-| --- | --- | --- |
-| `cluster-admin` | 전부 | ClusterRoleBinding이면 클러스터 전체, RoleBinding이면 그 namespace 전체 |
-| `admin` | namespace 관리자 | Role/RoleBinding 생성 가능. ResourceQuota와 namespace 자체는 수정 불가 |
-| `edit` | 대부분 읽기/쓰기 | Role, RoleBinding 수정 불가 |
-| `view` | 읽기 | Secret 제외 |
+| ClusterRole     | 용도             | 비고                                                                    |
+| --------------- | ---------------- | ----------------------------------------------------------------------- |
+| `cluster-admin` | 전부             | ClusterRoleBinding이면 클러스터 전체, RoleBinding이면 그 namespace 전체 |
+| `admin`         | namespace 관리자 | Role/RoleBinding 생성 가능. ResourceQuota와 namespace 자체는 수정 불가  |
+| `edit`          | 대부분 읽기/쓰기 | Role, RoleBinding 수정 불가                                             |
+| `view`          | 읽기             | Secret 제외                                                             |
 
 `dev-team` group에 `view`를 ClusterRoleBinding으로 줘 봄:
 
-| 요청 | 결과 |
-| --- | --- |
-| `get deploy -n kube-system` | 허용 |
-| `get secrets -n kube-system` | `Forbidden` (view는 Secret 제외) |
-| `get nodes` | `Forbidden` (view는 namespace 리소스만) |
+| 요청                         | 결과                                    |
+| ---------------------------- | --------------------------------------- |
+| `get deploy -n kube-system`  | 허용                                    |
+| `get secrets -n kube-system` | `Forbidden` (view는 Secret 제외)        |
+| `get nodes`                  | `Forbidden` (view는 namespace 리소스만) |
 
 ```bash
 kubectl create sa ci -n dev
@@ -182,9 +182,9 @@ metadata:
   name: monitoring
 aggregationRule:
   clusterRoleSelectors:
-  - matchLabels:
-      rbac.example.com/aggregate-to-monitoring: "true"
-rules: []          # controller가 채움
+    - matchLabels:
+        rbac.example.com/aggregate-to-monitoring: "true"
+rules: [] # controller가 채움
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -193,9 +193,9 @@ metadata:
   labels:
     rbac.example.com/aggregate-to-monitoring: "true"
 rules:
-- apiGroups: [""]
-  resources: ["services", "endpoints", "pods"]
-  verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["services", "endpoints", "pods"]
+    verbs: ["get", "list", "watch"]
 ```
 
 ```text
@@ -242,15 +242,15 @@ role을 바꾸려면 binding을 지우고 다시 만듦. `subjects`는 수정 �
 
 ## 헷갈리는 것 비교
 
-| 비교 | A | B |
-| --- | --- | --- |
-| 인증서 CN vs O | username | group |
-| `kube-apiserver-client` signer vs `kubelet-serving` 등 | 사용자/클라이언트 인증서. 수동 승인 | kubelet용. kubelet이 요청 |
-| CSR `Approved` vs `Issued` | 사람이 승인 | signer가 서명해서 `status.certificate`에 넣음 |
-| `set-credentials` vs `set-context` | user 항목 (키, 인증서) | cluster + user + namespace 조합 |
-| ClusterRole + RoleBinding vs + ClusterRoleBinding | 그 namespace 안. 클러스터 리소스 불가 | 전체 + 클러스터 리소스 |
-| `edit` vs `admin` | RBAC 객체 수정 불가 | namespace 안의 Role/RoleBinding 수정 가능 |
-| 401 vs 403 | 인증 실패 | 인증 성공, 권한 없음 |
+| 비교                                                   | A                                     | B                                             |
+| ------------------------------------------------------ | ------------------------------------- | --------------------------------------------- |
+| 인증서 CN vs O                                         | username                              | group                                         |
+| `kube-apiserver-client` signer vs `kubelet-serving` 등 | 사용자/클라이언트 인증서. 수동 승인   | kubelet용. kubelet이 요청                     |
+| CSR `Approved` vs `Issued`                             | 사람이 승인                           | signer가 서명해서 `status.certificate`에 넣음 |
+| `set-credentials` vs `set-context`                     | user 항목 (키, 인증서)                | cluster + user + namespace 조합               |
+| ClusterRole + RoleBinding vs + ClusterRoleBinding      | 그 namespace 안. 클러스터 리소스 불가 | 전체 + 클러스터 리소스                        |
+| `edit` vs `admin`                                      | RBAC 객체 수정 불가                   | namespace 안의 Role/RoleBinding 수정 가능     |
+| 401 vs 403                                             | 인증 실패                             | 인증 성공, 권한 없음                          |
 
 ## 시험 포인트
 

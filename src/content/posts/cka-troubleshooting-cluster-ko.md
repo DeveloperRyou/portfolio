@@ -4,7 +4,8 @@ description: "kubelet과 containerd를 멈추고, kubelet 설정과 static Pod m
 pubDatetime: 2026-10-14T01:11:00
 topic: "project-cncf"
 subtopic: "cka"
-tags: ["kubernetes", "cka", "troubleshooting", "kubelet", "crictl", "static-pod"]
+tags:
+  ["kubernetes", "cka", "troubleshooting", "kubelet", "crictl", "static-pod"]
 order: 11
 draft: true
 ---
@@ -31,11 +32,11 @@ kubectl이 응답하나?
                          (scheduler, controller-manager, CoreDNS, CNI, kube-proxy)
 ```
 
-| 컴포넌트 | 실행 방식 | 상태 | 로그 |
-| --- | --- | --- | --- |
-| kubelet, containerd | systemd | `systemctl status` | `journalctl -u kubelet` |
-| apiserver, etcd, scheduler, controller-manager | static Pod | `kubectl -n kube-system get pods`, apiserver가 죽었으면 `crictl ps -a` | `kubectl logs`, `crictl logs`, `/var/log/pods/` |
-| kube-proxy, CoreDNS, CNI | DaemonSet / Deployment | `kubectl get pods` | `kubectl logs` |
+| 컴포넌트                                       | 실행 방식              | 상태                                                                   | 로그                                            |
+| ---------------------------------------------- | ---------------------- | ---------------------------------------------------------------------- | ----------------------------------------------- |
+| kubelet, containerd                            | systemd                | `systemctl status`                                                     | `journalctl -u kubelet`                         |
+| apiserver, etcd, scheduler, controller-manager | static Pod             | `kubectl -n kube-system get pods`, apiserver가 죽었으면 `crictl ps -a` | `kubectl logs`, `crictl logs`, `/var/log/pods/` |
+| kube-proxy, CoreDNS, CNI                       | DaemonSet / Deployment | `kubectl get pods`                                                     | `kubectl logs`                                  |
 
 ## 노드가 NotReady
 
@@ -127,12 +128,12 @@ sudo crictl logs --tail 3 <container-id>
 
 kubectl 에러 메시지로 짐작할 수 있는 것:
 
-| 메시지 | 의심 |
-| --- | --- |
-| `connect: connection refused` | apiserver가 그 포트에 없음 (안 떴거나, kubeconfig의 주소·포트가 틀림) |
-| `net/http: TLS handshake timeout` | apiserver 프로세스는 있는데 응답을 못 함 (etcd 연결 등) |
-| `x509: certificate ...` | kubeconfig의 인증서나 CA 문제 |
-| `Unauthorized` | 인증 정보 문제 |
+| 메시지                            | 의심                                                                  |
+| --------------------------------- | --------------------------------------------------------------------- |
+| `connect: connection refused`     | apiserver가 그 포트에 없음 (안 떴거나, kubeconfig의 주소·포트가 틀림) |
+| `net/http: TLS handshake timeout` | apiserver 프로세스는 있는데 응답을 못 함 (etcd 연결 등)               |
+| `x509: certificate ...`           | kubeconfig의 인증서나 CA 문제                                         |
+| `Unauthorized`                    | 인증 정보 문제                                                        |
 
 `~/.kube/config`의 포트를 `6444`로 바꿔 보면 `dial tcp 192.168.122.11:6444: connect: connection refused`.
 
@@ -194,26 +195,26 @@ Pod가 목록에서 아예 사라졌으면 manifest 파싱 실패. kubelet 로�
 
 ## 증상별 정리
 
-| 증상 | 확인 | 이번 실습의 원인 |
-| --- | --- | --- |
-| 노드 `NotReady`, condition `Unknown` | 노드에서 `systemctl status kubelet` | kubelet 중지 |
-| kubelet `activating (auto-restart)` | `journalctl -u kubelet`의 `command failed` | config.yaml 경로 오류, containerd 없음 |
-| kubectl `TLS handshake timeout` | `crictl ps -a`, `crictl logs` | apiserver의 etcd 주소 오류 |
-| kubectl `connection refused` | kubeconfig server 주소, apiserver 컨테이너 | kubeconfig 포트 오류 |
-| control plane Pod `CrashLoopBackOff` | `describe pod`의 Last State, `crictl logs` | manifest command 오타 |
-| control plane Pod가 목록에 없음 | `journalctl -u kubelet` | manifest YAML 문법 |
-| Pod `Pending` + Events 없음 | scheduler Pod | scheduler 고장 |
-| Deployment `0/1`, ReplicaSet 없음 | controller-manager Pod | controller-manager 고장 |
+| 증상                                 | 확인                                       | 이번 실습의 원인                       |
+| ------------------------------------ | ------------------------------------------ | -------------------------------------- |
+| 노드 `NotReady`, condition `Unknown` | 노드에서 `systemctl status kubelet`        | kubelet 중지                           |
+| kubelet `activating (auto-restart)`  | `journalctl -u kubelet`의 `command failed` | config.yaml 경로 오류, containerd 없음 |
+| kubectl `TLS handshake timeout`      | `crictl ps -a`, `crictl logs`              | apiserver의 etcd 주소 오류             |
+| kubectl `connection refused`         | kubeconfig server 주소, apiserver 컨테이너 | kubeconfig 포트 오류                   |
+| control plane Pod `CrashLoopBackOff` | `describe pod`의 Last State, `crictl logs` | manifest command 오타                  |
+| control plane Pod가 목록에 없음      | `journalctl -u kubelet`                    | manifest YAML 문법                     |
+| Pod `Pending` + Events 없음          | scheduler Pod                              | scheduler 고장                         |
+| Deployment `0/1`, ReplicaSet 없음    | controller-manager Pod                     | controller-manager 고장                |
 
 ## 헷갈리는 것 비교
 
-| 비교 | A | B |
-| --- | --- | --- |
-| node condition `False` vs `Unknown` | kubelet이 보고한 상태가 나쁨 | kubelet이 보고를 안 함 (죽었거나 네트워크) |
-| `systemctl status` `inactive` vs `activating (auto-restart)` | 멈춰 있음. start하면 됨 | 시작하자마자 죽는 중. 로그 확인 |
-| `kubectl logs` vs `crictl logs` | apiserver 필요 | 노드에서 직접. apiserver가 죽어도 됨 |
-| `/var/log/pods` vs `/var/log/containers` | 실제 파일 (`<ns>_<pod>_<uid>/<container>/N.log`) | symlink |
-| `Pending` + `FailedScheduling` vs `Pending` + Events 없음 | 조건 불일치 | scheduler가 안 돌고 있음 |
+| 비교                                                         | A                                                | B                                          |
+| ------------------------------------------------------------ | ------------------------------------------------ | ------------------------------------------ |
+| node condition `False` vs `Unknown`                          | kubelet이 보고한 상태가 나쁨                     | kubelet이 보고를 안 함 (죽었거나 네트워크) |
+| `systemctl status` `inactive` vs `activating (auto-restart)` | 멈춰 있음. start하면 됨                          | 시작하자마자 죽는 중. 로그 확인            |
+| `kubectl logs` vs `crictl logs`                              | apiserver 필요                                   | 노드에서 직접. apiserver가 죽어도 됨       |
+| `/var/log/pods` vs `/var/log/containers`                     | 실제 파일 (`<ns>_<pod>_<uid>/<container>/N.log`) | symlink                                    |
+| `Pending` + `FailedScheduling` vs `Pending` + Events 없음    | 조건 불일치                                      | scheduler가 안 돌고 있음                   |
 
 ## 시험 포인트
 

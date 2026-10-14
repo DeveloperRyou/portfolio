@@ -25,11 +25,11 @@ Kubernetes가 CNI에게 요구하는 것:
 
 IP 대역 세 가지가 겹치면 안 됨.
 
-| 대역 | 이 클러스터 | 정하는 곳 |
-| --- | --- | --- |
-| 노드 네트워크 | `192.168.122.0/24` | 인프라 (libvirt) |
-| Pod 네트워크 | `10.244.0.0/16` | `kubeadm init --pod-network-cidr`, CNI 설정 |
-| Service 네트워크 | `10.96.0.0/12` | `kubeadm init --service-cidr` (기본값) |
+| 대역             | 이 클러스터        | 정하는 곳                                   |
+| ---------------- | ------------------ | ------------------------------------------- |
+| 노드 네트워크    | `192.168.122.0/24` | 인프라 (libvirt)                            |
+| Pod 네트워크     | `10.244.0.0/16`    | `kubeadm init --pod-network-cidr`, CNI 설정 |
+| Service 네트워크 | `10.96.0.0/12`     | `kubeadm init --service-cidr` (기본값)      |
 
 ## Pod IP는 어디서 오나
 
@@ -68,11 +68,11 @@ Service 없이 Pod IP로 바로 됨. Calico는 노드 사이를 VXLAN(`vxlan.cal
 
 Service는 실체가 없는 가상 IP. 각 노드의 kube-proxy가 Service와 EndpointSlice를 watch해서 패킷 규칙으로 바꿈.
 
-| mode | 방식 | 비고 |
-| --- | --- | --- |
+| mode       | 방식              | 비고       |
+| ---------- | ----------------- | ---------- |
 | `iptables` | iptables NAT 규칙 | Linux 기본 |
-| `ipvs` | 커널 IPVS | |
-| `nftables` | nftables 규칙 | |
+| `ipvs`     | 커널 IPVS         |            |
+| `nftables` | nftables 규칙     |            |
 
 ```bash
 kubectl -n kube-system get cm kube-proxy -o jsonpath='{.data.config\.conf}' | grep '^mode'
@@ -170,13 +170,13 @@ kube-dns   ClusterIP   10.96.0.10   53/UDP,53/TCP,9153/TCP
 }
 ```
 
-| plugin | 하는 일 |
-| --- | --- |
+| plugin                         | 하는 일                                                     |
+| ------------------------------ | ----------------------------------------------------------- |
 | `kubernetes cluster.local ...` | Service, Pod 레코드 응답. `pods insecure`면 Pod IP 레코드도 |
-| `forward . /etc/resolv.conf` | 클러스터 밖 이름은 노드(CoreDNS Pod)의 resolv.conf 서버로 |
-| `cache 30` | 30초 캐시 |
-| `reload` | Corefile이 바뀌면 재시작 없이 다시 읽음 |
-| `health`, `ready` | liveness(8080), readiness(8181) |
+| `forward . /etc/resolv.conf`   | 클러스터 밖 이름은 노드(CoreDNS Pod)의 resolv.conf 서버로   |
+| `cache 30`                     | 30초 캐시                                                   |
+| `reload`                       | Corefile이 바뀌면 재시작 없이 다시 읽음                     |
+| `health`, `ready`              | liveness(8080), readiness(8181)                             |
 
 ### Corefile 수정
 
@@ -201,11 +201,11 @@ kubectl -n kube-system edit cm coredns
 
 ## DNS 이름
 
-| 대상 | 이름 |
-| --- | --- |
-| Service | `<service>.<namespace>.svc.cluster.local` |
-| Pod | `<IP의 . 를 - 로>.<namespace>.pod.cluster.local` (예: `10-244-62-167.net.pod.cluster.local`) |
-| headless Service의 Pod | `<hostname>.<service>.<namespace>.svc.cluster.local` |
+| 대상                   | 이름                                                                                         |
+| ---------------------- | -------------------------------------------------------------------------------------------- |
+| Service                | `<service>.<namespace>.svc.cluster.local`                                                    |
+| Pod                    | `<IP의 . 를 - 로>.<namespace>.pod.cluster.local` (예: `10-244-62-167.net.pod.cluster.local`) |
+| headless Service의 Pod | `<hostname>.<service>.<namespace>.svc.cluster.local`                                         |
 
 Pod의 `/etc/resolv.conf` (`dnsPolicy: ClusterFirst`, 기본값):
 
@@ -220,12 +220,12 @@ options ndots:5
 
 ## dnsPolicy
 
-| dnsPolicy | resolv.conf | 실습 결과 |
-| --- | --- | --- |
-| `ClusterFirst` (기본) | CoreDNS + search 목록 | 위와 같음 |
-| `Default` | Pod가 뜬 노드의 resolv.conf를 그대로 | `nameserver 192.168.122.1`. 클러스터 이름 해석 안 됨 |
-| `ClusterFirstWithHostNet` | hostNetwork Pod에서도 CoreDNS 사용 | `nameserver 10.96.0.10` + search 목록 |
-| `None` | `dnsConfig`만 사용 | 아래 |
+| dnsPolicy                 | resolv.conf                          | 실습 결과                                            |
+| ------------------------- | ------------------------------------ | ---------------------------------------------------- |
+| `ClusterFirst` (기본)     | CoreDNS + search 목록                | 위와 같음                                            |
+| `Default`                 | Pod가 뜬 노드의 resolv.conf를 그대로 | `nameserver 192.168.122.1`. 클러스터 이름 해석 안 됨 |
+| `ClusterFirstWithHostNet` | hostNetwork Pod에서도 CoreDNS 사용   | `nameserver 10.96.0.10` + search 목록                |
+| `None`                    | `dnsConfig`만 사용                   | 아래                                                 |
 
 - 이름과 달리 `Default`가 기본값이 아님
 - `hostNetwork: true`에 `dnsPolicy`를 안 쓰면(`ClusterFirst`) 노드 resolv.conf(`192.168.122.1`)가 들어감. CoreDNS를 쓰려면 `ClusterFirstWithHostNet`
@@ -237,8 +237,8 @@ spec:
     nameservers: [1.1.1.1]
     searches: [example.internal]
     options:
-    - name: ndots
-      value: "2"
+      - name: ndots
+        value: "2"
 ```
 
 ```text
@@ -249,15 +249,15 @@ options ndots:2
 
 ## 헷갈리는 것 비교
 
-| 비교 | A | B |
-| --- | --- | --- |
-| `--pod-network-cidr` vs `--service-cidr` | Pod IP | Service ClusterIP |
-| `node.spec.podCIDR` vs 실제 Pod IP | controller-manager가 나눠 준 대역 | CNI IPAM이 정함. Calico는 자체 블록 |
-| kube-proxy vs CNI | Service → Pod (DNAT) | Pod ↔ Pod 연결 |
-| ClusterIP vs NodePort | 클러스터 안에서만 | 모든 노드 IP의 30000-32767 |
-| NodePort vs LoadBalancer | 노드 IP:port | 외부 LB IP. 구현 없으면 `<pending>`. NodePort도 같이 받음 |
-| `kube-dns` Service vs `coredns` Deployment | 이름만 kube-dns | 실제 서버 |
-| `dnsPolicy: Default` vs `ClusterFirst` | 노드 DNS | CoreDNS (실제 기본값) |
+| 비교                                       | A                                 | B                                                         |
+| ------------------------------------------ | --------------------------------- | --------------------------------------------------------- |
+| `--pod-network-cidr` vs `--service-cidr`   | Pod IP                            | Service ClusterIP                                         |
+| `node.spec.podCIDR` vs 실제 Pod IP         | controller-manager가 나눠 준 대역 | CNI IPAM이 정함. Calico는 자체 블록                       |
+| kube-proxy vs CNI                          | Service → Pod (DNAT)              | Pod ↔ Pod 연결                                            |
+| ClusterIP vs NodePort                      | 클러스터 안에서만                 | 모든 노드 IP의 30000-32767                                |
+| NodePort vs LoadBalancer                   | 노드 IP:port                      | 외부 LB IP. 구현 없으면 `<pending>`. NodePort도 같이 받음 |
+| `kube-dns` Service vs `coredns` Deployment | 이름만 kube-dns                   | 실제 서버                                                 |
+| `dnsPolicy: Default` vs `ClusterFirst`     | 노드 DNS                          | CoreDNS (실제 기본값)                                     |
 
 ## 시험 포인트
 

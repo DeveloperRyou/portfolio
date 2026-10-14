@@ -17,13 +17,13 @@ CKA 명령어·YAML 모음. CKAD와 겹치는 kubectl 기본(Pod, Deployment, Co
 
 CKAD와 다른 점: 커리큘럼에 노드 준비, kubeadm, etcd, 컴포넌트 트러블슈팅이 들어 있어서 노드에 ssh해서 kubelet, containerd, static Pod manifest를 직접 다룰 일이 많음. apiserver가 죽어 kubectl을 못 쓰는 상황도 대비.
 
-| 도메인 | 비중 |
-| --- | --- |
-| Troubleshooting | 30% |
-| Cluster Architecture, Installation and Configuration | 25% |
-| Services and Networking | 20% |
-| Workloads and Scheduling | 15% |
-| Storage | 10% |
+| 도메인                                               | 비중 |
+| ---------------------------------------------------- | ---- |
+| Troubleshooting                                      | 30%  |
+| Cluster Architecture, Installation and Configuration | 25%  |
+| Services and Networking                              | 20%  |
+| Workloads and Scheduling                             | 15%  |
+| Storage                                              | 10%  |
 
 열람 가능한 사이트는 시험 전에 Linux Foundation의 허용 리소스 목록에서 확인.
 
@@ -41,17 +41,17 @@ k explain pod.spec --recursive | less
 
 ### 노드에서 자주 보는 곳
 
-| 경로 | 내용 |
-| --- | --- |
-| `/etc/kubernetes/manifests/` | static Pod (etcd, kube-apiserver, kube-controller-manager, kube-scheduler) |
-| `/etc/kubernetes/pki/` | CA와 인증서. `etcd/` 아래 etcd 전용 |
-| `/etc/kubernetes/admin.conf` | 관리자 kubeconfig |
-| `/etc/kubernetes/kubelet.conf` | kubelet kubeconfig |
-| `/var/lib/kubelet/config.yaml` | kubelet 설정 (`staticPodPath`, `clusterDNS`, `cgroupDriver`) |
-| `/usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf` | kubelet systemd drop-in |
-| `/etc/containerd/config.toml` | containerd 설정 (`SystemdCgroup`) |
-| `/etc/cni/net.d/`, `/opt/cni/bin/` | CNI 설정, 바이너리 |
-| `/var/log/pods/`, `/var/log/containers/` | 컨테이너 로그 파일 |
+| 경로                                                        | 내용                                                                       |
+| ----------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `/etc/kubernetes/manifests/`                                | static Pod (etcd, kube-apiserver, kube-controller-manager, kube-scheduler) |
+| `/etc/kubernetes/pki/`                                      | CA와 인증서. `etcd/` 아래 etcd 전용                                        |
+| `/etc/kubernetes/admin.conf`                                | 관리자 kubeconfig                                                          |
+| `/etc/kubernetes/kubelet.conf`                              | kubelet kubeconfig                                                         |
+| `/var/lib/kubelet/config.yaml`                              | kubelet 설정 (`staticPodPath`, `clusterDNS`, `cgroupDriver`)               |
+| `/usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf` | kubelet systemd drop-in                                                    |
+| `/etc/containerd/config.toml`                               | containerd 설정 (`SystemdCgroup`)                                          |
+| `/etc/cni/net.d/`, `/opt/cni/bin/`                          | CNI 설정, 바이너리                                                         |
+| `/var/log/pods/`, `/var/log/containers/`                    | 컨테이너 로그 파일                                                         |
 
 ## Cluster Architecture, Installation and Configuration
 
@@ -214,25 +214,25 @@ k rollout status|history|undo deploy <name>
 
 ```yaml
 spec:
-  nodeSelector: {disk: ssd}
+  nodeSelector: { disk: ssd }
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
-        - matchExpressions:
-          - {key: disk, operator: In, values: [ssd]}
+          - matchExpressions:
+              - { key: disk, operator: In, values: [ssd] }
     podAntiAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector: {matchLabels: {app: web}}
-        topologyKey: kubernetes.io/hostname
+        - labelSelector: { matchLabels: { app: web } }
+          topologyKey: kubernetes.io/hostname
   tolerations:
-  - {key: key, operator: Equal, value: value, effect: NoSchedule}
+    - { key: key, operator: Equal, value: value, effect: NoSchedule }
   topologySpreadConstraints:
-  - maxSkew: 1
-    topologyKey: kubernetes.io/hostname
-    whenUnsatisfiable: DoNotSchedule
-    nodeTaintsPolicy: Honor          # control plane이 도메인으로 세어져 Pending 되는 것 방지
-    labelSelector: {matchLabels: {app: web}}
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: DoNotSchedule
+      nodeTaintsPolicy: Honor # control plane이 도메인으로 세어져 Pending 되는 것 방지
+      labelSelector: { matchLabels: { app: web } }
   priorityClassName: high
 ```
 
@@ -263,16 +263,16 @@ k -n kube-system get cm kube-proxy -o yaml | grep mode
 ```yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
-metadata: {name: app}
+metadata: { name: app }
 spec:
-  parentRefs: [{name: web-gw}]
+  parentRefs: [{ name: web-gw }]
   hostnames: [app.example.com]
   rules:
-  - matches: [{path: {type: PathPrefix, value: /v2}}]
-    backendRefs: [{name: app-v2, port: 80}]
-  - backendRefs:
-    - {name: app-v1, port: 80, weight: 80}
-    - {name: app-v2, port: 80, weight: 20}
+    - matches: [{ path: { type: PathPrefix, value: /v2 } }]
+      backendRefs: [{ name: app-v2, port: 80 }]
+    - backendRefs:
+        - { name: app-v1, port: 80, weight: 80 }
+        - { name: app-v2, port: 80, weight: 20 }
 ```
 
 - Route가 안 붙으면 `status.parents[].conditions` (`NotAllowedByListeners`, `BackendNotFound`, `RefNotPermitted`)
@@ -315,16 +315,16 @@ sudo crictl ps -a; sudo crictl logs <id>
 sudo sh -c 'ls /var/log/pods/kube-system_kube-apiserver-*/kube-apiserver/'
 ```
 
-| 증상 | 원인 후보 |
-| --- | --- |
-| 노드 `NotReady`, condition `Unknown` | kubelet 중지 |
-| kubelet `activating (auto-restart)` | 설정 파일 경로 오류, containerd 없음 → journalctl `command failed` |
-| kubectl `TLS handshake timeout` | apiserver가 etcd에 못 붙음 |
-| kubectl `connection refused` | apiserver 안 뜸, kubeconfig 주소·포트 |
-| control plane Pod `CrashLoopBackOff` | manifest command·flag 오류 |
-| control plane Pod가 목록에 없음 | manifest YAML 문법 → journalctl `Could not process manifest file` |
-| Pod `Pending` + Events 없음 | scheduler 고장 |
-| Deployment `0/N`, ReplicaSet 없음 | controller-manager 고장 |
+| 증상                                 | 원인 후보                                                          |
+| ------------------------------------ | ------------------------------------------------------------------ |
+| 노드 `NotReady`, condition `Unknown` | kubelet 중지                                                       |
+| kubelet `activating (auto-restart)`  | 설정 파일 경로 오류, containerd 없음 → journalctl `command failed` |
+| kubectl `TLS handshake timeout`      | apiserver가 etcd에 못 붙음                                         |
+| kubectl `connection refused`         | apiserver 안 뜸, kubeconfig 주소·포트                              |
+| control plane Pod `CrashLoopBackOff` | manifest command·flag 오류                                         |
+| control plane Pod가 목록에 없음      | manifest YAML 문법 → journalctl `Could not process manifest file`  |
+| Pod `Pending` + Events 없음          | scheduler 고장                                                     |
+| Deployment `0/N`, ReplicaSet 없음    | controller-manager 고장                                            |
 
 ### 리소스, 로그
 
@@ -339,13 +339,13 @@ k logs -l app=web
 
 ### Service, 네트워크
 
-| 증상 | 확인 |
-| --- | --- |
-| `Connection refused` + endpoint 없음 | selector vs Pod label |
+| 증상                                 | 확인                        |
+| ------------------------------------ | --------------------------- |
+| `Connection refused` + endpoint 없음 | selector vs Pod label       |
 | `Connection refused` + endpoint 있음 | targetPort vs 컨테이너 port |
-| endpoint `ready=false` | readinessProbe |
-| 이름은 `bad address`, ClusterIP는 됨 | CoreDNS |
-| `timed out` | NetworkPolicy |
+| endpoint `ready=false`               | readinessProbe              |
+| 이름은 `bad address`, ClusterIP는 됨 | CoreDNS                     |
+| `timed out`                          | NetworkPolicy               |
 
 ```bash
 k get endpointslice -l kubernetes.io/service-name=<svc>

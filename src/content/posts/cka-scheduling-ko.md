@@ -34,15 +34,15 @@ filter에서 전부 걸러지면 Pod는 `Pending`이고, 이유가 `FailedSchedu
 
 ## 방법 한눈에
 
-| 방법 | 위치 | 성격 |
-| --- | --- | --- |
-| `nodeName` | `spec.nodeName` | scheduler를 건너뜀. 그 노드 kubelet이 바로 실행 |
-| `nodeSelector` | `spec.nodeSelector` | node label이 전부 일치하는 노드만 |
-| node affinity | `spec.affinity.nodeAffinity` | 연산자(In, NotIn, Exists 등), required/preferred |
-| Pod affinity / anti-affinity | `spec.affinity.podAffinity` / `podAntiAffinity` | 다른 Pod가 있는(없는) 곳으로 |
-| taint / toleration | node `spec.taints` / Pod `spec.tolerations` | 노드가 Pod를 밀어냄. toleration이 있어야 들어감 |
-| topology spread | `spec.topologySpreadConstraints` | 도메인(노드, zone)마다 고르게 |
-| PriorityClass | `spec.priorityClassName` | 자리가 없으면 낮은 priority Pod를 밀어냄 |
+| 방법                         | 위치                                            | 성격                                             |
+| ---------------------------- | ----------------------------------------------- | ------------------------------------------------ |
+| `nodeName`                   | `spec.nodeName`                                 | scheduler를 건너뜀. 그 노드 kubelet이 바로 실행  |
+| `nodeSelector`               | `spec.nodeSelector`                             | node label이 전부 일치하는 노드만                |
+| node affinity                | `spec.affinity.nodeAffinity`                    | 연산자(In, NotIn, Exists 등), required/preferred |
+| Pod affinity / anti-affinity | `spec.affinity.podAffinity` / `podAntiAffinity` | 다른 Pod가 있는(없는) 곳으로                     |
+| taint / toleration           | node `spec.taints` / Pod `spec.tolerations`     | 노드가 Pod를 밀어냄. toleration이 있어야 들어감  |
+| topology spread              | `spec.topologySpreadConstraints`                | 도메인(노드, zone)마다 고르게                    |
+| PriorityClass                | `spec.priorityClassName`                        | 자리가 없으면 낮은 priority Pod를 밀어냄         |
 
 ## nodeName
 
@@ -80,17 +80,17 @@ spec:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
-        - matchExpressions:
-          - key: disk
-            operator: In
-            values: [ssd, nvme]
+          - matchExpressions:
+              - key: disk
+                operator: In
+                values: [ssd, nvme]
       preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 50
-        preference:
-          matchExpressions:
-          - key: kubernetes.io/hostname
-            operator: In
-            values: [cka-w2]
+        - weight: 50
+          preference:
+            matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values: [cka-w2]
 ```
 
 - required: filter. 못 맞추면 `Pending`
@@ -107,23 +107,23 @@ kubectl taint node cka-w2 dedicated-          # 제거 (key 뒤에 -)
 kubectl describe node cka-w2 | grep Taints
 ```
 
-| effect | 새 Pod | 이미 있는 Pod |
-| --- | --- | --- |
-| `NoSchedule` | toleration 없으면 배치 안 함 | 그대로 |
-| `PreferNoSchedule` | 가능하면 피함 | 그대로 |
-| `NoExecute` | toleration 없으면 배치 안 함 | toleration 없으면 즉시 축출. `tolerationSeconds`가 있으면 그만큼 뒤 축출 |
+| effect             | 새 Pod                       | 이미 있는 Pod                                                            |
+| ------------------ | ---------------------------- | ------------------------------------------------------------------------ |
+| `NoSchedule`       | toleration 없으면 배치 안 함 | 그대로                                                                   |
+| `PreferNoSchedule` | 가능하면 피함                | 그대로                                                                   |
+| `NoExecute`        | toleration 없으면 배치 안 함 | toleration 없으면 즉시 축출. `tolerationSeconds`가 있으면 그만큼 뒤 축출 |
 
 ```yaml
 spec:
   tolerations:
-  - key: dedicated
-    operator: Equal
-    value: gpu
-    effect: NoSchedule
-  - key: maint
-    operator: Exists        # value 없이 key만 맞으면
-    effect: NoExecute
-    tolerationSeconds: 30
+    - key: dedicated
+      operator: Equal
+      value: gpu
+      effect: NoSchedule
+    - key: maint
+      operator: Exists # value 없이 key만 맞으면
+      effect: NoExecute
+      tolerationSeconds: 30
 ```
 
 실습 결과:
@@ -142,10 +142,10 @@ spec:
   affinity:
     podAntiAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector:
-          matchLabels:
-            app: aa
-        topologyKey: kubernetes.io/hostname
+        - labelSelector:
+            matchLabels:
+              app: aa
+          topologyKey: kubernetes.io/hostname
 ```
 
 - `topologyKey`: 같은 값을 가진 노드를 한 도메인으로 봄. `kubernetes.io/hostname`이면 노드 하나가 도메인, `topology.kubernetes.io/zone`이면 zone
@@ -162,20 +162,20 @@ spec:
 ```yaml
 spec:
   topologySpreadConstraints:
-  - maxSkew: 1
-    topologyKey: kubernetes.io/hostname
-    whenUnsatisfiable: DoNotSchedule
-    labelSelector:
-      matchLabels:
-        app: ts
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: DoNotSchedule
+      labelSelector:
+        matchLabels:
+          app: ts
 ```
 
-| 필드 | 의미 |
-| --- | --- |
-| `maxSkew` | 도메인 간 Pod 수 차이 최대값 |
+| 필드                | 의미                                                         |
+| ------------------- | ------------------------------------------------------------ |
+| `maxSkew`           | 도메인 간 Pod 수 차이 최대값                                 |
 | `whenUnsatisfiable` | `DoNotSchedule`(Pending) 또는 `ScheduleAnyway`(score만 반영) |
-| `labelSelector` | 셀 Pod |
-| `nodeTaintsPolicy` | taint가 있는 노드를 도메인으로 셀지. 기본 `Ignore`(셈) |
+| `labelSelector`     | 셀 Pod                                                       |
+| `nodeTaintsPolicy`  | taint가 있는 노드를 도메인으로 셀지. 기본 `Ignore`(셈)       |
 
 replicas 5로 만들었더니 cka-w1 1개, cka-w2 1개만 뜨고 3개가 `Pending`.
 
@@ -210,15 +210,15 @@ Preempted   pod/low-w2   Preempted by pod 92ff4701-... on node cka-w2
 
 ## 헷갈리는 것 비교
 
-| 비교 | A | B |
-| --- | --- | --- |
-| nodeName vs nodeSelector | scheduler 건너뜀. taint 무시 | scheduler가 label로 filter |
-| nodeSelector vs node affinity | label 일치(AND)만 | 연산자, OR, preferred |
-| required vs preferred | filter. 못 맞추면 Pending | score. 못 맞춰도 배치 |
-| taint vs affinity | 노드가 Pod를 밀어냄 | Pod가 노드를 고름 |
-| NoSchedule vs NoExecute | 새 Pod만 막음 | 기존 Pod도 축출 |
+| 비교                             | A                                              | B                                    |
+| -------------------------------- | ---------------------------------------------- | ------------------------------------ |
+| nodeName vs nodeSelector         | scheduler 건너뜀. taint 무시                   | scheduler가 label로 filter           |
+| nodeSelector vs node affinity    | label 일치(AND)만                              | 연산자, OR, preferred                |
+| required vs preferred            | filter. 못 맞추면 Pending                      | score. 못 맞춰도 배치                |
+| taint vs affinity                | 노드가 Pod를 밀어냄                            | Pod가 노드를 고름                    |
+| NoSchedule vs NoExecute          | 새 Pod만 막음                                  | 기존 Pod도 축출                      |
 | anti-affinity vs topology spread | 같은 도메인에 같이 두지 않음 (도메인당 최대 1) | 도메인 간 개수 차이를 maxSkew 이하로 |
-| `Equal` vs `Exists` | key와 value 일치 | key만 있으면 |
+| `Equal` vs `Exists`              | key와 value 일치                               | key만 있으면                         |
 
 ## 시험 포인트
 

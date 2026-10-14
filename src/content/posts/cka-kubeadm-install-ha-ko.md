@@ -17,13 +17,13 @@ draft: true
 
 kubeadm은 "노드 하나를 control plane으로 만들고, 나머지 노드를 붙이는" 도구. OS 준비와 container runtime 설치, CNI 설치는 kubeadm이 해 주지 않음.
 
-| 단계 | 어디서 | 하는 일 |
-| --- | --- | --- |
-| 노드 준비 | 모든 노드 | swap, sysctl, container runtime, cgroup driver |
-| 패키지 설치 | 모든 노드 | kubeadm, kubelet, kubectl (+ cri-tools) |
+| 단계           | 어디서           | 하는 일                                                    |
+| -------------- | ---------------- | ---------------------------------------------------------- |
+| 노드 준비      | 모든 노드        | swap, sysctl, container runtime, cgroup driver             |
+| 패키지 설치    | 모든 노드        | kubeadm, kubelet, kubectl (+ cri-tools)                    |
 | `kubeadm init` | 첫 control plane | 인증서, kubeconfig, static Pod, addon(CoreDNS, kube-proxy) |
-| CNI 설치 | kubectl | Pod 네트워크. 이게 없으면 노드가 `NotReady` |
-| `kubeadm join` | 나머지 노드 | worker 또는 추가 control plane으로 합류 |
+| CNI 설치       | kubectl          | Pod 네트워크. 이게 없으면 노드가 `NotReady`                |
+| `kubeadm join` | 나머지 노드      | worker 또는 추가 control plane으로 합류                    |
 
 ## 노드 준비
 
@@ -39,16 +39,16 @@ sudo cat /sys/class/dmi/id/product_uuid
 
 ### 필요한 포트
 
-| 노드 | 포트 | 용도 |
-| --- | --- | --- |
-| control plane | 6443 | kube-apiserver |
-| control plane | 2379-2380 | etcd client / peer |
-| control plane | 10250 | kubelet API |
-| control plane | 10257 | kube-controller-manager |
-| control plane | 10259 | kube-scheduler |
-| worker | 10250 | kubelet API |
-| worker | 10256 | kube-proxy |
-| worker | 30000-32767 | NodePort Service |
+| 노드          | 포트        | 용도                    |
+| ------------- | ----------- | ----------------------- |
+| control plane | 6443        | kube-apiserver          |
+| control plane | 2379-2380   | etcd client / peer      |
+| control plane | 10250       | kubelet API             |
+| control plane | 10257       | kube-controller-manager |
+| control plane | 10259       | kube-scheduler          |
+| worker        | 10250       | kubelet API             |
+| worker        | 10256       | kube-proxy              |
+| worker        | 30000-32767 | NodePort Service        |
 
 ### swap
 
@@ -137,13 +137,13 @@ sudo kubeadm init \
   --apiserver-advertise-address=192.168.122.11
 ```
 
-| 플래그 | 의미 |
-| --- | --- |
-| `--pod-network-cidr` | Pod IP 대역. CNI 설정과 맞춰야 함. 노드 네트워크와 겹치면 안 됨 |
+| 플래그                          | 의미                                                            |
+| ------------------------------- | --------------------------------------------------------------- |
+| `--pod-network-cidr`            | Pod IP 대역. CNI 설정과 맞춰야 함. 노드 네트워크와 겹치면 안 됨 |
 | `--apiserver-advertise-address` | apiserver가 광고할 IP. 생략하면 default route가 있는 인터페이스 |
-| `--control-plane-endpoint` | HA용 공유 endpoint(LB 주소나 DNS). 아래 HA 절 참고 |
-| `--service-cidr` | Service IP 대역. 기본 `10.96.0.0/12` |
-| `--kubernetes-version` | control plane 버전 지정 |
+| `--control-plane-endpoint`      | HA용 공유 endpoint(LB 주소나 DNS). 아래 HA 절 참고              |
+| `--service-cidr`                | Service IP 대역. 기본 `10.96.0.0/12`                            |
+| `--kubernetes-version`          | control plane 버전 지정                                         |
 
 이미지를 미리 받아 둘 수도 있음: `sudo kubeadm config images pull`.
 
@@ -151,17 +151,17 @@ sudo kubeadm init \
 
 출력의 `[phase]` 순서가 그대로 kubeadm이 만드는 것들.
 
-| phase | 결과물 |
-| --- | --- |
-| `preflight` | swap, 포트, runtime 등 사전 점검. 이미지 pull |
-| `certs` | `/etc/kubernetes/pki/` 아래 CA와 인증서. apiserver 인증서 SAN에 `10.96.0.1`(kubernetes Service IP)과 노드 IP 포함 |
-| `kubeconfig` | `/etc/kubernetes/`에 `admin.conf`, `super-admin.conf`, `kubelet.conf`, `controller-manager.conf`, `scheduler.conf` |
-| `etcd`, `control-plane` | `/etc/kubernetes/manifests/`에 etcd, kube-apiserver, kube-controller-manager, kube-scheduler static Pod manifest |
-| `kubelet-start` | `/var/lib/kubelet/config.yaml`, `/var/lib/kubelet/kubeadm-flags.env` 작성 후 kubelet 시작 |
-| `upload-config` | 사용한 설정을 `kube-system/kubeadm-config` ConfigMap에 저장 |
-| `mark-control-plane` | label `node-role.kubernetes.io/control-plane`, taint `node-role.kubernetes.io/control-plane:NoSchedule` |
-| `bootstrap-token` | join용 token과 관련 RBAC, `kube-public/cluster-info` ConfigMap |
-| `addons` | CoreDNS Deployment, kube-proxy DaemonSet |
+| phase                   | 결과물                                                                                                             |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `preflight`             | swap, 포트, runtime 등 사전 점검. 이미지 pull                                                                      |
+| `certs`                 | `/etc/kubernetes/pki/` 아래 CA와 인증서. apiserver 인증서 SAN에 `10.96.0.1`(kubernetes Service IP)과 노드 IP 포함  |
+| `kubeconfig`            | `/etc/kubernetes/`에 `admin.conf`, `super-admin.conf`, `kubelet.conf`, `controller-manager.conf`, `scheduler.conf` |
+| `etcd`, `control-plane` | `/etc/kubernetes/manifests/`에 etcd, kube-apiserver, kube-controller-manager, kube-scheduler static Pod manifest   |
+| `kubelet-start`         | `/var/lib/kubelet/config.yaml`, `/var/lib/kubelet/kubeadm-flags.env` 작성 후 kubelet 시작                          |
+| `upload-config`         | 사용한 설정을 `kube-system/kubeadm-config` ConfigMap에 저장                                                        |
+| `mark-control-plane`    | label `node-role.kubernetes.io/control-plane`, taint `node-role.kubernetes.io/control-plane:NoSchedule`            |
+| `bootstrap-token`       | join용 token과 관련 RBAC, `kube-public/cluster-info` ConfigMap                                                     |
+| `addons`                | CoreDNS Deployment, kube-proxy DaemonSet                                                                           |
 
 ### 끝난 직후
 
@@ -218,10 +218,10 @@ sudo kubeadm token create --print-join-command
 sudo kubeadm join 192.168.122.11:6443 --token <token> --discovery-token-ca-cert-hash sha256:<hash>
 ```
 
-| 값 | 의미 | 확인 |
-| --- | --- | --- |
-| `--token` | worker가 처음 apiserver에 붙을 때 쓰는 bootstrap token. 기본 TTL 24시간 | `kubeadm token list` |
-| `--discovery-token-ca-cert-hash` | worker가 접속한 apiserver가 진짜인지 확인하는 CA 공개키 hash | 아래 openssl 명령 |
+| 값                               | 의미                                                                    | 확인                 |
+| -------------------------------- | ----------------------------------------------------------------------- | -------------------- |
+| `--token`                        | worker가 처음 apiserver에 붙을 때 쓰는 bootstrap token. 기본 TTL 24시간 | `kubeadm token list` |
+| `--discovery-token-ca-cert-hash` | worker가 접속한 apiserver가 진짜인지 확인하는 CA 공개키 hash            | 아래 openssl 명령    |
 
 ```bash
 openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt \
@@ -253,12 +253,12 @@ kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 
 ### 토폴로지
 
-| | stacked etcd | external etcd |
-| --- | --- | --- |
-| etcd 위치 | control plane 노드마다 etcd member가 같이 뜸 | 별도 etcd 노드 |
-| 최소 노드 | control plane 3대 | control plane 3대 + etcd 3대 |
-| 장점 | 노드 수가 적고 설정이 단순. kubeadm 기본값 | control plane 하나가 죽어도 etcd member는 그대로 |
-| 단점 | 노드 하나가 죽으면 etcd member와 control plane이 같이 빠짐 | 노드가 두 배, 설정 복잡 |
+|           | stacked etcd                                               | external etcd                                    |
+| --------- | ---------------------------------------------------------- | ------------------------------------------------ |
+| etcd 위치 | control plane 노드마다 etcd member가 같이 뜸               | 별도 etcd 노드                                   |
+| 최소 노드 | control plane 3대                                          | control plane 3대 + etcd 3대                     |
+| 장점      | 노드 수가 적고 설정이 단순. kubeadm 기본값                 | control plane 하나가 죽어도 etcd member는 그대로 |
+| 단점      | 노드 하나가 죽으면 etcd member와 control plane이 같이 빠짐 | 노드가 두 배, 설정 복잡                          |
 
 etcd는 과반(quorum)이 살아 있어야 쓰기가 됨. 3대면 1대까지 장애 허용. 그래서 stacked도 최소 3대.
 
@@ -295,11 +295,11 @@ sudo kubeadm join 192.168.122.100:6443 --token <token> \
   --control-plane --certificate-key <key>
 ```
 
-| 플래그 | 의미 |
-| --- | --- |
-| `--upload-certs` | CA 등 control plane끼리 공유할 인증서를 암호화해서 `kube-system/kubeadm-certs` Secret에 올림 |
-| `--control-plane` | worker가 아니라 control plane으로 join |
-| `--certificate-key` | 위 Secret을 복호화하는 키. 이 키로 인증서를 내려받음 |
+| 플래그              | 의미                                                                                         |
+| ------------------- | -------------------------------------------------------------------------------------------- |
+| `--upload-certs`    | CA 등 control plane끼리 공유할 인증서를 암호화해서 `kube-system/kubeadm-certs` Secret에 올림 |
+| `--control-plane`   | worker가 아니라 control plane으로 join                                                       |
+| `--certificate-key` | 위 Secret을 복호화하는 키. 이 키로 인증서를 내려받음                                         |
 
 - 올린 인증서와 키는 2시간 뒤 삭제됨. 그 뒤에 control plane을 추가하려면 `sudo kubeadm init phase upload-certs --upload-certs`로 다시 올리고 새 키를 받음
 - worker join은 `--control-plane`, `--certificate-key` 없이 같은 endpoint로
@@ -324,14 +324,14 @@ VIP를 들고 있던 cka-cp1 VM을 강제로 껐음.
 
 ## 헷갈리는 것 비교
 
-| 비교 | A | B |
-| --- | --- | --- |
-| `--apiserver-advertise-address` vs `--control-plane-endpoint` | 이 노드의 apiserver가 광고하는 자기 IP | 모든 노드가 붙는 공유 주소(LB). HA에 필요 |
-| bootstrap token vs certificate key | 노드가 처음 클러스터에 붙을 때 인증. 24시간 | control plane 인증서를 받기 위한 복호화 키. 2시간 |
-| worker join vs control plane join | `kubeadm join <ep> --token --discovery-token-ca-cert-hash` | 여기에 `--control-plane --certificate-key` 추가 |
-| `/opt/cni/bin` vs `/etc/cni/net.d` | CNI 플러그인 바이너리 | CNI 설정. 이게 있어야 노드 `Ready` |
-| stacked vs external etcd | control plane 노드에 etcd 같이. 최소 3대 | etcd 별도. 최소 3+3대 |
-| `admin.conf` vs `super-admin.conf` | `kubeadm:cluster-admins` 그룹. 평소에 쓰는 kubeconfig | `system:masters` 그룹. RBAC를 우회하는 비상용 |
+| 비교                                                          | A                                                          | B                                                 |
+| ------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------- |
+| `--apiserver-advertise-address` vs `--control-plane-endpoint` | 이 노드의 apiserver가 광고하는 자기 IP                     | 모든 노드가 붙는 공유 주소(LB). HA에 필요         |
+| bootstrap token vs certificate key                            | 노드가 처음 클러스터에 붙을 때 인증. 24시간                | control plane 인증서를 받기 위한 복호화 키. 2시간 |
+| worker join vs control plane join                             | `kubeadm join <ep> --token --discovery-token-ca-cert-hash` | 여기에 `--control-plane --certificate-key` 추가   |
+| `/opt/cni/bin` vs `/etc/cni/net.d`                            | CNI 플러그인 바이너리                                      | CNI 설정. 이게 있어야 노드 `Ready`                |
+| stacked vs external etcd                                      | control plane 노드에 etcd 같이. 최소 3대                   | etcd 별도. 최소 3+3대                             |
+| `admin.conf` vs `super-admin.conf`                            | `kubeadm:cluster-admins` 그룹. 평소에 쓰는 kubeconfig      | `system:masters` 그룹. RBAC를 우회하는 비상용     |
 
 ## 시험 포인트
 

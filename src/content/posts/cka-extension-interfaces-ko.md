@@ -19,11 +19,11 @@ Helm chart·release·values와 Kustomize base/overlay 기본은 [CKAD 개념 노
 
 Kubernetes는 컨테이너 실행, 네트워크, 스토리지를 직접 구현하지 않고 표준 인터페이스 뒤의 플러그인에 맡김.
 
-| 인터페이스 | 누가 호출 | 누구를 | 하는 일 | 이 클러스터 |
-| --- | --- | --- | --- | --- |
-| CRI (Container Runtime Interface) | kubelet | container runtime | sandbox·컨테이너 생성, 이미지 pull | containerd 2.4.1 |
-| CNI (Container Network Interface) | container runtime | CNI 플러그인 바이너리 | Pod에 네트워크 인터페이스와 IP 연결 | Calico |
-| CSI (Container Storage Interface) | kubelet, CSI sidecar controller | CSI driver | volume 생성, attach, mount | `csi.tigera.io` (Calico 내장) |
+| 인터페이스                        | 누가 호출                       | 누구를                | 하는 일                             | 이 클러스터                   |
+| --------------------------------- | ------------------------------- | --------------------- | ----------------------------------- | ----------------------------- |
+| CRI (Container Runtime Interface) | kubelet                         | container runtime     | sandbox·컨테이너 생성, 이미지 pull  | containerd 2.4.1              |
+| CNI (Container Network Interface) | container runtime               | CNI 플러그인 바이너리 | Pod에 네트워크 인터페이스와 IP 연결 | Calico                        |
+| CSI (Container Storage Interface) | kubelet, CSI sidecar controller | CSI driver            | volume 생성, attach, mount          | `csi.tigera.io` (Calico 내장) |
 
 ```text
 kubelet ──CRI(gRPC)──▶ containerd ──▶ runc (컨테이너)
@@ -53,10 +53,10 @@ sudo crictl version
 
 CNI 설정은 노드 파일 두 곳.
 
-| 경로 | 내용 |
-| --- | --- |
+| 경로              | 내용                                          |
+| ----------------- | --------------------------------------------- |
 | `/etc/cni/net.d/` | CNI 설정 파일. 이름순으로 첫 번째 파일을 사용 |
-| `/opt/cni/bin/` | CNI 플러그인 바이너리 |
+| `/opt/cni/bin/`   | CNI 플러그인 바이너리                         |
 
 containerd가 이 경로를 쓰는지 확인:
 
@@ -87,10 +87,10 @@ CNI가 없거나 설정이 비어 있으면 노드가 `NotReady`이고 이유는
 
 CSI driver는 보통 두 부분으로 설치됨.
 
-| 부분 | 형태 | 하는 일 |
-| --- | --- | --- |
+| 부분              | 형태                                                                          | 하는 일                        |
+| ----------------- | ----------------------------------------------------------------------------- | ------------------------------ |
 | controller plugin | Deployment/StatefulSet + sidecar (external-provisioner, external-attacher 등) | PVC를 보고 volume 생성, attach |
-| node plugin | DaemonSet + node-driver-registrar | 각 노드에서 mount |
+| node plugin       | DaemonSet + node-driver-registrar                                             | 각 노드에서 mount              |
 
 클러스터에 등록된 driver는 CSIDriver 객체로 보임.
 
@@ -171,12 +171,12 @@ Operator = CRD + 그 CRD를 watch하는 controller. 사람이 하던 운영 절�
 
 Calico는 operator 방식으로 설치했음.
 
-| 구성 | 이 클러스터 |
-| --- | --- |
-| operator Deployment | `tigera-operator/tigera-operator` |
-| CRD | `operator.tigera.io` 그룹 등 (`kubectl get crd | grep tigera` → 9개) |
-| custom resource | `Installation default`, `APIServer default` 등 |
-| 상태 | `kubectl get tigerastatus` |
+| 구성                | 이 클러스터                                    |
+| ------------------- | ---------------------------------------------- |
+| operator Deployment | `tigera-operator/tigera-operator`              |
+| CRD                 | `operator.tigera.io` 그룹 등 (`kubectl get crd | grep tigera` → 9개) |
+| custom resource     | `Installation default`, `APIServer default` 등 |
+| 상태                | `kubectl get tigerastatus`                     |
 
 ```bash
 kubectl get installation default -o jsonpath='{.spec.calicoNetwork.ipPools}'
@@ -211,15 +211,15 @@ kubectl -n calico-system get ds calico-node    # DESIRED 3, READY 3
 
 ## 헷갈리는 것 비교
 
-| 비교 | A | B |
-| --- | --- | --- |
-| CRI vs CNI | kubelet ↔ runtime. 컨테이너 실행 | runtime ↔ 네트워크 플러그인. Pod IP |
-| `/etc/cni/net.d` vs `/opt/cni/bin` | 설정 | 바이너리 |
-| containerd vs runc | CRI를 구현하는 고수준 runtime | 실제로 컨테이너를 만드는 저수준 runtime |
-| CSI controller plugin vs node plugin | volume 생성, attach (Deployment) | 노드에서 mount (DaemonSet) |
-| `helm install --set` vs `-f values.yaml` | 값 몇 개 | 값이 많을 때 |
-| `kubectl apply -k` vs `kubectl kustomize` | 빌드 후 적용 | 빌드 결과만 출력 |
-| operator 리소스 직접 수정 vs custom resource 수정 | operator가 되돌림 | operator가 반영 |
+| 비교                                              | A                                | B                                       |
+| ------------------------------------------------- | -------------------------------- | --------------------------------------- |
+| CRI vs CNI                                        | kubelet ↔ runtime. 컨테이너 실행 | runtime ↔ 네트워크 플러그인. Pod IP     |
+| `/etc/cni/net.d` vs `/opt/cni/bin`                | 설정                             | 바이너리                                |
+| containerd vs runc                                | CRI를 구현하는 고수준 runtime    | 실제로 컨테이너를 만드는 저수준 runtime |
+| CSI controller plugin vs node plugin              | volume 생성, attach (Deployment) | 노드에서 mount (DaemonSet)              |
+| `helm install --set` vs `-f values.yaml`          | 값 몇 개                         | 값이 많을 때                            |
+| `kubectl apply -k` vs `kubectl kustomize`         | 빌드 후 적용                     | 빌드 결과만 출력                        |
+| operator 리소스 직접 수정 vs custom resource 수정 | operator가 되돌림                | operator가 반영                         |
 
 ## 시험 포인트
 

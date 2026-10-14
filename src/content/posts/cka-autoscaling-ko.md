@@ -15,12 +15,12 @@ draft: true
 
 ## autoscaling 종류
 
-| 대상 | 방법 | 누가 |
-| --- | --- | --- |
-| Pod 개수 | HorizontalPodAutoscaler (HPA) | kube-controller-manager의 HPA controller. 기본 포함 |
-| Pod 리소스 크기 | VerticalPodAutoscaler (VPA) | 별도 설치하는 add-on (CRD + controller) |
-| 노드 개수 | Cluster Autoscaler, Karpenter 등 | 클라우드 연동 add-on |
-| 수동 | `kubectl scale deploy <name> --replicas=N` | 사람 |
+| 대상            | 방법                                       | 누가                                                |
+| --------------- | ------------------------------------------ | --------------------------------------------------- |
+| Pod 개수        | HorizontalPodAutoscaler (HPA)              | kube-controller-manager의 HPA controller. 기본 포함 |
+| Pod 리소스 크기 | VerticalPodAutoscaler (VPA)                | 별도 설치하는 add-on (CRD + controller)             |
+| 노드 개수       | Cluster Autoscaler, Karpenter 등           | 클라우드 연동 add-on                                |
+| 수동            | `kubectl scale deploy <name> --replicas=N` | 사람                                                |
 
 시험 범위에서 직접 다룰 건 HPA. VPA와 노드 autoscaler는 개념만.
 
@@ -72,18 +72,18 @@ spec:
   minReplicas: 1
   maxReplicas: 5
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 50
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50
 ```
 
-| `target.type` | 의미 |
-| --- | --- |
-| `Utilization` + `averageUtilization` | request 대비 % 평균 |
-| `AverageValue` + `averageValue` | 절대량 평균 (예: `500m`, `200Mi`) |
+| `target.type`                        | 의미                              |
+| ------------------------------------ | --------------------------------- |
+| `Utilization` + `averageUtilization` | request 대비 % 평균               |
+| `AverageValue` + `averageValue`      | 절대량 평균 (예: `500m`, `200Mi`) |
 
 ## 동작 확인
 
@@ -114,11 +114,11 @@ Normal  SuccessfulRescale  New size: 5; reason: cpu resource utilization (percen
 
 부하 Pod를 지운 뒤:
 
-| 시간 | TARGETS | REPLICAS |
-| --- | --- | --- |
-| 0분 | `0%/50%` | 5 |
-| 3분 | `0%/50%` | 5 |
-| 약 4~5분 | `0%/50%` | 1 |
+| 시간     | TARGETS  | REPLICAS |
+| -------- | -------- | -------- |
+| 0분      | `0%/50%` | 5        |
+| 3분      | `0%/50%` | 5        |
+| 약 4~5분 | `0%/50%` | 1        |
 
 줄어드는 쪽은 기본 stabilization window가 300초라서 바로 줄지 않음. 늘어나는 쪽은 기본 0초.
 
@@ -132,15 +132,15 @@ spec:
     scaleDown:
       stabilizationWindowSeconds: 60
       policies:
-      - type: Percent
-        value: 50
-        periodSeconds: 30
+        - type: Percent
+          value: 50
+          periodSeconds: 30
     scaleUp:
       stabilizationWindowSeconds: 0
       policies:
-      - type: Pods
-        value: 2
-        periodSeconds: 15
+        - type: Pods
+          value: 2
+          periodSeconds: 15
 ```
 
 - `stabilizationWindowSeconds`: 이 기간의 추천값 중 가장 보수적인 값을 씀 (scale down이면 가장 큰 값)
@@ -149,12 +149,12 @@ spec:
 
 ## 안 될 때
 
-| 증상 | 원인 |
-| --- | --- |
-| `TARGETS`가 `cpu: <unknown>/50%` | metrics-server 없음, 아직 수집 전, 또는 request 없음 |
-| `missing request for cpu in container nginx of Pod ...` | 대상 컨테이너에 CPU request가 없음 |
-| replicas가 min에서 안 움직임 | 부하가 실제로 안 들어감, 목표값이 너무 높음 |
-| replicas가 바로 안 줄어듦 | scaleDown stabilization (기본 300초) |
+| 증상                                                    | 원인                                                 |
+| ------------------------------------------------------- | ---------------------------------------------------- |
+| `TARGETS`가 `cpu: <unknown>/50%`                        | metrics-server 없음, 아직 수집 전, 또는 request 없음 |
+| `missing request for cpu in container nginx of Pod ...` | 대상 컨테이너에 CPU request가 없음                   |
+| replicas가 min에서 안 움직임                            | 부하가 실제로 안 들어감, 목표값이 너무 높음          |
+| replicas가 바로 안 줄어듦                               | scaleDown stabilization (기본 300초)                 |
 
 request 없는 Deployment에 HPA를 걸어 봄:
 
@@ -177,13 +177,13 @@ $ kubectl describe hpa noreq
 
 ## 헷갈리는 것 비교
 
-| 비교 | A | B |
-| --- | --- | --- |
-| HPA vs VPA | Pod 개수 | Pod 크기 (requests/limits) |
-| `Utilization` vs `AverageValue` | request 대비 % | 절대량 |
-| `kubectl scale` vs HPA | 한 번 바꿈. HPA가 있으면 다시 덮어씀 | 계속 조정 |
-| scale up vs scale down 기본 | stabilization 0초 | stabilization 300초 |
-| `--cpu=50%` vs `--cpu-percent=50` | v1.35 kubectl 방식 | deprecated 경고 |
+| 비교                              | A                                    | B                          |
+| --------------------------------- | ------------------------------------ | -------------------------- |
+| HPA vs VPA                        | Pod 개수                             | Pod 크기 (requests/limits) |
+| `Utilization` vs `AverageValue`   | request 대비 %                       | 절대량                     |
+| `kubectl scale` vs HPA            | 한 번 바꿈. HPA가 있으면 다시 덮어씀 | 계속 조정                  |
+| scale up vs scale down 기본       | stabilization 0초                    | stabilization 300초        |
+| `--cpu=50%` vs `--cpu-percent=50` | v1.35 kubectl 방식                   | deprecated 경고            |
 
 ## 시험 포인트
 

@@ -37,13 +37,13 @@ draft: true
 
 ## control plane 컴포넌트
 
-| 컴포넌트 | 하는 일 | kubeadm에서 실행 방식 |
-| --- | --- | --- |
-| kube-apiserver | 모든 요청의 입구. 인증, 인가, admission, 검증 후 etcd에 저장 | static Pod |
-| etcd | 클러스터 상태를 저장하는 key-value store | static Pod |
-| kube-scheduler | `nodeName`이 비어 있는 Pod에 노드를 골라 줌 | static Pod |
-| kube-controller-manager | Deployment, ReplicaSet, Node, Job 등 controller 묶음. 원하는 상태로 맞춤 | static Pod |
-| cloud-controller-manager | 클라우드 API 연동 (LB, 노드 등) | 온프레미스 kubeadm에는 없음 |
+| 컴포넌트                 | 하는 일                                                                  | kubeadm에서 실행 방식       |
+| ------------------------ | ------------------------------------------------------------------------ | --------------------------- |
+| kube-apiserver           | 모든 요청의 입구. 인증, 인가, admission, 검증 후 etcd에 저장             | static Pod                  |
+| etcd                     | 클러스터 상태를 저장하는 key-value store                                 | static Pod                  |
+| kube-scheduler           | `nodeName`이 비어 있는 Pod에 노드를 골라 줌                              | static Pod                  |
+| kube-controller-manager  | Deployment, ReplicaSet, Node, Job 등 controller 묶음. 원하는 상태로 맞춤 | static Pod                  |
+| cloud-controller-manager | 클라우드 API 연동 (LB, 노드 등)                                          | 온프레미스 kubeadm에는 없음 |
 
 manifest의 주요 플래그:
 
@@ -75,12 +75,12 @@ kube-scheduler            cka-cp1_af5d04d1-...
 
 ## node 컴포넌트
 
-| 컴포넌트 | 하는 일 | 실행 방식 |
-| --- | --- | --- |
-| kubelet | 노드에 배정된 Pod를 container runtime으로 실행하고 상태를 보고 | systemd 서비스 |
-| container runtime | 이미지 pull, 컨테이너 실행. kubelet과 CRI로 통신 | systemd 서비스 (containerd) |
-| kube-proxy | Service와 EndpointSlice를 보고 노드의 iptables/IPVS/nftables 규칙 작성 | DaemonSet |
-| CNI 플러그인 | Pod에 IP와 네트워크 인터페이스 연결 | 대부분 DaemonSet + `/opt/cni/bin` 바이너리 |
+| 컴포넌트          | 하는 일                                                                | 실행 방식                                  |
+| ----------------- | ---------------------------------------------------------------------- | ------------------------------------------ |
+| kubelet           | 노드에 배정된 Pod를 container runtime으로 실행하고 상태를 보고         | systemd 서비스                             |
+| container runtime | 이미지 pull, 컨테이너 실행. kubelet과 CRI로 통신                       | systemd 서비스 (containerd)                |
+| kube-proxy        | Service와 EndpointSlice를 보고 노드의 iptables/IPVS/nftables 규칙 작성 | DaemonSet                                  |
+| CNI 플러그인      | Pod에 IP와 네트워크 인터페이스 연결                                    | 대부분 DaemonSet + `/opt/cni/bin` 바이너리 |
 
 kubelet만 Pod가 아님. kubelet이 있어야 Pod가 뜨니까. control plane 노드에도 kubelet, container runtime, kube-proxy가 다 있음.
 
@@ -117,12 +117,12 @@ EnvironmentFile=-/etc/default/kubelet
 ExecStart=/usr/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS
 ```
 
-| 파일 | 내용 |
-| --- | --- |
-| `/etc/kubernetes/kubelet.conf` | apiserver 접속용 kubeconfig |
-| `/var/lib/kubelet/config.yaml` | KubeletConfiguration. `staticPodPath`, `cgroupDriver`, `clusterDNS` 등 |
-| `/var/lib/kubelet/kubeadm-flags.env` | kubeadm이 넣는 추가 플래그 (`KUBELET_KUBEADM_ARGS`) |
-| `/etc/default/kubelet` | 사용자가 넣는 추가 플래그 (`KUBELET_EXTRA_ARGS`) |
+| 파일                                 | 내용                                                                   |
+| ------------------------------------ | ---------------------------------------------------------------------- |
+| `/etc/kubernetes/kubelet.conf`       | apiserver 접속용 kubeconfig                                            |
+| `/var/lib/kubelet/config.yaml`       | KubeletConfiguration. `staticPodPath`, `cgroupDriver`, `clusterDNS` 등 |
+| `/var/lib/kubelet/kubeadm-flags.env` | kubeadm이 넣는 추가 플래그 (`KUBELET_KUBEADM_ARGS`)                    |
+| `/etc/default/kubelet`               | 사용자가 넣는 추가 플래그 (`KUBELET_EXTRA_ARGS`)                       |
 
 ```bash
 sudo grep -E "staticPodPath|cgroupDriver|containerRuntimeEndpoint|clusterDomain" /var/lib/kubelet/config.yaml
@@ -154,8 +154,8 @@ metadata:
     role: static
 spec:
   containers:
-  - name: web
-    image: nginx:1.27
+    - name: web
+      image: nginx:1.27
 ```
 
 ```text
@@ -166,11 +166,11 @@ $ kubectl get pod static-web-cka-w1 -o jsonpath='{.metadata.ownerReferences[0].k
 Node/cka-w1
 ```
 
-| 동작 | 결과 |
-| --- | --- |
+| 동작                                   | 결과                                                                             |
+| -------------------------------------- | -------------------------------------------------------------------------------- |
 | `kubectl delete pod static-web-cka-w1` | `deleted`라고 나오지만 몇 초 뒤 다시 `Running`. kubelet이 mirror Pod를 다시 만듦 |
-| manifest 파일 삭제 | Pod가 실제로 사라짐 (`NotFound`) |
-| manifest 파일 수정 | kubelet이 Pod를 새로 만듦 |
+| manifest 파일 삭제                     | Pod가 실제로 사라짐 (`NotFound`)                                                 |
+| manifest 파일 수정                     | kubelet이 Pod를 새로 만듦                                                        |
 
 static Pod를 지우거나 고치려면 그 노드에 ssh해서 파일을 다뤄야 함. 어느 노드인지는 이름 끝이나 `-o wide`로.
 
@@ -205,17 +205,17 @@ worker에는 `kubelet.conf`, `manifests/`(비어 있음), `pki/ca.crt`만 있음
 
 control plane에서 `ss -tlnp`로 본 것:
 
-| 주소 | 프로세스 | 용도 |
-| --- | --- | --- |
-| `*:6443` | kube-apiserver | API |
-| `192.168.122.11:2379`, `127.0.0.1:2379` | etcd | client |
-| `192.168.122.11:2380` | etcd | peer (HA에서 member끼리) |
-| `127.0.0.1:2381` | etcd | metrics, health |
-| `127.0.0.1:10257` | kube-controller-manager | health |
-| `127.0.0.1:10259` | kube-scheduler | health |
-| `*:10250` | kubelet | API (apiserver가 logs, exec로 접속) |
-| `127.0.0.1:10248` | kubelet | healthz |
-| `*:10256`, `127.0.0.1:10249` | kube-proxy | healthz, metrics |
+| 주소                                    | 프로세스                | 용도                                |
+| --------------------------------------- | ----------------------- | ----------------------------------- |
+| `*:6443`                                | kube-apiserver          | API                                 |
+| `192.168.122.11:2379`, `127.0.0.1:2379` | etcd                    | client                              |
+| `192.168.122.11:2380`                   | etcd                    | peer (HA에서 member끼리)            |
+| `127.0.0.1:2381`                        | etcd                    | metrics, health                     |
+| `127.0.0.1:10257`                       | kube-controller-manager | health                              |
+| `127.0.0.1:10259`                       | kube-scheduler          | health                              |
+| `*:10250`                               | kubelet                 | API (apiserver가 logs, exec로 접속) |
+| `127.0.0.1:10248`                       | kubelet                 | healthz                             |
+| `*:10256`, `127.0.0.1:10249`            | kube-proxy              | healthz, metrics                    |
 
 ## 요청 하나가 Pod가 되기까지
 
@@ -230,22 +230,22 @@ control plane에서 `ss -tlnp`로 본 것:
 
 어느 단계에서 멈췄는지에 따라 보는 곳이 다름:
 
-| 증상 | 의심할 곳 |
-| --- | --- |
-| Deployment는 있는데 ReplicaSet/Pod가 안 생김 | kube-controller-manager |
-| Pod가 `Pending`, Events에 아무것도 없음 | kube-scheduler |
+| 증상                                                 | 의심할 곳                       |
+| ---------------------------------------------------- | ------------------------------- |
+| Deployment는 있는데 ReplicaSet/Pod가 안 생김         | kube-controller-manager         |
+| Pod가 `Pending`, Events에 아무것도 없음              | kube-scheduler                  |
 | Pod가 노드에 배정됐는데 `ContainerCreating`에서 멈춤 | kubelet, container runtime, CNI |
-| `kubectl`이 아예 응답 없음 | kube-apiserver, etcd |
+| `kubectl`이 아예 응답 없음                           | kube-apiserver, etcd            |
 
 ## 헷갈리는 것 비교
 
-| 비교 | A | B |
-| --- | --- | --- |
-| static Pod vs DaemonSet | kubelet이 로컬 파일로 띄움. apiserver 불필요. 노드 하나 | controller가 API로 관리. 모든(또는 선택한) 노드 |
-| mirror Pod 삭제 vs manifest 삭제 | 다시 생김 | 실제로 사라짐 |
-| kubelet vs 나머지 컴포넌트 | systemd 서비스. `systemctl`, `journalctl` | Pod. `kubectl logs`, `crictl logs` |
-| `--service-cluster-ip-range` vs `--cluster-cidr` | Service IP 대역 (apiserver) | Pod IP 대역 (controller-manager) |
-| `admin.conf` vs `kubelet.conf` | 사람이 쓰는 관리자 kubeconfig | kubelet의 노드 신원 (`system:node:<노드>`) |
+| 비교                                             | A                                                       | B                                               |
+| ------------------------------------------------ | ------------------------------------------------------- | ----------------------------------------------- |
+| static Pod vs DaemonSet                          | kubelet이 로컬 파일로 띄움. apiserver 불필요. 노드 하나 | controller가 API로 관리. 모든(또는 선택한) 노드 |
+| mirror Pod 삭제 vs manifest 삭제                 | 다시 생김                                               | 실제로 사라짐                                   |
+| kubelet vs 나머지 컴포넌트                       | systemd 서비스. `systemctl`, `journalctl`               | Pod. `kubectl logs`, `crictl logs`              |
+| `--service-cluster-ip-range` vs `--cluster-cidr` | Service IP 대역 (apiserver)                             | Pod IP 대역 (controller-manager)                |
+| `admin.conf` vs `kubelet.conf`                   | 사람이 쓰는 관리자 kubeconfig                           | kubelet의 노드 신원 (`system:node:<노드>`)      |
 
 ## 시험 포인트
 

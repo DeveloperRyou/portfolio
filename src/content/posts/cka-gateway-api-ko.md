@@ -19,12 +19,12 @@ Ingress 리소스 기본(host·path 규칙, pathType, TLS)은 [CKAD 개념 노�
 
 Ingress의 후속으로 만든 Kubernetes 공식 API(`gateway.networking.k8s.io`). Kubernetes 본체에 포함되지 않아서 CRD를 따로 설치함.
 
-| 리소스 | 누가 관리 | 내용 |
-| --- | --- | --- |
-| GatewayClass | 인프라 제공자 | 어떤 controller가 처리하는지 (`controllerName`). 클러스터 범위 |
-| Gateway | 클러스터 운영자 | listener(포트, 프로토콜, hostname, TLS), 어떤 namespace의 Route를 받을지 |
-| HTTPRoute (GRPCRoute 등) | 앱 개발자 | 매칭 규칙과 backend Service |
-| ReferenceGrant | backend 쪽 namespace 소유자 | 다른 namespace에서 내 Service를 참조해도 된다는 허가 |
+| 리소스                   | 누가 관리                   | 내용                                                                     |
+| ------------------------ | --------------------------- | ------------------------------------------------------------------------ |
+| GatewayClass             | 인프라 제공자               | 어떤 controller가 처리하는지 (`controllerName`). 클러스터 범위           |
+| Gateway                  | 클러스터 운영자             | listener(포트, 프로토콜, hostname, TLS), 어떤 namespace의 Route를 받을지 |
+| HTTPRoute (GRPCRoute 등) | 앱 개발자                   | 매칭 규칙과 backend Service                                              |
+| ReferenceGrant           | backend 쪽 namespace 소유자 | 다른 namespace에서 내 Service를 참조해도 된다는 허가                     |
 
 Ingress 하나에 몰려 있던 설정을 역할별 리소스로 나눈 것.
 
@@ -65,10 +65,10 @@ metadata:
 spec:
   gatewayClassName: nginx
   listeners:
-  - name: http
-    protocol: HTTP
-    port: 80
-    hostname: "*.example.com"
+    - name: http
+      protocol: HTTP
+      port: 80
+      hostname: "*.example.com"
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
@@ -77,21 +77,21 @@ metadata:
   namespace: gw
 spec:
   parentRefs:
-  - name: web-gw
+    - name: web-gw
   hostnames: [app.example.com]
   rules:
-  - matches:
-    - path: {type: PathPrefix, value: /v2}
-    backendRefs:
-    - {name: app-v2, port: 80}
-  - matches:
-    - headers:
-      - {name: x-canary, value: "true"}
-    backendRefs:
-    - {name: app-v2, port: 80}
-  - backendRefs:
-    - {name: app-v1, port: 80, weight: 80}
-    - {name: app-v2, port: 80, weight: 20}
+    - matches:
+        - path: { type: PathPrefix, value: /v2 }
+      backendRefs:
+        - { name: app-v2, port: 80 }
+    - matches:
+        - headers:
+            - { name: x-canary, value: "true" }
+      backendRefs:
+        - { name: app-v2, port: 80 }
+    - backendRefs:
+        - { name: app-v1, port: 80, weight: 80 }
+        - { name: app-v2, port: 80, weight: 20 }
 ```
 
 Gateway를 만들면 NGINX Gateway Fabric이 Gateway마다 data plane(Deployment + Service `web-gw-nginx`)을 만듦.
@@ -104,13 +104,13 @@ httproute.gateway.networking.k8s.io/app    ["app.example.com"]
 
 요청 결과 (`Host: app.example.com`):
 
-| 요청 | 결과 |
-| --- | --- |
-| `/v2/x` | `v2` (PathPrefix) |
-| `/` + `x-canary: true` | `v2` (header 매칭) |
-| `/` 100번 | `v1` 75번, `v2` 25번 (weight 80:20) |
-| `Host: foo.example.com` (Route 없음) | 404 |
-| `Host: app.other.org` (listener hostname 불일치) | 404 |
+| 요청                                             | 결과                                |
+| ------------------------------------------------ | ----------------------------------- |
+| `/v2/x`                                          | `v2` (PathPrefix)                   |
+| `/` + `x-canary: true`                           | `v2` (header 매칭)                  |
+| `/` 100번                                        | `v1` 75번, `v2` 25번 (weight 80:20) |
+| `Host: foo.example.com` (Route 없음)             | 404                                 |
+| `Host: app.other.org` (listener hostname 불일치) | 404                                 |
 
 - `weight`는 비율이라서 100번에 정확히 80:20이 나오지는 않음
 - 매칭: `path`(Exact, PathPrefix, RegularExpression), `headers`, `queryParams`, `method`. 한 `matches` 항목 안은 AND, 항목 여러 개는 OR
@@ -178,29 +178,29 @@ metadata:
   namespace: other
 spec:
   from:
-  - group: gateway.networking.k8s.io
-    kind: HTTPRoute
-    namespace: gw
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: gw
   to:
-  - group: ""
-    kind: Service
+    - group: ""
+      kind: Service
 ```
 
 적용 후 `ResolvedRefs=True`, `/v2` 요청이 `other`의 Service로 감. v1.6 CRD에는 ReferenceGrant `v1`도 있지만 여기서는 `v1beta1`로 확인함.
 
-| 방향 | 누가 허가 | 리소스 |
-| --- | --- | --- |
+| 방향                             | 누가 허가  | 리소스                      |
+| -------------------------------- | ---------- | --------------------------- |
 | Route → 다른 namespace의 Gateway | Gateway 쪽 | `listeners[].allowedRoutes` |
-| Route → 다른 namespace의 Service | Service 쪽 | ReferenceGrant |
+| Route → 다른 namespace의 Service | Service 쪽 | ReferenceGrant              |
 
 ## NodePort와 externalTrafficPolicy
 
 Gateway data plane Service는 `externalTrafficPolicy: Local`로 만들어졌음. data plane Pod가 cka-w2에만 있어서, cka-w1의 NodePort로 보낸 요청은 응답 없이 timeout(`000`), cka-w2로 보낸 요청만 200.
 
-| externalTrafficPolicy | 동작 |
-| --- | --- |
-| `Cluster` (기본) | 아무 노드로 들어와도 다른 노드의 Pod로 전달. 클라이언트 IP는 SNAT로 바뀜 |
-| `Local` | 그 노드에 있는 Pod로만. 없으면 drop. 클라이언트 IP 보존 |
+| externalTrafficPolicy | 동작                                                                     |
+| --------------------- | ------------------------------------------------------------------------ |
+| `Cluster` (기본)      | 아무 노드로 들어와도 다른 노드의 Pod로 전달. 클라이언트 IP는 SNAT로 바뀜 |
+| `Local`               | 그 노드에 있는 Pod로만. 없으면 drop. 클라이언트 IP 보존                  |
 
 ## Ingress controller
 
@@ -222,24 +222,24 @@ kubectl create ingress a --class=nginx --rule="a.example.com/*=a:80"
 
 ## Ingress vs Gateway API
 
-| | Ingress | Gateway API |
-| --- | --- | --- |
-| 리소스 | Ingress 하나 (+ IngressClass) | GatewayClass, Gateway, *Route, ReferenceGrant |
-| 프로토콜 | HTTP/HTTPS | HTTPRoute, GRPCRoute, TCPRoute, UDPRoute, TLSRoute (v1.6 CRD 기준 모두 standard channel의 `v1`) |
-| header 매칭, 가중치 분할 | 표준에 없음. controller annotation | 표준 필드 |
-| 다른 namespace | 같은 namespace Service만 | allowedRoutes, ReferenceGrant로 명시적 허용 |
-| 상태 확인 | `ADDRESS` 정도 | Gateway·Route status condition에 이유 |
-| 설치 | API는 기본 포함, controller만 설치 | CRD + controller |
+|                          | Ingress                            | Gateway API                                                                                     |
+| ------------------------ | ---------------------------------- | ----------------------------------------------------------------------------------------------- |
+| 리소스                   | Ingress 하나 (+ IngressClass)      | GatewayClass, Gateway, *Route, ReferenceGrant                                                   |
+| 프로토콜                 | HTTP/HTTPS                         | HTTPRoute, GRPCRoute, TCPRoute, UDPRoute, TLSRoute (v1.6 CRD 기준 모두 standard channel의 `v1`) |
+| header 매칭, 가중치 분할 | 표준에 없음. controller annotation | 표준 필드                                                                                       |
+| 다른 namespace           | 같은 namespace Service만           | allowedRoutes, ReferenceGrant로 명시적 허용                                                     |
+| 상태 확인                | `ADDRESS` 정도                     | Gateway·Route status condition에 이유                                                           |
+| 설치                     | API는 기본 포함, controller만 설치 | CRD + controller                                                                                |
 
 ## 헷갈리는 것 비교
 
-| 비교 | A | B |
-| --- | --- | --- |
-| GatewayClass vs IngressClass | Gateway가 쓸 controller | Ingress가 쓸 controller |
-| `parentRefs` vs `backendRefs` | Route를 붙일 Gateway | 트래픽을 보낼 Service |
-| Gateway listener `hostname` vs Route `hostnames` | Gateway가 받을 이름 범위 | Route가 처리할 이름. 둘이 겹쳐야 함 |
-| `Accepted=False` vs `ResolvedRefs=False` | Gateway가 Route를 안 받음 (allowedRoutes 등) | backend 참조 문제 (없는 Service, ReferenceGrant 없음) |
-| allowedRoutes vs ReferenceGrant | Gateway 쪽이 Route를 허용 | Service 쪽이 참조를 허용 |
+| 비교                                             | A                                            | B                                                     |
+| ------------------------------------------------ | -------------------------------------------- | ----------------------------------------------------- |
+| GatewayClass vs IngressClass                     | Gateway가 쓸 controller                      | Ingress가 쓸 controller                               |
+| `parentRefs` vs `backendRefs`                    | Route를 붙일 Gateway                         | 트래픽을 보낼 Service                                 |
+| Gateway listener `hostname` vs Route `hostnames` | Gateway가 받을 이름 범위                     | Route가 처리할 이름. 둘이 겹쳐야 함                   |
+| `Accepted=False` vs `ResolvedRefs=False`         | Gateway가 Route를 안 받음 (allowedRoutes 등) | backend 참조 문제 (없는 Service, ReferenceGrant 없음) |
+| allowedRoutes vs ReferenceGrant                  | Gateway 쪽이 Route를 허용                    | Service 쪽이 참조를 허용                              |
 
 ## 시험 포인트
 
