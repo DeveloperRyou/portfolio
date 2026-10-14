@@ -45,6 +45,7 @@ export const taxonomy: Topic[] = [
     label: "Project CNCF",
     subtopics: [
       { slug: "ckad", label: "CKAD" },
+      { slug: "cka", label: "CKA" },
       { slug: "cncf-practice", label: "CNCF Practice" },
     ],
   },
