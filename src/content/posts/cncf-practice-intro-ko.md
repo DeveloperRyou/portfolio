@@ -86,3 +86,7 @@ Chrome이나 Edge에서는 이때 "로컬 네트워크의 기기에 접근"하�
 직접 써 보고 싶다면 위 명령 네 줄이면 됩니다. 다만 지금은 WSL2 + Docker Desktop 환경만 확인했고 Safari는 https 페이지에서 localhost 접근을 막아서 지원하지 않아요.
 
 다음 글에서는 정적 페이지가 어떻게 로컬 클러스터와 터미널을 다루는지, 그러면서 다른 사이트가 이 서버를 건드리지 못하게 어떤 장치를 뒀는지 정리해 보겠습니다.
+
+## 업데이트: v0.2.0
+
+[v0.2.0](https://github.com/DeveloperRyou/cncf-practice/releases/tag/v0.2.0)에서 `cka/` 디렉터리와 CKA 모의고사를 추가했습니다. 노드 단위 작업을 낼 수 있도록 컨트롤 플레인 1대와 워커 2대, 총 3노드 kind 클러스터로 돌리고, 시험 화면과 `up.sh`가 이 클러스터를 띄울 수 있게 했습니다. `install.sh`가 kubectl, kind와 함께 helm도 설치하고, 설치·클러스터·시험 스크립트는 macOS에서도 동작합니다.
