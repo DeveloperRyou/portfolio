@@ -86,3 +86,7 @@ As of September 27, 2026, there's only one set of questions: CKAD round-01, with
 If you want to try it yourself, the four commands above are all it takes. That said, I've only tested it on WSL2 + Docker Desktop so far, and Safari isn't supported because it blocks localhost access from https pages.
 
 In the next post, I'll go over how a static page drives a local cluster and terminal, and what safeguards I put in place so other sites can't touch this server.
+
+## Update: v0.2.0
+
+[v0.2.0](https://github.com/DeveloperRyou/cncf-practice/releases/tag/v0.2.0) adds a `cka/` directory with CKA mock exams. They run on a 3-node kind cluster (one control plane, two workers) so node-level tasks have somewhere to go, and the exam UI and `up.sh` can start that cluster. `install.sh` now installs helm next to kubectl and kind, and the install, cluster and exam scripts work on macOS as well.
